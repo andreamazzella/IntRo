@@ -1,7 +1,7 @@
 ---
 title: "1: The basics"
 subtitle: "Introduction to R"
-author: Andrea Mazzella[link](https://github.com/andreamazzella)
+author: Andrea Mazzella [github](https://github.com/andreamazzella)
 output: html_notebook
 ---
 
@@ -12,6 +12,8 @@ c) Assignment
 d) Functions
 e) Datasets
 
+---
+
 # Console
 The console is used to run simple commands that you don't need to save.
 
@@ -20,16 +22,18 @@ In the console below, add 3 and 5 - it's like using a calculator: 3+5 Enter.
 
 Now forget about the console forever.
 
+---
+
 # R Notebooks
 
 A notebook is composed of two things:
-a) Text, which is the main component
-b) "Chunks", which contain code (plus comments, preceded by #)
+* Text, which is the main component
+* "Chunks", which contain code (plus comments, preceded by #)
 
 A chunk is contained by:
-"```{r}" 
+````{r}` 
 and
-"```".
+````"`
 
 To run code in a chunk, you click on the *Run* button at the top right of the chunk (or you place your cursor inside it and press *Ctrl+Shift+Enter*).
 
@@ -56,6 +60,7 @@ Add a new chunk in the space below, and use it to calculate the area of a rectan
 
 
 
+---
 
 # Assignment
 You can tell R that something has a name; R will remember it and you can use that later in your code. This is called *assignment* and is done by using the arrow <-.
@@ -79,6 +84,8 @@ Calculate the diameter of a circle of radius 5.7, without typing 5.7.
 
 ```
 
+---
+
 # Functions
 In programming, a function is like a verb. It takes something (its "arguments"), it does something to it, and gives you back an output.
 In R, the arguments of a function are kept in brackets.
@@ -92,7 +99,7 @@ Create a new chunk below, and use it to calculate the square root of 5.7, withou
 
 
 
-
+---
 
 # Datasets
 Some sample datasets are available in R. Let's import "women", a small dataset containing the heights and weights of 15 women, into our Environment.
@@ -141,3 +148,4 @@ Use the women dataset and calculate the mean BMI. There are a few ways of coding
 
 
 
+---
