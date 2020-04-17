@@ -1,0 +1,54 @@
+---
+title: "2: Packages, data import and exploration"
+subtitle: "Introduction to R"
+author: Andrea Mazzella[link](https://github.com/andreamazzella)
+output: html_notebook
+---
+
+# What you will learn
+a) ...
+
+# Packages
+
+R has some core functions, like the ones we've used so far: sqrt(), mean(), table() and some more advanced ones (for example, the function for logistic regression). There are also extra functions made by programmers and grouped into "packages", which need to be downloaded (and loaded) separately.
+
+In order to install a package, one uses the install.packages() function, adding the package name in quotes. This might take a bit of time if the packages are large.
+```{r}
+install.packages("magrittr")
+install.packages("haven")
+```
+
+*Exercise* Install packages "survival" and "tidyverse".
+```{r}
+
+```
+
+You only need to install packages once, but then you need to load them every time you open R. You do this with library() - without quotes. So, you put a chunk with the packages you need to load at the start of each Notebook.
+```{r}
+library(magrittr)
+library(haven)
+library(survival)
+library(tidyverse)
+```
+
+
+# A taste of what's to come
+
+```{r}
+chickwts %>%
+  ggplot(aes(
+    x = reorder(feed, weight, FUN = median),
+    y = weight,
+    fill = feed
+  )) +
+  geom_boxplot() +
+  labs(
+    title = "Chicken feed and weight",
+    x = "Type of feed",
+    y = "Chicken weight (g)"
+  ) +
+  geom_hline(yintercept = 300, linetype = "dashed") +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  guides(fill = "none")
+```

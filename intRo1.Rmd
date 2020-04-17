@@ -138,9 +138,6 @@ sd(women$height)
 *Recap exercise*
 Use the women dataset and calculate the mean BMI. There are a few ways of coding this and the choice is yours :)
 (BMI = weight in kg divided by squared height in m; 1 lb = 0.453592 kg, 1 in = 0.0254 m)
-```{r Solution}
-weight <- mean(women$weight) * 0.453592
-height <- mean(women$height) * 0.0254
-bmi <- weight / height ^2
-bmi
-```
+
+
+
