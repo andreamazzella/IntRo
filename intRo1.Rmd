@@ -1,0 +1,146 @@
+---
+title: "1: The basics"
+subtitle: "Introduction to R"
+author: Andrea Mazzella[link](https://github.com/andreamazzella)
+output: html_notebook
+---
+
+# What you will learn
+a) Console
+b) R Notebooks
+c) Assignment
+d) Functions
+e) Datasets
+
+# Console
+The console is used to run simple commands that you don't need to save.
+
+*Exercise*
+In the console below, add 3 and 5 - it's like using a calculator: 3+5 Enter.
+
+Now forget about the console forever.
+
+# R Notebooks
+
+A notebook is composed of two things:
+a) Text, which is the main component
+b) "Chunks", which contain code (plus comments, preceded by #)
+
+A chunk is contained by:
+"```{r}" 
+and
+"```".
+
+To run code in a chunk, you click on the *Run* button at the top right of the chunk (or you place your cursor inside it and press *Ctrl+Shift+Enter*).
+
+*Exercise*
+Run this chunk. Where is the output displayed?
+```{r}
+5 - 1
+```
+
+To run just part of the chunk, you can select the code of interest, r just place your cursor on any line, and press *Ctrl+Enter*.
+
+*Exercise*
+Only run the second line of this chunk.
+```{r}
+# Area of a circle
+pi * 4 ^2
+pi * 5.7 ^2
+```
+
+To add a new chunk, you click on the toolbar: Code -> Insert Chunk.
+
+*Exercise*
+Add a new chunk in the space below, and use it to calculate the area of a rectangle of length 3.1 and width 7.5.
+
+
+
+
+# Assignment
+You can tell R that something has a name; R will remember it and you can use that later in your code. This is called *assignment* and is done by using the arrow <-.
+The following code means: "radius" gets the value of 5.7.
+
+*Exercise*
+Run this chunk. In which part of the screen is R storing this value?
+```{r}
+# Assigning a value to "radius"
+radius <- 5.7
+
+# Visualising the value of "radius"
+radius
+```
+
+From now, you can use radius in the rest of your code, and R will know what you mean.
+
+*Exercise*
+Calculate the diameter of a circle of radius 5.7, without typing 5.7.
+```{r}
+
+```
+
+# Functions
+In programming, a function is like a verb. It takes something (its "arguments"), it does something to it, and gives you back an output.
+In R, the arguments of a function are kept in brackets.
+```{r}
+# Square root function
+sqrt(64)
+```
+
+*Exercise*
+Create a new chunk below, and use it to calculate the square root of 5.7, without typing 5.7.
+
+
+
+
+
+# Datasets
+Some sample datasets are available in R. Let's import "women", a small dataset containing the heights and weights of 15 women, into our Environment.
+
+```{r}
+women <- women
+```
+
+*Exercise*
+Import "chickwts", a dataset containing information on chicken feeds and weights.
+```{r}
+
+```
+
+
+To visualise this dataset, you can run its name, or you can either click on it in the Environment or you can use the function View(). Caution: R is case-sensitive, so you need to type this with an upper-case V, otherwise it won't work.
+
+*Exercise*
+Visualise this dataset in one of these two ways. Which one do you prefer?
+```{r}
+women
+View(women)
+```
+
+Now let's use the mean() and sd() functions to calculate the average woman height and its standard deviation. R can work with more than one dataset at the time. For this reason, unlike Stata, everytime you refer to a variable, you also need to tell R which dataset is that variable from. You do this by typing a $ sign between the dataset and the variable name.
+```{r}
+mean(women$height)
+sd(women$height)
+```
+
+*Exercise*
+1. Calculate the `median` weight among `chickens`, and convert it from grams into kilograms
+2. Use the formula table() to tabulate the chicken feeds.
+```{r}
+# Median chicken weight (in kg)
+
+
+# Chicken feed frequencies
+
+
+```
+
+*Recap exercise*
+Use the women dataset and calculate the mean BMI. There are a few ways of coding this and the choice is yours :)
+(BMI = weight in kg divided by squared height in m; 1 lb = 0.453592 kg, 1 in = 0.0254 m)
+```{r Solution}
+weight <- mean(women$weight) * 0.453592
+height <- mean(women$height) * 0.0254
+bmi <- weight / height ^2
+bmi
+```
