@@ -30,10 +30,10 @@ A notebook is composed of two things:
 * Text, which is the main component
 * "Chunks", which contain code (plus comments, preceded by #)
 
-A chunk is contained by:
-````{r}` 
-and
-````"`
+A chunk looks like this
+```{r}
+
+```
 
 To run code in a chunk, you click on the *Run* button at the top right of the chunk (or you place your cursor inside it and press *Ctrl+Shift+Enter*).
 
@@ -57,6 +57,9 @@ To add a new chunk, you click on the toolbar: Code -> Insert Chunk.
 
 *Exercise*
 Add a new chunk in the space below, and use it to calculate the area of a rectangle of length 3.1 and width 7.5.
+```{r}
+
+```
 
 
 
@@ -99,6 +102,9 @@ Create a new chunk below, and use it to calculate the square root of 5.7, withou
 
 
 
+
+
+
 ---
 
 # Datasets
@@ -132,7 +138,7 @@ sd(women$height)
 
 *Exercise*
 1. Calculate the `median` weight among `chickens`, and convert it from grams into kilograms
-2. Use the formula table() to tabulate the chicken feeds.
+2. Use the function table() to tabulate the chicken feeds.
 ```{r}
 # Median chicken weight (in kg)
 
@@ -149,3 +155,21 @@ Use the women dataset and calculate the mean BMI. There are a few ways of coding
 
 
 ---
+
+Solutions
+```{r}
+# Second-to-last exercise
+median(chickwts$weight) * 0.001
+table(chickwts$feed)
+
+# Recap exercise
+# Multiple ways of doing this
+# Way 1
+weight <- mean(women$weight) * 0.453592
+height  <- mean(women$height) * 0.0254
+bmi <- weight / height ^ 2
+bmi
+# Way 2
+(mean(women$weight) * 0.453592) / (mean(women$height) * 0.0254) ^ 2
+```
+
