@@ -4,5 +4,7 @@
 .Ruserdata
 *.html
 *.pptx
+*.ppsx
 *.Rproj
 *.gitignore
+*.mp4
