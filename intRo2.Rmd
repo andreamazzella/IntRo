@@ -1,0 +1,250 @@
+---
+title: "2: Data import and ggplot"
+subtitle: "Introduction to R"
+author: Andrea Mazzella[link](https://github.com/andreamazzella)
+output: html_notebook
+---
+
+-------------------------------------------------------------------------------
+
+# What you will learn
+a) Using packages
+b) Data import
+c) Data exploration
+d) Graphing with ggplot
+
+-------------------------------------------------------------------------------
+
+# Using packages
+
+R has some core functions, like the ones we've used so far: sqrt(), mean(), table() and some more advanced ones (for example, the function for logistic regression). There are also extra functions made by programmers and grouped into "packages", which need to be downloaded (and loaded) separately.
+
+In order to install a package, one uses the `install.packages()` function, adding the package name in quotes. This might take a bit of time if the packages are large.
+```{r message=FALSE, include=FALSE}
+install.packages("haven")
+install.packages("tidyverse")
+```
+
+*Exercise* Install package "readxl".
+```{r}
+
+```
+
+You only need to install packages once, but then you need to load them every time you open R. You do this with library() - without quotes. So, you put a chunk with the packages you need to load at the start of each Notebook.
+```{r message=FALSE}
+library(readxl) # to import Excel spreadsheets
+library(haven)     # to import Stata datasets
+library(tidyverse) # %>% pipe and much more
+```
+
+Once you have loaded a package, you can use its functions freely.
+
+-------------------------------------------------------------------------------
+
+# Data import
+
+We've previously seen how to import sample datasets which are already loaded in R.
+Now let's import an external dataset. The way you do this with .Rmd notebooks is:
+1. You move your dataset to the same folder as the .Rmd file;
+2. You run a function to load the specific data format your data in saved as, and assign it to a name.
+
+For example, make sure the `diab.csv`, `diab_excel.xlsx`, and `diab_stata.dta` files are in the same folder as this .Rmd. Then run this chunk:
+```{r message=FALSE, warning=FALSE}
+# Comma-separated value files
+diab_csv <- read_csv("diab.csv")
+
+# Excel files
+diab_xlsx <- read_excel("diab_excel.xlsx")
+
+# Stata files
+diab <- read_dta("diab_stata.dta")
+diab <- mutate_if(diab, is.labelled, as_factor) # this simply applies labels to values
+```
+You will note that now these three datasets have been imported in your Environment, in the top right of your window (they actually contain the same data, that I made up).
+NB: the location needs to be in quotes.
+
+*Exercise*
+Insert a new chunk and use it to import the `poo.csv` dataset.
+```{r message=FALSE}
+poo <- read_csv("poo.csv")
+```
+
+Let's now focus on the diabetes dataset in its Stata version, and let's remove the other two versions from the Environment. You do this with `remove()` (or `rm()`) which you can use to remove any kind of object from your environemnt, not only data.
+```{r}
+# Removing objects from the environment
+remove(diab_csv)
+rm(diab_xlsx)
+```
+
+-------------------------------------------------------------------------------
+
+# Data exploration
+
+From now on, you can refer to this dataset by typing the name you gave it: `diab`.
+For example, in order to simply visualise the dataset:
+```{r}
+# Option A: view in a separate window (similar to Stata "browse")
+View(diab)
+
+# Option B: view below (similar to Stata "list")
+diab
+
+# List of variable names
+names(diab)
+
+# Variable names and data types
+glimpse(diab)
+```
+
+*Exercise*
+Visualise the poo dataset.
+- How many observations does it contain?
+- How many variables?
+- What are the variables called?
+```{r}
+
+```
+
+-------------------------------------------------------------------------------
+
+# Graphing with ggplot
+Package {ggplot} from the {tidyverse} can make stunning graphs – plotting is one of the areas in which R shines.
+It works in "layers" separated by `+` signs: you can have a very simple graph with just two layers, or a very complex one with many more.
+Let's start with something simple and work on it.
+
+-------------------------------------------------------------------------------
+
+## Histograms
+ 
+```{r}
+# A simple ggplot histogram
+ggplot(diab, aes(bmi)) +        # dataset and variable to plot
+  geom_histogram()              # type of graph
+```
+Let's break this code down.
+`ggplot()` is the base function: it needs as arguments the dataset and the numerical variable that will be on your x-axis. aes() stands for "aesthetics", and basically means what we want to appear on the graph.
+`geom_histogram` is the geometry function: it specificies that we want the variable above to be represented in a histogram.
+A `+` sign links the base function with the geometry function.
+
+*Exercise*
+Make a histogram of another variable of your choice.
+```{r}
+
+```
+
+Now let's add a title and rename the axes. You do this by adding another `+` sign and then the `labs()` function. Let's also reduce the number of bins to 10, by adding this as an argument in the geom_histogram() function.
+```{r}
+ggplot(diab, aes(bmi)) +
+  geom_histogram(bins = 10) +                      # how many bins
+  labs(title = "Body Mass Index distribution",     # title
+       x = "BMI (kg/m²)",                          # legend
+       y = "Frequency")
+```
+
+Ggplot lets you customise your graphs in a lot of detail. For example, let's now:
+* stratify by a categorical variable: physical exercise. We do this by adding a `fill` argument to the aes();
+* change the bins so that each has a width of 2. We do this by chaning the `bins` argument to `binwidth`;
+* add some vertical lines to highlight the BMI categories. We do this by adding a `geom_vline()` layer.
+
+*Exercise*
+a. run this chunk as-is.
+b. change `fill` with `colour`. What happens?
+c. make bins wider.
+d. add another vertical line at BMI 20.
+```{r}
+ggplot(diab, aes(bmi, fill = exercise)) +                       # stratify
+  geom_histogram(binwidth = 2) +                                # width
+  labs(title = "Body Mass Index distribution",
+       x = "BMI (kg/m²)",
+       y = "Frequency") +
+  geom_vline(xintercept = c(18.5, 25, 30), linetype = "dashed") # vertical lines
+```
+ In order to `save` this graph, you can right click on it -> "Save image as...".
+ 
+*Recap exercise*
+- Make a new histogram of a continuous variable of your choice, in how many bins you want.
+- Rename your axes appropriately
+- Save your beautiful pooled histogram on your computer.
+```{r}
+
+```
+
+-------------------------------------------------------------------------------
+
+## Scatterplots
+
+You can plot two continuous variables against each other in a scatterplot.
+The function is `geom_point()`; a basic scatterplot is made this way:
+```{r}
+ggplot(diab, aes(exercise_weekly, bmi)) +               # axes
+  geom_point()                                          # scatterplot
+```
+
+*Exercise*
+Add a title and rename the axes on the scatterplot above.
+```{r}
+
+```
+
+
+We can also stratify by a categorical variable thanks to the `colour` aesthetic:
+```{r}
+ggplot(diab, aes(exercise_weekly, bmi)) +
+  geom_point(aes(colour = gender)) +                # stratify by gender
+  labs(
+    title = "Physical exercise and BMI",
+    subtitle = "Imaginary data from a study that never happened",
+    x = "Weekly physical exercise (minutes)",
+    y = "Body Mass Index (kg/m²)",
+    colour = "Gender"                               # label legend title
+  )
+```
+
+*Exercise*
+Stratify by `diabetes`, using a `shape` aesthetic.
+```{r}
+
+```
+
+We can also fit a linear regression line with its confidence intervals with `geom_smooth()`, and change the overall layout colour scheme:
+```{r}
+ggplot(diab, aes(exercise_weekly, bmi)) +
+  geom_point(aes(shape = diabetes, colour = gender)) +
+  geom_smooth(method = "lm") +                           # regression line
+  labs(
+    title = "Physical exercise and BMI",
+    subtitle = "Imaginary data from a study that never happened",
+    x = "Weekly physical exercise (minutes)",
+    y = "Body Mass Index (kg/m²)",
+    shape = "Diabetes",
+    colour = "Gender"
+  ) +
+  theme_bw() +                                            # layout colour
+  scale_colour_brewer(palette  = "Dark2")                 # point colours
+?geom_smooth
+```
+
+-------------------------------------------------------------------------------
+
+## Bar charts
+
+Bar charts are made by using `geom_bar()`. This is how to make a basic bar chart with ggplot:
+```{r}
+ggplot(diab, aes(religion)) +
+  geom_bar()
+```
+
+*Exercise*
+Run the following chunk, compare the graph with the previous one, and try to dissect the code to understand what each bit does.
+```{r}
+ggplot(drop_na(diab, religion), aes(fct_infreq(religion))) +
+  geom_bar(aes(fill = continent)) +
+  labs(title = "Religion and continent of origin",
+       subtitle = "A colourful bar chart",
+       x = "Religion",
+       y = "Frequency") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set2")
+```
+
+-------------------------------------------------------------------------------
