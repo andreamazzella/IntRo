@@ -164,12 +164,12 @@ table(chickwts$feed)
 
 # Recap exercise
 # Multiple ways of doing this
-# Way 1
+# Option 1
 weight <- mean(women$weight) * 0.453592
 height  <- mean(women$height) * 0.0254
 bmi <- weight / height ^ 2
 bmi
-# Way 2
+# Option 2
 (mean(women$weight) * 0.453592) / (mean(women$height) * 0.0254) ^ 2
 ```
 
