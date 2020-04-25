@@ -6,23 +6,36 @@ output: html_notebook
 ---
 
 # What you will learn
-a) Console
-b) R Notebooks
-c) Assignment
-d) Functions
-e) Datasets
 
----
+* User interface
+* Console
+* R Notebooks
+* Assignment
+* Functions
+* Datasets
+
+-------------------------------------------------------------------------------
+
+# User interface
+
+The RStudio interface is divided into four parts:
+- *top left*: the code script (*.R) or notebook (like this one, intRo1.Rmd) you're working on.
+- *bottom left*: the console (where you can input your commands)
+- *top right*: Environment (where your datasets and other "objects" are stored)
+- *bottom right*: help (and other stuff)
+
+-------------------------------------------------------------------------------
 
 # Console
+
 The console is used to run simple commands that you don't need to save.
 
 *Exercise*
 In the console below, add 3 and 5 - it's like using a calculator: 3+5 Enter.
 
-Now forget about the console forever.
+Now forget about the console forever – it's better to keep your code in a notebook (or in a script), like in Stata you would with a .do file.
 
----
+-------------------------------------------------------------------------------
 
 # R Notebooks
 
@@ -61,13 +74,11 @@ Add a new chunk in the space below, and use it to calculate the area of a rectan
 
 ```
 
-
-
----
+-------------------------------------------------------------------------------
 
 # Assignment
-You can tell R that something has a name; R will remember it and you can use that later in your code. This is called *assignment* and is done by using the arrow <-.
-The following code means: "radius" gets the value of 5.7.
+You can tell R that something has a name; R will remember it and you can use that later in your code. This is called *assignment* and is done by using the arrow <-. Assignment creates a new "object".
+The following code means: "radius" gets the value of 5.7. "radius" is a new object.
 
 *Exercise*
 Run this chunk. In which part of the screen is R storing this value?
@@ -79,7 +90,7 @@ radius <- 5.7
 radius
 ```
 
-From now, you can use radius in the rest of your code, and R will know what you mean.
+From now, you can use the object "radius" in the rest of your code, and R will know what you mean.
 
 *Exercise*
 Calculate the diameter of a circle of radius 5.7, without typing 5.7.
@@ -87,11 +98,11 @@ Calculate the diameter of a circle of radius 5.7, without typing 5.7.
 
 ```
 
----
+-------------------------------------------------------------------------------
 
 # Functions
 In programming, a function is like a verb. It takes something (its "arguments"), it does something to it, and gives you back an output.
-In R, the arguments of a function are kept in brackets.
+In R, the arguments of a function are written in brackets.
 ```{r}
 # Square root function
 sqrt(64)
@@ -102,10 +113,7 @@ Create a new chunk below, and use it to calculate the square root of 5.7, withou
 
 
 
-
-
-
----
+-------------------------------------------------------------------------------
 
 # Datasets
 Some sample datasets are available in R. Let's import "women", a small dataset containing the heights and weights of 15 women, into our Environment.
@@ -130,7 +138,8 @@ women
 View(women)
 ```
 
-Now let's use the mean() and sd() functions to calculate the average woman height and its standard deviation. R can work with more than one dataset at the time. For this reason, unlike Stata, everytime you refer to a variable, you also need to tell R which dataset is that variable from. You do this by typing a $ sign between the dataset and the variable name.
+Now let's use the mean() and sd() functions to calculate the average woman height and its standard deviation. R can work with more than one dataset at the time. For this reason, unlike Stata, everytime you refer to a variable, you also need to tell R which dataset is that variable from. You do this by typing a `$` sign between the dataset and the variable name.
+(The $ sign is technically called the "exposition operator")
 ```{r}
 mean(women$height)
 sd(women$height)
@@ -138,7 +147,7 @@ sd(women$height)
 
 *Exercise*
 1. Calculate the `median` weight among `chickens`, and convert it from grams into kilograms
-2. Use the function table() to tabulate the chicken feeds.
+2. Use the function table() to tabulate the types of chicken feeds.
 ```{r}
 # Median chicken weight (in kg)
 
@@ -154,9 +163,9 @@ Use the women dataset and calculate the mean BMI. There are a few ways of coding
 
 
 
----
+-------------------------------------------------------------------------------
 
-Solutions
+# Solutions
 ```{r}
 # Second-to-last exercise
 median(chickwts$weight) * 0.001
