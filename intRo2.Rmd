@@ -221,7 +221,6 @@ ggplot(diab, aes(exercise_weekly, bmi)) +
   ) +
   theme_bw() +                                            # layout colour
   scale_colour_brewer(palette  = "Dark2")                 # point colours
-?geom_smooth
 ```
 
 -------------------------------------------------------------------------------
@@ -240,7 +239,7 @@ Run the following chunk, compare the graph with the previous one, and try to dis
 ggplot(drop_na(diab, religion), aes(fct_infreq(religion))) +
   geom_bar(aes(fill = continent)) +
   labs(title = "Religion and continent of origin",
-       subtitle = "A colourful bar chart",
+       subtitle = "A colourful bar chart of dubious usefulness",
        x = "Religion",
        y = "Frequency") +
   theme_minimal() +
