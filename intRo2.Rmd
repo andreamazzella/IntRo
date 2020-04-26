@@ -8,10 +8,11 @@ output: html_notebook
 -------------------------------------------------------------------------------
 
 # What you will learn
-a) Using packages
-b) Data import
-c) Data exploration
-d) Graphing with ggplot
+
+* Using packages
+* Data import
+* Data exploration
+* Graphing with ggplot
 
 -------------------------------------------------------------------------------
 
@@ -66,7 +67,7 @@ NB: the location needs to be in quotes.
 *Exercise*
 Insert a new chunk and use it to import the `poo.csv` dataset.
 ```{r message=FALSE}
-poo <- read_csv("poo.csv")
+
 ```
 
 Let's now focus on the diabetes dataset in its Stata version, and let's remove the other two versions from the Environment. You do this with `remove()` (or `rm()`) which you can use to remove any kind of object from your environemnt, not only data.
@@ -91,7 +92,8 @@ diab
 
 # List of variable names
 names(diab)
-
+```
+```{r}
 # Variable names and data types
 glimpse(diab)
 ```
