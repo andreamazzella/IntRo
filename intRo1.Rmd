@@ -1,7 +1,7 @@
 ---
 title: "1: The basics"
 subtitle: "Introduction to R"
-author: Andrea Mazzella [github](https://github.com/andreamazzella)
+author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 output: html_notebook
 ---
 

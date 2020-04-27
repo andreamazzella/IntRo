@@ -1,0 +1,255 @@
+---
+title: "3: Summarising and transforming data"
+subtitle: "Introduction to R"
+author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
+output: html_notebook
+---
+
+-------------------------------------------------------------------------------
+
+# What you will learn
+* Pipes
+* Data summarisation
+* Data transformation with {dplyr}
+
+
+
+
+
+
+drop_na()
+select()
+filter()
+
+
+
+-------------------------------------------------------------------------------
+
+```{r}
+install.packages("magrittr")
+install.packages("summarytools")
+```
+
+```{r}
+library(haven)        # read Stata datasets
+library(magrittr)     # provides %$% pipe
+library(summarytools) # better tables
+library(tidyverse)    # %>% pipe and much more
+options(digits = 2, scipen = 10) # reduce signif digits and scientific notation
+```
+
+```{r}
+diab <- read_dta("diab_stata.dta") %>% mutate_if(is.labelled, as_factor)
+diab
+```
+
+-------------------------------------------------------------------------------
+
+# Pipes
+
+In the chunk above there's a `%>%`. What's that?
+
+Pipes are operators that make your code quicker to write and easier to read. They're *optional*: base R doesn't have them, but they can make your R easier. We're going to use two pipes: `%$%` and `%>%`.
+
+## %$% pipe
+
+THe `%$%` pipe, from package {magrittr}, takes what's on its left (usually, the dataset name) and moves it inside the function, before each argument, and adds a `$` in between. It lets you avoid typing the dataset name and `$` twice, and it makes the true arguments of the function stand out.
+It's particularly useful when a function uses multiple variables, because otherwise you would need to specify which dataset is each variable from – this would quickly become verbose.
+The two commands below generate the same output.
+```{r}
+# Without a pipe (= base R)
+table(diab$diet, diab$exercise)
+
+# With the %$% pipe
+diab %$% table(diet, exercise)
+```
+
+# %>% pipe
+
+The `%>%` takes what's on the left and it moves it inside the brackets on the right, and follows it with a comma.
+It's really helpful to avoid using too many nested functions, or assigning too often. There's a keyboard shorcut for it: Ctrl + Shift + M.
+
+These three options produce the same output:
+```{r}
+# Nested functions
+log(sqrt(mean(diab$height)))
+
+# Over-assignment
+mean_height <- mean(diab$height)
+root_mean_ht <- sqrt(mean_height)
+log(root_mean_ht)
+
+# Code with pipes
+diab %$% mean(height) %>% sqrt() %>% log()
+```
+
+So you can also use `%>%` for any function that takes the dataset as its first argument (like all functions in the {tidyverse}, for example `ggplot()`.
+```{r}
+# Without a pipe
+ggplot(diab, aes(x = gender)) + geom_bar()
+
+# With a pipe
+diab %>% ggplot(aes(x = gender)) + geom_bar()
+```
+
+-------------------------------------------------------------------------------
+
+# Data summarisation
+
+`summary()` is a useful function that lets you summarise your entire dataset (or just a single variable) – as long as the variables are formatted correctly.
+
+*Exercise*
+Run the following chunk.
+- What is R doing to each variable?
+- What is the median BMI?
+- How many missing values does the "exercise" variable have?
+```{r}
+summary(diab)
+```
+
+## Summarising continuous variables
+
+As we've seen previously, to summarise continuous variables, you can use functions mean(), median(), sd()
+```{r}
+mean(diab$weight)
+median(diab$height)
+sd(diab$bmi)
+```
+
+
+## Summarising categorical variables: frequency tables
+
+To tabulate categorical data, we have many options, among which `table()` from base R and `freq()` from package {summarytools}.
+
+*Exercise*
+Run this chunk and compare the output from those three functions.
+- What's the difference?
+- Which function do you prefer?
+- What does the `useNA` argument do? (Try removing it, run the code again, and see what happens)
+```{r}
+# Simple frequency table
+table(diab$gender)
+freq(diab$gender)
+
+# More complex frequency tables
+table(diab$sexual_orien, useNA = "ifany")
+freq(diab$sexual_orien, report.nas = TRUE, cumul = TRUE)
+```
+
+*Exercise*
+What percentage of all people in this sample has a mild disability?
+```{r}
+freq(diab$disability, report.nas = TRUE, cumul = F)
+```
+
+
+## Summarising categorical variables: cross-tabulation
+
+To make two-way tables you can again use `table()` from base R, but it doesn't calculate percentages for you.
+You can use `ctable()` from {summarytools}; it's a very customisable function.
+```{r}
+# Base R
+diab %$% table(diet, diabetes, useNA = "ifany")
+
+# {summarytools}
+diab %$% ctable(diet, diabetes, headings = FALSE, prop = "c")
+```
+
+*Exercise*
+What percentage of trans people is atheist?
+```{r}
+diab %$% ctable(religion, cistrans, total = FALSE, headings = FALSE, prop = "c")
+```
+
+-------------------------------------------------------------------------------
+
+# Transforming data with {dplyr}
+
+## Filter rows
+
+Sometimes you don't need to use all the observations (rows) in your dataset, but only a group of those: for example, you might want to check the median height only in women. The function `filter()` lets you do just that: it filters your dataset according to a condition. You can then pipe this into any other function.
+
+```{r}
+# Only keep females
+diab %>% filter(gender == "female")
+# note that it's a double = sign!
+
+# Pipe this filtered dataset into the median() function
+diab %>% filter(gender == "female") %$% median(height)
+```
+
+You can also filter on more than one condition; for example, you might want to only filter underweight women.
+```{r}
+diab %>% filter(gender == "female", bmi < 18.5)
+```
+
+*Exercise*
+Filter Christian men shorter than 170 cm with a mild disability.
+```{r}
+diab %>% filter(gender == "male", height < 170, disability == "mild")
+```
+
+
+
+
+`filter()` can be very useful to make graphs with only a subgroup of data. Compare these two pieces of code:
+```{r}
+# Plotting all observations
+diab %>% ggplot(aes(exercise_weekly, bmi)) +
+  geom_point(aes(shape = diabetes, colour = gender)) +
+  geom_smooth(method = "lm")
+
+# Filtering out inactive people
+diab %>% filter(exercise_weekly > 0) %>%
+  ggplot(aes(exercise_weekly, bmi)) +
+  geom_point(aes(shape = diabetes, colour = gender)) +
+  geom_smooth(method = "lm")
+```
+
+
+
+## Select columns
+
+Function `select()` selects only certain columns (variables). Imagine we wanted a dataset containing only information about ID and height:
+
+```{r}
+diab %>% select(id, height)
+```
+
+We can add as many variables as we need.
+
+*Exercise*
+Select only variables with nutritional information.
+```{r}
+diab %>% select(id, weight, bmi, diet, diabetes)
+```
+
+You can combine select() and filter() by piping. For example, you might want to only keep information on exercise and diabetes for Hindu men:
+```{r}
+diab %>% filter(religion == "hindu", gender == "male") %>% 
+  select(id, exercise, exercise_weekly, diabetes)
+```
+
+Note that `filter()` and `select()`, like the other {dplyr} functions, _do not_ change the original dataset permanently. If you want to keep a copy of a transformed dataset, you need to assign it a name.
+```{r}
+diab_overweight <-
+  diab %>%
+  filter(bmi >= 25 & bmi < 30) %>%
+  select(id, gender, bmi, diabetes)
+```
+
+*Recap exercise*
+
+
+1. Create a new dataset called "diab_personal" containing only data on ID, gender, cis/trans, sexual orientation, and religion, only for able-bodied people who are 1.95 metres tall or above.
+2. How many people satisfy these filters?
+3. What are their IDs?
+```{r}
+diab_tall <- diab %>%
+  filter(disability == "able-bodied", height > 195) %>%
+  select(id, gender, cistrans, sexual_orien, religion)
+
+diab_tall
+```
+
+-------------------------------------------------------------------------------

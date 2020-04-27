@@ -1,7 +1,7 @@
 ---
 title: "2: Data import and visualisation"
 subtitle: "Introduction to R"
-author: Andrea Mazzella[link](https://github.com/andreamazzella)
+author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 output: html_notebook
 ---
 
@@ -33,10 +33,10 @@ install.packages("tidyverse")
 
 You only need to install packages once, but then you need to load them every time you open R. You do this with `library()` - without quotes. So, you put a chunk with the packages you need to load at the start of each Notebook.
 ```{r message=FALSE}
-library(readxl) # to import Excel spreadsheets
+library(readxl)    # to import Excel spreadsheets
 library(haven)     # to import Stata datasets
-library(tidyverse) # %>% pipe and much more
-options(digits = 2, scipen = 10) # reduce signif  digits and scientific notation
+library(tidyverse) # ggplot visualisations and much more
+options(digits = 2, scipen = 10) # reduce signif digits and scientific notation
 ```
 
 Once you have loaded a package, you can use its functions freely.
