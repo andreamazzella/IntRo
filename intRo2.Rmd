@@ -1,5 +1,5 @@
 ---
-title: "2: Data import and ggplot"
+title: "2: Data import and visualisation"
 subtitle: "Introduction to R"
 author: Andrea Mazzella[link](https://github.com/andreamazzella)
 output: html_notebook
@@ -12,7 +12,7 @@ output: html_notebook
 * Using packages
 * Data import
 * Data exploration
-* Graphing with ggplot
+* Data visualisation with ggplot
 
 -------------------------------------------------------------------------------
 
@@ -36,6 +36,7 @@ You only need to install packages once, but then you need to load them every tim
 library(readxl) # to import Excel spreadsheets
 library(haven)     # to import Stata datasets
 library(tidyverse) # %>% pipe and much more
+options(digits = 2, scipen = 10) # reduce signif  digits and scientific notation
 ```
 
 Once you have loaded a package, you can use its functions freely.
@@ -49,7 +50,7 @@ Now let's import an external dataset. The way you do this with .Rmd notebooks is
 1. You move your dataset to the same folder as the .Rmd file;
 2. You run a function to load the specific data format your data in saved as, and assign it to a name.
 
-For example, make sure the `diab.csv`, `diab_excel.xlsx`, and `diab_stata.dta` files are in the same folder as this .Rmd. Then run this chunk:
+For example, make sure the `diab.csv`, `diab_excel.xlsx`, and `diab_stata.dta` files are in the same folder as this .Rmd. (They are simulated datasets containing the same data). Then run this chunk:
 ```{r message=FALSE, warning=FALSE}
 # Comma-separated value files
 diab_csv <- read_csv("diab.csv")
@@ -65,10 +66,10 @@ You will note that now these three datasets have been imported in your Environme
 NB: the location needs to be in quotes.
 
 *Exercise*
-Insert a new chunk and use it to import the `poo.csv` dataset.
-```{r message=FALSE}
+Insert a new chunk below, and use it to import the `poo.csv` dataset:
 
-```
+
+
 
 Let's now focus on the diabetes dataset in its Stata version, and let's remove the other two versions from the Environment. You do this with `remove()` (or `rm()`) which you can use to remove any kind of object from your environemnt, not only data.
 ```{r}
@@ -82,7 +83,7 @@ rm(diab_xlsx)
 # Data exploration
 
 From now on, you can refer to this dataset by typing the name you gave it: `diab`.
-For example, in order to simply visualise the dataset:
+For example, in order to simply have a look at the dataset:
 ```{r}
 # Option A: view in a separate window (similar to Stata "browse")
 View(diab)
@@ -99,7 +100,7 @@ glimpse(diab)
 ```
 
 *Exercise*
-Visualise the poo dataset.
+Explore the "poo" dataset.
 - How many observations does it contain?
 - How many variables?
 - What are the variables called?
@@ -109,7 +110,8 @@ Visualise the poo dataset.
 
 -------------------------------------------------------------------------------
 
-# Graphing with ggplot
+* Data visualisation with ggplot
+
 Package {ggplot} from the {tidyverse} can make stunning graphs – plotting is one of the areas in which R shines.
 It works in "layers" separated by `+` signs: you can have a very simple graph with just two layers, or a very complex one with many more.
 Let's start with something simple and work on it.
