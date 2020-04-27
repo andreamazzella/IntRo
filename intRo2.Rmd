@@ -31,7 +31,7 @@ install.packages("tidyverse")
 
 ```
 
-You only need to install packages once, but then you need to load them every time you open R. You do this with library() - without quotes. So, you put a chunk with the packages you need to load at the start of each Notebook.
+You only need to install packages once, but then you need to load them every time you open R. You do this with `library()` - without quotes. So, you put a chunk with the packages you need to load at the start of each Notebook.
 ```{r message=FALSE}
 library(readxl) # to import Excel spreadsheets
 library(haven)     # to import Stata datasets
@@ -133,7 +133,8 @@ A `+` sign links the base function with the geometry function.
 *Exercise*
 Make a histogram of another variable of your choice.
 ```{r}
-
+ggplot(diab, aes(x = height)) +
+  geom_histogram()
 ```
 
 Now let's add a title and rename the axes. You do this by adding another `+` sign and then the `labs()` function. Let's also reduce the number of bins to 10, by adding this as an argument in the geom_histogram() function.
@@ -144,6 +145,20 @@ ggplot(diab, aes(bmi)) +
        x = "BMI (kg/m²)",                          # legend
        y = "Frequency")
 ```
+
+*Exercise*
+
+This chunk won't execute. Can you spot the three (tiny) bugs that break the code, and fix them so that you can have a histogram _with a title_?
+(Hint: R will help with two of these bugs. Look at the left of the chunk).
+```{r bugs}
+ggplot(diab, aes(height)) +
+  geom_histogram() 
+  labs(title = "Height distribution",
+       x = "Height (cm)"
+       y = "Frequency",
+```
+
+
 
 Ggplot lets you customise your graphs in a lot of detail. For example, let's now:
 * stratify by a categorical variable: physical exercise. We do this by adding a `fill` argument to the aes();
@@ -158,7 +173,7 @@ d. add another vertical line at BMI 20.
 ```{r}
 ggplot(diab, aes(bmi, fill = exercise)) +                       # stratify
   geom_histogram(binwidth = 2) +                                # width
-  labs(title = "Body Mass Index distribution",
+  labs(title = "Body Mass Index distribution according to exercise frequency",
        x = "BMI (kg/m²)",
        y = "Frequency") +
   geom_vline(xintercept = c(18.5, 25, 30), linetype = "dashed") # vertical lines
@@ -166,7 +181,7 @@ ggplot(diab, aes(bmi, fill = exercise)) +                       # stratify
  In order to `save` this graph, you can right click on it -> "Save image as...".
  
 *Recap exercise*
-- Make a new histogram of a continuous variable of your choice, in how many bins you want.
+- Make a new histogram of a continuous variable of your choice, in how many bins you want, stratified by a categorical variable of your choice.
 - Rename your axes appropriately
 - Save your beautiful pooled histogram on your computer.
 ```{r}
@@ -251,3 +266,22 @@ ggplot(drop_na(diab, religion), aes(fct_infreq(religion))) +
 ```
 
 -------------------------------------------------------------------------------
+
+## Want more ggplot?
+
+I recommend these two resources:
+
+* R for Data Science, [chapter 3: Data visualisation](https://r4ds.had.co.nz/data-visualisation.html)
+* The BBC Visual and Data Journalism cookbook for R graphics [link](https://bbc.github.io/rcookbook/)
+
+-------------------------------------------------------------------------------
+
+## Solutions
+
+```{r bugs solution}
+ggplot(diab, aes(height)) +
+  geom_histogram() +                      # a + was missing
+  labs(title = "Height distribution",
+       x = "Height (cm)",                 # a comma was missing
+       y = "Frequency")                   # replaced comma with )
+```
