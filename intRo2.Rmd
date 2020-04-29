@@ -33,9 +33,9 @@ install.packages("tidyverse")
 
 You only need to install packages once, but then you need to load them every time you open R. You do this with `library()` - without quotes. So, you put a chunk with the packages you need to load at the start of each Notebook.
 ```{r message=FALSE}
-library(readxl)    # to import Excel spreadsheets
-library(haven)     # to import Stata datasets
-library(tidyverse) # ggplot visualisations and much more
+library("readxl")    # to import Excel spreadsheets
+library("haven")     # to import Stata datasets
+library("tidyverse") # ggplot visualisations and much more
 options(digits = 2, scipen = 10) # reduce signif digits and scientific notation
 ```
 

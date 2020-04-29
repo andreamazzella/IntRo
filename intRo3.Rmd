@@ -12,34 +12,28 @@ output: html_notebook
 * Data summarisation
 * Data transformation with {dplyr}
 
-
-
-
-
-
-drop_na()
-select()
-filter()
-
-
-
 -------------------------------------------------------------------------------
 
 ```{r}
+# Install new packages
 install.packages("magrittr")
 install.packages("summarytools")
 ```
 
 ```{r}
-library(haven)        # read Stata datasets
-library(magrittr)     # provides %$% pipe
-library(summarytools) # better tables
-library(tidyverse)    # %>% pipe and much more
+# Load packages
+library("magrittr")              # provides %$% pipe
+library("summarytools")          # better tables
+library("tidyverse")             # %>% pipe and much more
 options(digits = 2, scipen = 10) # reduce signif digits and scientific notation
 ```
 
+Let's import othe diab_stata dataset. The `read_dta()` function is part of package "haven", that we haven't imported. We can still use this function by prefixing it with the name of the package and `::` (as long as we've installed the package)
 ```{r}
-diab <- read_dta("diab_stata.dta") %>% mutate_if(is.labelled, as_factor)
+# Import and label
+diab <- haven::read_dta("diab_stata.dta") %>% mutate_if(is.labelled, as_factor)
+
+# Preview the first 10 rows and columns
 diab
 ```
 
@@ -47,9 +41,11 @@ diab
 
 # Pipes
 
-In the chunk above there's a `%>%`. What's that?
+In the chunk above you might have noticed a weird `%>%`. What was that?
 
-Pipes are operators that make your code quicker to write and easier to read. They're *optional*: base R doesn't have them, but they can make your R easier. We're going to use two pipes: `%$%` and `%>%`.
+"Pipes" are operators that make your code quicker to write and easier to read.
+They're *optional*: base R doesn't have them.
+We're going to use two pipes: `%$%` and `%>%`.
 
 ## %$% pipe
 
@@ -109,11 +105,12 @@ summary(diab)
 
 ## Summarising continuous variables
 
-As we've seen previously, to summarise continuous variables, you can use functions mean(), median(), sd()
+As we've seen previously, to summarise continuous variables, you can use functions `mean()`, `median()`, `sd()` – or you can use `summary()` again:
 ```{r}
 mean(diab$weight)
 median(diab$height)
 sd(diab$bmi)
+summary(diab$exercise_weekly)
 ```
 
 
@@ -224,7 +221,7 @@ Select only variables with nutritional information.
 diab %>% select(id, weight, bmi, diet, diabetes)
 ```
 
-You can combine select() and filter() by piping. For example, you might want to only keep information on exercise and diabetes for Hindu men:
+You can combine `select()` and `filter()` by piping. For example, you might want to only keep information on exercise and diabetes for Hindu men:
 ```{r}
 diab %>% filter(religion == "hindu", gender == "male") %>% 
   select(id, exercise, exercise_weekly, diabetes)
@@ -239,8 +236,6 @@ diab_overweight <-
 ```
 
 *Recap exercise*
-
-
 1. Create a new dataset called "diab_personal" containing only data on ID, gender, cis/trans, sexual orientation, and religion, only for able-bodied people who are 1.95 metres tall or above.
 2. How many people satisfy these filters?
 3. What are their IDs?
