@@ -31,7 +31,7 @@ options(digits = 2, scipen = 10) # reduce signif digits and scientific notation
 Let's import othe diab_stata dataset. The `read_dta()` function is part of package "haven", that we haven't imported. We can still use this function by prefixing it with the name of the package and `::` (as long as we've installed the package)
 ```{r}
 # Import and label
-diab <- haven::read_dta("diab_stata.dta") %>% mutate_if(is.labelled, as_factor)
+diab <- haven::read_dta("diab_stata.dta") %>% mutate_if(haven::is.labelled, as_factor)
 
 # Preview the first 10 rows and columns
 diab
