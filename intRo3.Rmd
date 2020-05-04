@@ -10,7 +10,9 @@ output: html_notebook
 # What you will learn
 * Pipes
 * Data summarisation
-* Data transformation with {dplyr}
+* Basics of data transformation with dplyr
+ - Filtering rows
+ - Selecting columns
 
 -------------------------------------------------------------------------------
 
@@ -31,13 +33,14 @@ options(digits = 2, scipen = 10) # reduce signif digits and scientific notation
 Let's import othe diab_stata dataset. The `read_dta()` function is part of package "haven", that we haven't imported. We can still use this function by prefixing it with the name of the package and `::` (as long as we've installed the package)
 ```{r}
 # Import and label
-diab <- haven::read_dta("diab_stata.dta") %>% mutate_if(haven::is.labelled, as_factor)
+dm <- haven::read_dta("diab_stata.dta") %>% mutate_if(haven::is.labelled, as_factor)
 
 # Preview the first 10 rows and columns
-diab
+dm
 ```
 
 -------------------------------------------------------------------------------
+
 
 # Pipes
 
@@ -49,16 +52,28 @@ We're going to use two pipes: `%$%` and `%>%`.
 
 ## %$% pipe
 
-THe `%$%` pipe, from package {magrittr}, takes what's on its left (usually, the dataset name) and moves it inside the function, before each argument, and adds a `$` in between. It lets you avoid typing the dataset name and `$` twice, and it makes the true arguments of the function stand out.
+THe `%$%` pipe, from package magrittr, takes what's on its left (usually, the dataset name) and moves it inside the function, before each argument, and adds a `$` in between. It lets you avoid typing the dataset name and `$` twice, and it makes the true arguments of the function stand out.
 It's particularly useful when a function uses multiple variables, because otherwise you would need to specify which dataset is each variable from – this would quickly become verbose.
 The two commands below generate the same output.
 ```{r}
 # Without a pipe (= base R)
-table(diab$diet, diab$exercise)
+table(dm$diet, dm$exercise)
 
 # With the %$% pipe
-diab %$% table(diet, exercise)
+dm %$% table(diet, exercise)
 ```
+
+*Exercise*
+Rewrite the following code using %$%.
+```{r ex1}
+# Mean height
+mean(dm$height)
+
+# With a %$%
+
+```
+
+
 
 # %>% pipe
 
@@ -68,27 +83,40 @@ It's really helpful to avoid using too many nested functions, or assigning too o
 These three options produce the same output:
 ```{r}
 # Nested functions
-log(sqrt(mean(diab$height)))
+log(sqrt(mean(dm$height)))
 
 # Over-assignment
-mean_height <- mean(diab$height)
+mean_height <- mean(dm$height)
 root_mean_ht <- sqrt(mean_height)
 log(root_mean_ht)
 
 # Code with pipes
-diab %$% mean(height) %>% sqrt() %>% log()
+dm %$% mean(height) %>% sqrt() %>% log()
 ```
 
-So you can also use `%>%` for any function that takes the dataset as its first argument (like all functions in the {tidyverse}, for example `ggplot()`.
+*Exercise*
+Rewrite this chunk in just one line by using two pipes. You can break it down into two steps if you prefer.
+```{r ex2}
+# ANOVA in base R
+anova1 <- aov(dm$bmi ~ dm$diet)
+summary(anova1)
+
+# ANOVA with two pipes
+
+```
+
+
+So you can also use `%>%` for any function that takes the dataset as its first argument (like all functions in the tidyverse, for example `ggplot()`.
 ```{r}
 # Without a pipe
-ggplot(diab, aes(x = gender)) + geom_bar()
+ggplot(dm, aes(x = gender)) + geom_bar()
 
 # With a pipe
-diab %>% ggplot(aes(x = gender)) + geom_bar()
+dm %>% ggplot(aes(x = gender)) + geom_bar()
 ```
 
 -------------------------------------------------------------------------------
+
 
 # Data summarisation
 
@@ -100,17 +128,17 @@ Run the following chunk.
 - What is the median BMI?
 - How many missing values does the "exercise" variable have?
 ```{r}
-summary(diab)
+summary(dm)
 ```
 
 ## Summarising continuous variables
 
 As we've seen previously, to summarise continuous variables, you can use functions `mean()`, `median()`, `sd()` – or you can use `summary()` again:
 ```{r}
-mean(diab$weight)
-median(diab$height)
-sd(diab$bmi)
-summary(diab$exercise_weekly)
+mean(dm$weight)
+median(dm$height)
+sd(dm$bmi)
+summary(dm$exercise_weekly)
 ```
 
 
@@ -125,18 +153,18 @@ Run this chunk and compare the output from those three functions.
 - What does the `useNA` argument do? (Try removing it, run the code again, and see what happens)
 ```{r}
 # Simple frequency table
-table(diab$gender)
-freq(diab$gender)
+table(dm$gender)
+freq(dm$gender)
 
 # More complex frequency tables
-table(diab$sexual_orien, useNA = "ifany")
-freq(diab$sexual_orien, report.nas = TRUE, cumul = TRUE)
+table(dm$sexual_orien, useNA = "ifany")
+freq(dm$sexual_orien, report.nas = TRUE, cumul = TRUE)
 ```
 
 *Exercise*
 What percentage of all people in this sample has a mild disability?
-```{r}
-freq(diab$disability, report.nas = TRUE, cumul = F)
+```{r ex freq}
+
 ```
 
 
@@ -146,21 +174,21 @@ To make two-way tables you can again use `table()` from base R, but it doesn't c
 You can use `ctable()` from {summarytools}; it's a very customisable function.
 ```{r}
 # Base R
-diab %$% table(diet, diabetes, useNA = "ifany")
+dm %$% table(diet, diabetes, useNA = "ifany")
 
-# {summarytools}
-diab %$% ctable(diet, diabetes, headings = FALSE, prop = "c")
+# Package summarytools
+dm %$% ctable(diet, diabetes, headings = FALSE, prop = "c")
 ```
 
 *Exercise*
 What percentage of trans people is atheist?
-```{r}
-diab %$% ctable(religion, cistrans, total = FALSE, headings = FALSE, prop = "c")
+```{r ex contingency}
+
 ```
 
 -------------------------------------------------------------------------------
 
-# Transforming data with {dplyr}
+# Transforming data with dplyr
 
 ## Filter rows
 
@@ -168,22 +196,22 @@ Sometimes you don't need to use all the observations (rows) in your dataset, but
 
 ```{r}
 # Only keep females
-diab %>% filter(gender == "female")
+dm %>% filter(gender == "female")
 # note that it's a double = sign!
 
 # Pipe this filtered dataset into the median() function
-diab %>% filter(gender == "female") %$% median(height)
+dm %>% filter(gender == "female") %$% median(height)
 ```
 
 You can also filter on more than one condition; for example, you might want to only filter underweight women.
 ```{r}
-diab %>% filter(gender == "female", bmi < 18.5)
+dm %>% filter(gender == "female", bmi < 18.5)
 ```
 
 *Exercise*
-Filter Christian men shorter than 170 cm with a mild disability.
-```{r}
-diab %>% filter(gender == "male", height < 170, disability == "mild")
+Filter Christian men shorter than 170 cm with a mild disability. How many are in our dataset?
+```{r filter}
+
 ```
 
 
@@ -192,17 +220,26 @@ diab %>% filter(gender == "male", height < 170, disability == "mild")
 `filter()` can be very useful to make graphs with only a subgroup of data. Compare these two pieces of code:
 ```{r}
 # Plotting all observations
-diab %>% ggplot(aes(exercise_weekly, bmi)) +
+dm %>% ggplot(aes(exercise_weekly, bmi)) +
   geom_point(aes(shape = diabetes, colour = gender)) +
   geom_smooth(method = "lm")
 
 # Filtering out inactive people
-diab %>% filter(exercise_weekly > 0) %>%
+dm %>% filter(exercise_weekly > 0) %>%
   ggplot(aes(exercise_weekly, bmi)) +
   geom_point(aes(shape = diabetes, colour = gender)) +
   geom_smooth(method = "lm")
 ```
 
+*Exercise*
+Create the same scatterplot, but without men.
+```{r scatter}
+# Base scatterplot
+dm %>% ggplot(aes(height, weight)) + geom_point(aes(colour = gender)) + ylim(c(25,125)) + xlim(c(130,200))
+
+# Scatteplot without men
+
+```
 
 
 ## Select columns
@@ -210,41 +247,35 @@ diab %>% filter(exercise_weekly > 0) %>%
 Function `select()` selects only certain columns (variables). Imagine we wanted a dataset containing only information about ID and height:
 
 ```{r}
-diab %>% select(id, height)
+dm %>% select(id, height)
 ```
 
 We can add as many variables as we need.
 
 *Exercise*
 Select only variables with nutritional information.
-```{r}
-diab %>% select(id, weight, bmi, diet, diabetes)
+```{r select}
+
 ```
 
 You can combine `select()` and `filter()` by piping. For example, you might want to only keep information on exercise and diabetes for Hindu men:
 ```{r}
-diab %>% filter(religion == "hindu", gender == "male") %>% 
+dm %>% filter(religion == "hindu", gender == "male") %>% 
   select(id, exercise, exercise_weekly, diabetes)
 ```
 
 Note that `filter()` and `select()`, like the other {dplyr} functions, _do not_ change the original dataset permanently. If you want to keep a copy of a transformed dataset, you need to assign it a name.
 ```{r}
-diab_overweight <-
-  diab %>%
-  filter(bmi >= 25 & bmi < 30) %>%
-  select(id, gender, bmi, diabetes)
+dm_overweight <- dm %>% filter(bmi >= 25 & bmi < 30) %>%
+                        select(id, gender, bmi, diabetes)
 ```
 
 *Recap exercise*
-1. Create a new dataset called "diab_personal" containing only data on ID, gender, cis/trans, sexual orientation, and religion, only for able-bodied people who are 1.95 metres tall or above.
+1. Create a new dataset called "dm_tall" containing only data on ID, gender, cis/trans, sexual orientation, and religion, only for able-bodied people who are 1.95 metres tall or above.
 2. How many people satisfy these filters?
 3. What are their IDs?
-```{r}
-diab_tall <- diab %>%
-  filter(disability == "able-bodied", height > 195) %>%
-  select(id, gender, cistrans, sexual_orien, religion)
+```{r recap}
 
-diab_tall
 ```
 
 -------------------------------------------------------------------------------
