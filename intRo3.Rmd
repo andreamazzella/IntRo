@@ -80,7 +80,7 @@ mean(dm$height)
 The `%>%` takes what's on the left and it moves it inside the brackets on the right, and follows it with a comma.
 It's really helpful to avoid using too many nested functions, or assigning too often. There's a keyboard shorcut for it: Ctrl + Shift + M.
 
-These three options produce the same output:
+These options produce the same output:
 ```{r}
 # Nested functions
 log(sqrt(mean(dm$height)))
@@ -90,7 +90,10 @@ mean_height <- mean(dm$height)
 root_mean_ht <- sqrt(mean_height)
 log(root_mean_ht)
 
-# Code with pipes
+# Code with %>% pipe
+mean(dm$height) %>% sqrt() %>% log()
+
+# Code with two pipes
 dm %$% mean(height) %>% sqrt() %>% log()
 ```
 
@@ -159,6 +162,8 @@ freq(dm$gender)
 # More complex frequency tables
 table(dm$sexual_orien, useNA = "ifany")
 freq(dm$sexual_orien, report.nas = TRUE, cumul = TRUE)
+
+epiDisplay::tab1(dm$gender, graph = F)
 ```
 
 *Exercise*
@@ -276,6 +281,42 @@ dm_overweight <- dm %>% filter(bmi >= 25 & bmi < 30) %>%
 3. What are their IDs?
 ```{r recap}
 
+```
+
+-------------------------------------------------------------------------------
+
+# Solutions
+
+```{r ex2 solution}
+dm %$% aov(height ~ weight) %>% summary()
+```
+
+```{r ex freq solution}
+freq(dm$disability, report.nas = TRUE, cumul = F)
+```
+
+```{r ex contingency solution}
+dm %$% ctable(religion, cistrans, total = FALSE, headings = FALSE, prop = "c")
+```
+
+```{r filter solution}
+dm %>% filter(gender == "male", height < 170, disability == "mild")
+```
+
+```{r scatter solution}
+dm %>% filter(gender != "male") %>% ggplot(aes(height, weight)) + geom_point(aes(colour = gender)) + ylim(c(25, 125)) + xlim(c(130,200))
+```
+
+```{r select solution}
+dm %>% select(id, weight, bmi, diet, diabetes)
+```
+
+```{r recap solution}
+dm_tall <- dm %>%
+  filter(disability == "able-bodied", height > 195) %>%
+  select(id, gender, cistrans, sexual_orien, religion)
+
+dm_tall
 ```
 
 -------------------------------------------------------------------------------
