@@ -30,6 +30,8 @@ library("tidyverse")             # %>% pipe and much more
 options(digits = 2, scipen = 10) # reduce signif digits and scientific notation
 ```
 
+NB: there seems to be an issue with summarytools on Mac computers. If this happens to you, try this solution: https://community.rstudio.com/t/problem-in-installing-summary-tools-package-in-mac/38387. If you still can't work it out, install and load package "epiDisplay" instead, it has similar tabulation functions.
+
 Let's import othe diab_stata dataset. The `read_dta()` function is part of package "haven", that we haven't imported. We can still use this function by prefixing it with the name of the package and `::` (as long as we've installed the package)
 ```{r}
 # Import and label
@@ -147,7 +149,7 @@ summary(dm$exercise_weekly)
 
 ## Summarising categorical variables: frequency tables
 
-To tabulate categorical data, we have many options, among which `table()` from base R and `freq()` from package {summarytools}.
+To tabulate categorical data, we have many options, among which `table()` from base R and `freq()` from package summarytools.
 
 *Exercise*
 Run this chunk and compare the output from those three functions.
@@ -158,12 +160,11 @@ Run this chunk and compare the output from those three functions.
 # Simple frequency table
 table(dm$gender)
 freq(dm$gender)
+epiDisplay::tab1(dm$gender, graph = F)
 
 # More complex frequency tables
 table(dm$sexual_orien, useNA = "ifany")
 freq(dm$sexual_orien, report.nas = TRUE, cumul = TRUE)
-
-epiDisplay::tab1(dm$gender, graph = F)
 ```
 
 *Exercise*
@@ -182,7 +183,10 @@ You can use `ctable()` from {summarytools}; it's a very customisable function.
 dm %$% table(diet, diabetes, useNA = "ifany")
 
 # Package summarytools
-dm %$% ctable(diet, diabetes, headings = FALSE, prop = "c")
+dm %$% ctable(diet, diabetes, headings = FALSE, prop = "c", useNA = "no")
+
+# Package epiDisplay
+dm %$% epiDisplay::tabpct(diet, diabetes, graph = F, percent = "col")
 ```
 
 *Exercise*
@@ -301,6 +305,7 @@ dm %$% ctable(religion, cistrans, total = FALSE, headings = FALSE, prop = "c")
 
 ```{r filter solution}
 dm %>% filter(gender == "male", height < 170, disability == "mild")
+
 ```
 
 ```{r scatter solution}
