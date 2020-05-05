@@ -59,7 +59,7 @@ Now let's import an external dataset. The way you do this with .Rmd notebooks is
 For example, make sure the `diab.csv`, `diab_excel.xlsx`, and `diab_stata.dta` files are in the same folder as this .Rmd. (They are simulated datasets containing the same data). Then run this chunk:
 ```{r message=FALSE, warning=FALSE}
 # Comma-separated value files
-diab_csv <- read_csv("diab.csv")
+diab_csv <- read_csv("diab_old.csv")
 
 # Excel files
 diab_xlsx <- read_excel("diab_excel.xlsx")
