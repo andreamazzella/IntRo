@@ -1,0 +1,245 @@
+---
+title: "4: Data manipulation"
+subtitle: "Introduction to R"
+author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
+output: html_notebook
+---
+
+-------------------------------------------------------------------------------
+
+# Content
+
+* Data manipulation
+ - calculate new variables
+ - the assignment pipe `%<>%`
+ - calculate age
+ - categorise continuous variables
+ - regroup a categorical variable
+ - combine values of two categorical variables
+* Data export
+ - csv
+ - dta
+
+-------------------------------------------------------------------------------
+
+```{r}
+library("haven")     # import .dta datasets
+library("lubridate") # dealing with dates
+library("magrittr")  # %$% pipe
+library("dplyr")     # data management (part of the tidyverse)
+library("ggplot2")   # graphs
+library("forcats")   # dealing with factors
+```
+
+-------------------------------------------------------------------------------
+
+
+Let's import `diab_stata.dta` and let's have a look at the data.
+```{r}
+# Data import
+dm <- read_stata("diab_stata.dta") %>% mutate_if(is.labelled, as_factor)
+summary(dm)
+```
+
+
+# Data manipulation
+
+We might want to transform the data that we have to answer some specific questions. For example, we have date of births, but we don't have ages. BMI is continuous, but we might want to analyse it divided in clinical categories. Some strata have very few observations and we might want to group them together. 
+
+## Calculate new variables
+
+Let's start by creating a new variable with a simple calculation: height in metres. There are two ways of doing this; in both you need to assign with `<-` to make the operation permanent.
+* In dplyr/tidyverse, you use function `mutate()` that is used to change a variable or create a new one, and you assign this new dataset to its own name.
+* In base R, you expose the variable with `$`, you do the calculation, and you assign it to a new variable name.
+
+```{r}
+# dplyr
+dm <- mutate(dm, height_m = height / 100)
+
+# Base R
+# dm$height_m <- dm$height / 100
+```
+
+`%<>%` is another pipe from package magrittr. It combines the assignment operator `<-` and the forward pipe `%>%`, so it's used as shorthand instead of `data <- data %>%`. For example, we can replace the dplyr line of code above with:
+```{r}
+# mutate() with %<>%
+# dm %<>% mutate(height_m2 = height / 100)
+
+# mutate() with %>% 
+# dm <- dm %>% mutate(height_m = height / 100)
+```
+
+*Exercise*
+Convert weight into pounds (1kg = 2.20462 lbs).
+```{r}
+
+```
+
+
+Now let's suppose we want to recalculate the BMI, in order to have decimal figures (our dataset contains BMI as an integer).
+```{r}
+# Calculate BMI with decimals
+dm %<>% mutate(bmi_dc = (weight / (height_m)^2))
+
+# Check it worked
+ggplot(dm, aes(bmi, bmi_dc)) + geom_point()
+
+# Learn how to delete old variable in next session!
+```
+
+
+## Calculate age
+
+Now we can calculate each observation's age as of 07/05/2020. Dealing with dates in all programming language is tricky, because they can be inputted in many different formats, with different (or no) delimiters between numbers. R codes all dates as days passed since the 1st of January 1970. Package "lubridate" (great name!) has some good functions for this.
+```{r}
+# Create a calculated age variable
+dm %<>% mutate(age = ((dmy("7/5/2020") - date_birth) / 365.25) %>% # yr diff.ce
+               as.numeric() %>%      # make it a number
+               round(digits = 1))   # round it 1 sign.t digit
+```
+
+*Recall exercise*
+Explore the distribution of age with a histogram.
+```{r}
+
+```
+
+## Categorise continuous variables
+
+We might also want to transform a continuous variable into a categorical one, for example to reflect clinically meaningful groups. The function we nest in `mutate()` is `cut()`: the `breaks` indicate which values delimit groups, and `labels` 
+
+```{r}
+dm %<>% mutate(bmi_group = cut(bmi_dc,
+                               breaks = c(0, 18.5, 25, 30, +Inf),
+                               labels = c("underwt", "normal wt", "overwt", "obese")))
+
+dm %>% group_by(bmi_group) %>% summarise("min BMI" = min(bmi_dc) %>% round(2),
+                                         "max BMI" = max(bmi_dc) %>% round(2))
+```
+
+Now let's use this new categorised BMI for a plot.
+```{r}
+dm %>% filter(exercise_weekly > 0) %>% ggplot(aes(exercise_weekly, bmi_group)) + geom_boxplot()
+```
+
+We might also want to categorise according to quintiles, and not arbitrary breakpoints. We do this with function `ntile()`.
+
+Let's transform the variable "exercise_weekly", containing minutes of exercise, into quintiles.
+
+```{r}
+# Create quintile variable
+dm %<>% mutate(exer_quint = ntile(exercise_weekly, 5))
+
+# Find the breakpoints
+dm %>% group_by(exer_quint) %>% summarise(max(exercise_weekly))
+```
+
+*Exercise*
+Categorise height with either `cut()` or `ntile()`.
+```{r}
+
+```
+s
+## Group levels of a categorical variable
+
+Sometimes we might need to group together two or more levels of a categorical variables, to avoid data sparcity.
+
+The "disability" variable has only 17 observations in the "severe" stratum, and only 7 of these have the outcome of interest.
+
+We can group together people with mild and severe disability. We do this with the `mutate()` and `ifelse()` functions.
+
+```{r}
+# Data exploration
+dm %$% table(disability, diabetes)
+
+# Regreoup
+dm %<>% mutate(disabled = ifelse(disability == "able-bodied", "no", "yes"))
+
+# Check it worked
+dm %$% table(disability, disabled)
+```
+
+In order to categorise into three levels or more, you can either nest one `ifelse()` function into another, or use `case_when()`. `case_when()` takes a condition on the left, then a `~`, then the value to use on the right.
+
+For example, the first line of the mutate() function reads: create a new variable called "continent_2", and when the value in variable "continent" is "n_america", or `|` when the continent is "s_america", use the new value "americas".
+```{r}
+# Explore levels
+table(dm$continent)
+
+# Regroup
+dm %<>% mutate(continent_2 = case_when(continent == "n_america" | continent == "s_america" ~ "americas",
+                                       continent == "europe" | continent == "asia" ~ "eurasia",
+                                       continent == "africa" ~ "africa",
+                                       continent == "oceania" ~ "oceania"))
+# Check it worked
+dm %$% table(continent, continent_2)
+```
+
+There's another way of doing this, if you don't want to keep the original variable – recoding values (we'll explore this in session 5).
+
+*Exercise*
+Reduce the levels of the sexual orientation variable with either `ifelse()` or `case_when()`.
+```{r}
+
+```
+
+## Extra: Combine values of two categorical variables
+
+We can also create a new categorical variables that summarises two other categorical variables.
+
+For example, we can create a new variable, `minority`, that indicates if that person is part of any gender minority.
+
+To do this, we use `mutate()` and `ifelse()` with two "or" statements, indicated by operator `|`. That bit of code means: "if gender is non-binary or trans, assign a value of "nb/trans"; else, assign a value of "cis m/f".
+```{r}
+# Crosstabulation
+dm %$% table(gender)
+dm %$% table(cistrans)
+
+# Create the new variable
+dm %<>% mutate(minority = ifelse(gender == "non-binary" | cistrans == "trans",
+                                "nb/trans",
+                                "cis m/f"))
+
+# Check it worked
+dm %$% table(minority, cistrans, gender, useNA = "ifany")
+```
+
+-------------------------------------------------------------------------------
+
+# Exporting/saving datasets
+
+Whatever you do to the dataset, it doesn't change the original file. If you want to make some changes permanent, you need to use the `write_csv()` or `write_dta()` functions.
+```{r}
+# csv
+dm %>% readr::write_csv("diab_csv_2.csv")
+
+# Stata
+dm %>% write_dta("diab_2.dta")
+```
+
+Note that .csv is a very simple format that does not keep information on labels, data types. More on this in the next session!
+
+-------------------------------------------------------------------------------
+
+*Recap exercise*
+1. Import the `poo.csv` dataset
+2. Explore the data.
+2. Categorise the type of stool in the Bristol scale  into three levels: "constipation" (type 1-2), "normal" (type 3-5), "diarrhoea" (type 6-7).
+3. Save a copy as `poo_cleaned.dta` so you can send it to your colleague Karen, who only uses STATA.
+
+```{r}
+# Import
+
+
+# Explore
+
+
+# Categorise
+
+
+# Export
+
+
+```
+
+-------------------------------------------------------------------------------
