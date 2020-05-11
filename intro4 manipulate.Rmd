@@ -16,6 +16,8 @@ output: html_notebook
  - categorise continuous variables
  - regroup a categorical variable
  - combine values of two categorical variables
+* Data visualisation
+ - Box plots
 * Data export
  - csv
  - dta
@@ -71,7 +73,9 @@ dm <- mutate(dm, height_m = height / 100)
 
 *Exercise*
 Convert weight into pounds (1kg = 2.20462 lbs).
-```{r}
+
+(If you make a mistake and you want to recalculate the variable, you don't need to drop the old one first. When you assign it again, R will overwrite the old variable)
+```{r new_variable}
 
 ```
 
@@ -98,15 +102,15 @@ dm %<>% mutate(age = ((dmy("7/5/2020") - date_birth) / 365.25) %>% # yr diff.ce
                round(digits = 1))   # round it 1 sign.t digit
 ```
 
-*Recall exercise*
+*Exercise*
 Explore the distribution of age with a histogram.
-```{r}
+```{r histogram}
 
 ```
 
 ## Categorise continuous variables
 
-We might also want to transform a continuous variable into a categorical one, for example to reflect clinically meaningful groups. The function we nest in `mutate()` is `cut()`: the `breaks` indicate which values delimit groups, and `labels` 
+We might also want to transform a continuous variable into a categorical one, for example to reflect clinically meaningful groups. The function we nest in `mutate()` is `cut()`: the `breaks` indicate which values delimit groups, and `labels` indicate, well, the value labels.
 
 ```{r}
 dm %<>% mutate(bmi_group = cut(bmi_dc,
@@ -117,7 +121,11 @@ dm %>% group_by(bmi_group) %>% summarise("min BMI" = min(bmi_dc) %>% round(2),
                                          "max BMI" = max(bmi_dc) %>% round(2))
 ```
 
-Now let's use this new categorised BMI for a plot.
+>
+(I really recommend this paper on why categorising continuous variables is potentially problematic:
+Turner E, Dobson J & Pocock S. (2010). "Categorisation of continuous risk factors in epidemiological publications: A survey of current practice." Epidemiologic perspectives & innovations ).
+
+Now let's use this new categorised BMI for a plot. The ggplot function is `geom_boxplot()`.
 ```{r}
 dm %>% filter(exercise_weekly > 0) %>% ggplot(aes(exercise_weekly, bmi_group)) + geom_boxplot()
 ```
@@ -136,10 +144,10 @@ dm %>% group_by(exer_quint) %>% summarise(max(exercise_weekly))
 
 *Exercise*
 Categorise height with either `cut()` or `ntile()`.
-```{r}
+```{r categorise}
 
 ```
-s
+
 ## Group levels of a categorical variable
 
 Sometimes we might need to group together two or more levels of a categorical variables, to avoid data sparcity.
@@ -161,7 +169,9 @@ dm %$% table(disability, disabled)
 
 In order to categorise into three levels or more, you can either nest one `ifelse()` function into another, or use `case_when()`. `case_when()` takes a condition on the left, then a `~`, then the value to use on the right.
 
-For example, the first line of the mutate() function reads: create a new variable called "continent_2", and when the value in variable "continent" is "n_america", or `|` when the continent is "s_america", use the new value "americas".
+(The `~` sign can be inserted by pressing `Alt 126` in Windows, `Alt 5` with Mac)
+
+For example, the first line of the `mutate()` function reads: create a new variable called "continent_2", and when the value in variable "continent" is "n_america", or `|` when the continent is "s_america", use the new value "americas".
 ```{r}
 # Explore levels
 table(dm$continent)
@@ -179,7 +189,7 @@ There's another way of doing this, if you don't want to keep the original variab
 
 *Exercise*
 Reduce the levels of the sexual orientation variable with either `ifelse()` or `case_when()`.
-```{r}
+```{r group_levels}
 
 ```
 
@@ -227,7 +237,7 @@ Note that .csv is a very simple format that does not keep information on labels,
 2. Categorise the type of stool in the Bristol scale  into three levels: "constipation" (type 1-2), "normal" (type 3-5), "diarrhoea" (type 6-7).
 3. Save a copy as `poo_cleaned.dta` so you can send it to your colleague Karen, who only uses STATA.
 
-```{r}
+```{r recap}
 # Import
 
 
@@ -240,6 +250,58 @@ Note that .csv is a very simple format that does not keep information on labels,
 # Export
 
 
+```
+
+-------------------------------------------------------------------------------
+
+## Solutions
+
+```{r solution_new_variable}
+dm %<>% mutate(pounds = weight * 2.20462)
+```
+
+```{r solution_histogram}
+ggplot(dm, aes(age, fill = gender)) + geom_histogram(bins = 20)
+```
+
+```{r solution_categorise}
+# Summarise continuous height
+summary(dm$height)
+
+# Categorise
+dm %<>% mutate(height_cat = cut(height,
+                                breaks = c(0, 168.2, +Inf),
+                                labels = c("below mean", "above mean")))
+
+# Explore
+dm %>% select(height, height_cat)
+```
+
+```{r solution_group_levels}
+dm %<>% mutate(lgb = ifelse(sexual_orien == "hetero",
+                                "no",
+                                "yes"))
+dm %$% table(sexual_orien, lgb)
+```
+
+```{r solution_recap}
+# Import
+poo <- readr::read_csv("poo.csv")
+
+# Explore
+View(poo)
+glimpse(poo)
+table(poo$bristol)
+
+# Categorise
+poo %<>% mutate(stool_type = case_when(bristol <= 2 ~ "constipation",
+                                      bristol >= 3 & bristol <= 5 ~ "normal",
+                                      bristol >= 6 ~ "diarrhoea"))
+
+poo %$% table(bristol, stool_type)
+
+# Export
+poo %>% haven::write_dta("poo_cleaned.dta")
 ```
 
 -------------------------------------------------------------------------------
