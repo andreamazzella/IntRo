@@ -1,5 +1,5 @@
 ---
-title: "3: Summarising and transforming data"
+title: "3: Summarising data"
 subtitle: "Introduction to R"
 author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 output: html_notebook
@@ -8,9 +8,17 @@ output: html_notebook
 -------------------------------------------------------------------------------
 
 # What you will learn
+
 * Pipes
+ - Exposition pipe: `%$%`
+ - Forward pipe: `%>%`
+ 
 * Data summarisation
-* Basics of data transformation with dplyr
+ - Categorical variables
+ - Continuous variables
+ - Grouped summaries with {dplyr}
+
+* Subsetting a dataset with {dplyr}
  - Filtering rows
  - Selecting columns
 
@@ -125,7 +133,7 @@ dm %>% ggplot(aes(x = gender)) + geom_bar()
 
 # Data summarisation
 
-`summary()` is a useful function that lets you summarise your entire dataset (or just a single variable) – as long as the variables are formatted correctly.
+`summary()` is a useful function that lets you summarise your entire dataset (or just a single variable)
 
 *Exercise*
 Run the following chunk.
@@ -136,16 +144,7 @@ Run the following chunk.
 summary(dm)
 ```
 
-## Summarising continuous variables
-
-As we've seen previously, to summarise continuous variables, you can use functions `mean()`, `median()`, `sd()` – or you can use `summary()` again:
-```{r}
-mean(dm$weight)
-median(dm$height)
-sd(dm$bmi)
-summary(dm$exercise_weekly)
-```
-
+*NB:* this only works if the variables are coded in the correct data classes, so it will not work well with csv datasets without cleaning them first. See `intRo5 clean.Rmd` for how to do this.
 
 ## Summarising categorical variables: frequency tables
 
@@ -194,6 +193,47 @@ What percentage of trans people is atheist?
 ```{r ex contingency}
 
 ```
+
+## Summarising continuous variables
+
+As we've seen previously, to summarise continuous variables, you can use functions `mean()`, `median()`, `sd()` – or you can use `summary()` again:
+```{r}
+mean(dm$weight)
+median(dm$height)
+sd(dm$bmi)
+summary(dm$exercise_weekly)
+```
+
+# Grouped summaries with {dplyr}
+
+What if we wanted to calculate the mean weight according to continent?
+
+We can use two powerful functions from package {dplyr}, part of the {tidyverse}: `group_by()` and `summarise()`. Combined, these two functions collapse the dataset according to a categorical variable, and summarise it with on or more other functions.
+
+```{r}
+dm %>% group_by(continent) %>% 
+       summarise(mean(weight))
+```
+
+We can also summarise more than one variable:
+```{r}
+dm %>% group_by(diabetes) %>% 
+       summarise(mean(height),
+                 median_exercise = median(exercise_weekly, na.rm = T))
+```
+
+And we can group by more than one variable. In these cases it's useful to have a count of individuals in that combination, with `n()`.
+```{r}
+dm %>% group_by(diabetes, diet) %>% 
+       summarise(count = n(),
+                 median_BMI = median(bmi))
+```
+
+You can summarise with any of these functions:
+- `mean()`, `median()`,
+- `sd()`, `IQR()`,
+- `min()`, `max()`,
+- `n()`, `n_distinct()`
 
 -------------------------------------------------------------------------------
 

@@ -9,7 +9,7 @@ output: html_notebook
 
 * User interface
 * Console
-* R Notebooks
+* R Markdown notebooks
 * Assignment
 * Functions
 * Datasets
@@ -43,7 +43,7 @@ A notebook is composed of two things:
 * Text, which is the main component
 * "Chunks", which contain code (plus comments, preceded by #)
 
-A chunk looks like this
+A chunk looks like this: 
 ```{r}
 
 ```
@@ -161,8 +161,6 @@ sd(women$height)
 Use the women dataset and calculate the mean BMI. There are a few ways of coding this and the choice is yours :)
 (BMI = weight in kg divided by squared height in m; 1 lb = 0.453592 kg, 1 in = 0.0254 m)
 
-
-
 -------------------------------------------------------------------------------
 
 # Solutions
@@ -182,3 +180,4 @@ bmi
 (mean(women$weight) * 0.453592) / (mean(women$height) * 0.0254) ^ 2
 ```
 
+-------------------------------------------------------------------------------

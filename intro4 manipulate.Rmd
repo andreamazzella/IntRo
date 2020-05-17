@@ -16,8 +16,10 @@ output: html_notebook
  - categorise continuous variables
  - regroup a categorical variable
  - combine values of two categorical variables
+ 
 * Data visualisation
  - Box plots
+ 
 * Data export
  - csv
  - dta
@@ -235,7 +237,7 @@ Note that .csv is a very simple format that does not keep information on labels,
 1. Import the `poo.csv` dataset
 2. Explore the data.
 2. Categorise the type of stool in the Bristol scale  into three levels: "constipation" (type 1-2), "normal" (type 3-5), "diarrhoea" (type 6-7).
-3. Save a copy as `poo_cleaned.dta` so you can send it to your colleague Karen, who only uses STATA.
+3. Save a copy as `poo_v2.dta` so you can send it to your colleague Karen, who only uses STATA.
 
 ```{r recap}
 # Import
@@ -301,7 +303,7 @@ poo %<>% mutate(stool_type = case_when(bristol <= 2 ~ "constipation",
 poo %$% table(bristol, stool_type)
 
 # Export
-poo %>% haven::write_dta("poo_cleaned.dta")
+poo %>% haven::write_dta("poo_v2.dta")
 ```
 
 -------------------------------------------------------------------------------

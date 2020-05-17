@@ -10,9 +10,20 @@ output: html_notebook
 # What you will learn
 
 * Using packages
+
 * Data import
+ - {readr}
+ - {haven}
+ 
 * Data exploration
-* Data visualisation with ggplot
+ - `View()`
+ - `names()`
+ - `glimpse()`
+
+* Data visualisation with {ggplot}
+ - Histograms
+ - Scatterplots
+ - Bar charts
 
 -------------------------------------------------------------------------------
 
@@ -41,7 +52,7 @@ options(digits = 2, scipen = 10) # reduce signif digits and scientific notation
 
 Once you have loaded a package, you can use its functions freely.
 
-Conflict between packages: if two packages contain two functions with the same name, R will use the function from the package that you loaded last. For this reason, always load the tidyverse library last (tidyverse contains loads of important functions). You can also force R to use the package from a specific dataset by prefacing the function with packagename::. For example,
+Conflict between packages: if two packages contain two functions with the same name, R will use the function from the package that you loaded last. For this reason, always load the tidyverse library last (tidyverse contains loads of important functions). You can also force R to use the package from a specific dataset by prefacing the function with `packagename::`. For example,
 ```{example}
 dplyr::select(...)
 ```
@@ -291,3 +302,5 @@ ggplot(diab, aes(height)) +
        x = "Height (cm)",                 # a comma was missing
        y = "Frequency")                   # replaced comma with )
 ```
+
+-------------------------------------------------------------------------------
