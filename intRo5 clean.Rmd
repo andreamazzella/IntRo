@@ -280,7 +280,7 @@ It looks like there two "0" values were mistyped as "0-". Let's fix this with `r
 dm_new %<>% mutate(diabetes = recode(diabetes, "0-" = "0"))
 
 # Method 2 (base R)
-# dm_new$diabetes[dm_new$diabetes == "no-"] <- "no"
+# dm_new$diabetes[dm_new$diabetes == "0-"] <- "0"
 
 # Make it categorical
 dm_new$diabetes <- factor(dm_new$diabetes,
@@ -356,3 +356,68 @@ ggplot(dm_new, aes(exercise)) + geom_bar()
 
 -------------------------------------------------------------------------------
 
+## Solutions
+
+*Ex 1 solution*
+ * In the new dataset there are 5 new columns: HTN, CHD (which contain meaningful data), X18, X19, test_delete (which do not);
+ * There is no meaningful summary for many variables, which now read "class: character".
+ * The values of some categorical variables have no labels, only numbers.
+ * The variable names are slightly different (capital letters, abbreviations or longer names)
+
+```{r Ex 2 solution}
+dm_new$test_delete <- NULL
+```
+
+```{r Ex 3 solution}
+# Summary before
+summary(dm_new$religion)
+
+# Change to factor
+dm_new$religion <- as.factor(dm_new$religion)
+
+# Summary after
+summary(dm_new$religion)
+```
+
+```{r Ex 4 solution}
+table(dm_new$gender, useNA = "ifany")
+
+dm_new$gender <- factor(dm_new$gender,
+                            levels = c(1, 2, 3),
+                            labels = c("female", "male", "non-binary"))
+```
+
+```{r Ex 5 solution}
+dm_new %<>% rename(dob = DOB, bmi = BMI) 
+```
+
+```{r Ex 6 solution}
+dm_new %<>% mutate(height = recode(height, `1777` = 177))
+```
+
+```{r Challenge exercise solution}
+# Import and explore
+poo <- readr::read_csv("poo.csv")
+poo
+
+# Change data classes
+poo %<>% mutate(bed_number = factor(bed_number),
+               ward_bay = factor(ward_bay),
+               sex = factor(sex),
+               date_birth = dmy(date_birth),
+               date_admission = dmy(date_admission),
+               bristol = factor(bristol),
+               colour = factor(colour))
+
+# Calculate age
+poo %<>% mutate(age = as.numeric(date_admission - date_birth) / 365.25)
+
+# Cross-tab colour×Bristol
+poo %$% summarytools::ctable(bristol, colour, prop = "c")
+
+# Temperature Box plot
+poo %>% ggplot(aes(temperature, sex)) + geom_boxplot()
+
+# Export to Stata
+poo %>% haven::write_dta("poo_cleaned.dta")
+```
