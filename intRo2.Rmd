@@ -24,6 +24,7 @@ output: html_notebook
  - Histograms
  - Scatterplots
  - Bar charts
+ - Saving a plot
 
 -------------------------------------------------------------------------------
 
@@ -31,7 +32,7 @@ output: html_notebook
 
 R has some core functions, like the ones we've used so far: sqrt(), mean(), table() and some more advanced ones (for example, the function for logistic regression). There are also extra functions made by programmers and grouped into "packages", which need to be downloaded (and loaded) separately.
 
-In order to install a package, one uses the `install.packages()` function, adding the package name in quotes. This might take a bit of time if the packages are large.
+To install a package, one uses the `install.packages()` function, adding the package name in quotes. This might take a bit of time if the packages are large.
 ```{r message=FALSE, include=FALSE}
 install.packages("haven")
 install.packages("tidyverse")
@@ -164,12 +165,11 @@ ggplot(diab, aes(bmi)) +
 ```
 
 *Exercise*
-
 This chunk won't execute. Can you spot the three (tiny) bugs that break the code, and fix them so that you can have a histogram _with a title_?
-(Hint: R will help with two of these bugs. Look at the left of the chunk).
+(Hint: RStudio will help with two of these bugs. Look at the left of the chunk).
 ```{r bugs}
-ggplot(diab, aes(height)) +
-  geom_histogram() 
+ggplot(diab, aes(height))
+  geom_histogram() +
   labs(title = "Height distribution",
        x = "Height (cm)"
        y = "Frequency",
@@ -177,7 +177,7 @@ ggplot(diab, aes(height)) +
 
 
 
-Ggplot lets you customise your graphs in a lot of detail. For example, let's now:
+{ggplot2} lets you customise your graphs in a lot of detail. For example, let's now:
 * stratify by a categorical variable: physical exercise. We do this by adding a `fill` argument to the aes();
 * change the bins so that each has a width of 2. We do this by chaning the `bins` argument to `binwidth`;
 * add some vertical lines to highlight the BMI categories. We do this by adding a `geom_vline()` layer.
@@ -284,6 +284,14 @@ ggplot(drop_na(diab, religion), aes(fct_infreq(religion))) +
 
 -------------------------------------------------------------------------------
 
+## Saving a plot
+
+In order to save the last plot, you use `ggsave()`. You can save to pdf, jpeg, png, svg, and other formats, and you can change height and width.
+```{r}
+ggsave("rel_continent.png")
+```
+-------------------------------------------------------------------------------
+
 ## Want more ggplot?
 
 I recommend these two resources:
@@ -296,11 +304,11 @@ I recommend these two resources:
 ## Solutions
 
 ```{r bugs solution}
-ggplot(diab, aes(height)) +
-  geom_histogram() +                      # a + was missing
+ggplot(diab, aes(height)) +            # a + was missing
+  geom_histogram() +
   labs(title = "Height distribution",
-       x = "Height (cm)",                 # a comma was missing
-       y = "Frequency")                   # replaced comma with )
+       x = "Height (cm)",              # a comma was missing
+       y = "Frequency")                # replaced comma with )
 ```
 
 -------------------------------------------------------------------------------

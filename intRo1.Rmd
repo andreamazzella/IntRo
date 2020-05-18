@@ -37,9 +37,10 @@ Now forget about the console forever – it's better to keep your code in a note
 
 -------------------------------------------------------------------------------
 
-# R Notebooks
+# R Notebooks (.Rmd)
 
-A notebook is composed of two things:
+A notebook, like this one (`intRo1.Rmd`) is composed of two things:
+
 * Text, which is the main component
 * "Chunks", which contain code (plus comments, preceded by #)
 
@@ -76,6 +77,14 @@ Add a new chunk in the space below, and use it to calculate the area of a rectan
 
 -------------------------------------------------------------------------------
 
+# R scripts (.R)
+
+An R script, for example `analysis.R`, mainly contains code, and any non-code text needs to be highlighted with a preceding `#`. You can think of R scripts as a very large chunk.
+
+We won't be using R scripts in this course, but you might see them elsewhere. 
+
+-------------------------------------------------------------------------------
+
 # Assignment
 You can tell R that something has a name; R will remember it and you can use that later in your code. This is called *assignment* and is done by using the arrow <-. Assignment creates a new "object".
 The following code means: "radius" gets the value of 5.7. "radius" is a new object.
@@ -97,6 +106,13 @@ Calculate the diameter of a circle of radius 5.7, without typing 5.7.
 ```{r}
 
 ```
+
+Note that assigning a new value to an existing object will permanently replace the old version.
+```{r}
+radius <- 6.58
+radius
+```
+
 
 -------------------------------------------------------------------------------
 
