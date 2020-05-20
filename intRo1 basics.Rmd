@@ -31,7 +31,7 @@ The RStudio interface is divided into four parts:
 The console is used to run simple commands that you don't need to save.
 
 *Exercise*
-In the console below, add 3 and 5 - it's like using a calculator: 3+5 Enter.
+In the console below, add 3 and 5. You do this by using it as a calculator: 3+5 Enter.
 
 Now forget about the console forever – it's better to keep your code in a notebook (or in a script), like in Stata you would with a .do file.
 
