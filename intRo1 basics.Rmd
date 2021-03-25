@@ -39,17 +39,17 @@ Now forget about the console forever – it's better to keep your code in a note
 
 # R Notebooks (.Rmd)
 
-A notebook, like this one (`intRo1.Rmd`) is composed of two things:
+A notebook, like this one (`intRo1 basics.Rmd`) is composed of two things:
 
 * Text, which is the main component
-* "Chunks", which contain code (plus comments, preceded by #)
+* "Chunks", which contain code (and comments, which are preceded by #)
 
-A chunk looks like this: 
+A chunk looks like this:
 ```{r}
 
 ```
 
-To run code in a chunk, you click on the *Run* button at the top right of the chunk (or you place your cursor inside it and press *Ctrl+Shift+Enter*).
+To run code in a chunk, you click on the *Run* (green triangle) button at the top right of the chunk (or you place your cursor inside it and press *Ctrl+Shift+Enter*).
 
 *Exercise*
 Run this chunk. Where is the output displayed?
@@ -57,7 +57,7 @@ Run this chunk. Where is the output displayed?
 5 - 1
 ```
 
-To run just part of the chunk, you can select the code of interest, r just place your cursor on any line, and press *Ctrl+Enter*.
+To run just part of the chunk, you can select the code of interest (or just place your cursor on any line) and press *Ctrl+Enter*.
 
 *Exercise*
 Only run the second line of this chunk.
@@ -71,9 +71,9 @@ To add a new chunk, you click on the toolbar: Code -> Insert Chunk.
 
 *Exercise*
 Add a new chunk in the space below, and use it to calculate the area of a rectangle of length 3.1 and width 7.5.
-```{r}
 
-```
+
+
 
 -------------------------------------------------------------------------------
 
@@ -86,6 +86,7 @@ We won't be using R scripts in this course, but you might see them elsewhere.
 -------------------------------------------------------------------------------
 
 # Assignment
+
 You can tell R that something has a name; R will remember it and you can use that later in your code. This is called *assignment* and is done by using the arrow <-. Assignment creates a new "object".
 The following code means: "radius" gets the value of 5.7. "radius" is a new object.
 
@@ -117,6 +118,7 @@ radius
 -------------------------------------------------------------------------------
 
 # Functions
+
 In programming, a function is like a verb. It takes something (its "arguments"), it does something to it, and gives you back an output.
 In R, the arguments of a function are written in brackets.
 ```{r}
@@ -132,6 +134,7 @@ Create a new chunk below, and use it to calculate the square root of 5.7, withou
 -------------------------------------------------------------------------------
 
 # Datasets
+
 Some sample datasets are available in R. Let's import "women", a small dataset containing the heights and weights of 15 women, into our Environment.
 
 ```{r}
@@ -180,6 +183,7 @@ Use the women dataset and calculate the mean BMI. There are a few ways of coding
 -------------------------------------------------------------------------------
 
 # Solutions
+
 ```{r}
 # Second-to-last exercise
 median(chickwts$weight) * 0.001
