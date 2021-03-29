@@ -48,6 +48,7 @@ A chunk looks like this:
 ```{r}
 
 ```
+Please note that those three signs are not normal apostrophes ('): they are "backticks" (`). On a Windows keyboard, the key is to the left of the number 1.
 
 To run code in a chunk, you click on the *Run* (green triangle) button at the top right of the chunk (or you place your cursor inside it and press *Ctrl+Shift+Enter*).
 
@@ -135,14 +136,14 @@ Create a new chunk below, and use it to calculate the square root of 5.7, withou
 
 # Datasets
 
-Some sample datasets are available in R. Let's import "women", a small dataset containing the heights and weights of 15 women, into our Environment. (It's a default R dataset, so R already knows what it is)
+Some sample datasets are available in R. Let's import "Theoph", a small dataset regarding the pharmacokinetics of theophylline, into our Environment. (It's a default R dataset, so R already knows what it is). We will call it "data_theo" but we could call it whatever name we like.
 
 ```{r}
-women <- women
+data_theo <- Theoph
 ```
 
 *Exercise*
-Import "chickwts", another default dataset containing information on chicken feeds and weights.
+Import "chickwts", another default dataset containing information on chicken feeds and weights. You can assign it to whatever name you prefer.
 ```{r}
 
 ```
@@ -153,20 +154,21 @@ To visualise this dataset, you can run its name, or you can either click on it i
 *Exercise*
 Visualise this dataset in one of these two ways. Which one do you prefer?
 ```{r}
-women
-View(women)
+data_theo
+View(data_theo)
 ```
 
-Now let's use the mean() and sd() functions to calculate the average woman height and its standard deviation. R can work with more than one dataset at the time. For this reason, unlike Stata, everytime you refer to a variable, you also need to tell R which dataset is that variable from. You do this by typing a `$` sign between the dataset and the variable name.
+Now let's use the `mean()` and `sd()` functions to calculate the average theophylline concentration and its standard deviation. That variable is called "conc" in this dataset.
+R can work with more than one dataset at the time. For this reason (unlike Stata) every time you refer to a variable, you also need to tell R which dataset is that variable from. You do this by typing a `$` sign between the dataset and the variable name.
 (The $ sign is technically called the "exposition operator")
 ```{r}
-mean(women$height)
-sd(women$height)
+mean(data_theo$conc)
+sd(data_theo$conc)
 ```
 
 *Exercise*
-1. Calculate the `median` weight among `chickens`, and convert it from grams into kilograms
-2. Use the function table() to tabulate the types of chicken feeds. This function can use the same syntax as the functions above.
+1. Calculate the `median` chicken weight, and convert it from grams into kilograms
+2. Use the function `table()` to tabulate the types of chicken feeds. This function can use the same syntax as the functions above.
 ```{r}
 # Median chicken weight (in kg)
 
@@ -177,8 +179,8 @@ sd(women$height)
 ```
 
 *Recap exercise*
-Use the women dataset and calculate the mean height in metres. There are a few ways of coding this and the choice is yours :)
-(1 inch = 0.0254 m)
+Use the theophylline dataset and calculate the mean subject weight, and convert it into pounds. There are a few ways of coding this and the choice is yours :)
+(1 kg = 2.20462 pounds)
 
 -------------------------------------------------------------------------------
 
@@ -190,18 +192,17 @@ median(chickwts$weight) * 0.001
 table(chickwts$feed)
 
 # Recap exercise
-women$height                  #  To check in which unit was height measured
 
 # Multiple ways of doing this calculation
 # Option 1: all in one line
-mean(women$height) * 0.0254
+mean(data_theo$Wt) * 2.20462
 
 # Option 2: break it down
-mean_in <- mean(women$height) # calculate the mean height in inches and assign this
+mean_kg <- mean(data_theo$Wt) # calculate the mean weight in kilograms and assign this
 
-mean_mt <- mean_in * 0.0254   # convert into metres and assign this
+mean_lb <- mean_kg * 2.20462   # convert into pounds and assign this
 
-mean_mt                       # visualise result
+mean_lb                       # visualise result
 ```
 
 -------------------------------------------------------------------------------
