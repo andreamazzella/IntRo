@@ -151,8 +151,7 @@ A `+` sign links the base function with the geometry function.
 *Exercise*
 Make a histogram of another variable of your choice.
 ```{r}
-ggplot(diab, aes(x = height)) +
-  geom_histogram()
+
 ```
 
 Now let's add a title and rename the axes. You do this by adding another `+` sign and then the `labs()` function. Let's also reduce the number of bins to 10, by adding this as an argument in the geom_histogram() function.
@@ -294,10 +293,11 @@ ggsave("rel_continent.png")
 
 ## Want more ggplot?
 
-I recommend these two resources:
+I recommend these resources:
 
 * R for Data Science, [chapter 3: Data visualisation](https://r4ds.had.co.nz/data-visualisation.html)
 * The BBC Visual and Data Journalism cookbook for R graphics [link](https://bbc.github.io/rcookbook/)
+* RStudio Data Visualisation Cheat Sheet [link](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf)
 
 -------------------------------------------------------------------------------
 
