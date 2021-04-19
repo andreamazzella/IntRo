@@ -88,7 +88,7 @@ mean(dm$height)
 # %>% pipe
 
 The `%>%` takes what's on the left and it moves it inside the brackets on the right, and follows it with a comma.
-It's really helpful to avoid using too many nested functions, or assigning too often. There's a keyboard shorcut for it: Ctrl + Shift + M.
+It's really helpful to avoid using too many nested functions, or assigning too often. There's a keyboard shorcut for it: *Ctrl + Shift + M* (on Mac: *Ctrl + Shift + M*).
 
 These options produce the same output:
 ```{r}
