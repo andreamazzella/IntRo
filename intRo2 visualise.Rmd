@@ -34,8 +34,8 @@ R has some core functions, like the ones we've used so far: sqrt(), mean(), tabl
 
 To install a package, one uses the `install.packages()` function, adding the package name in quotes. This might take a bit of time if the packages are large.
 ```{r message=FALSE, include=FALSE}
-# install.packages("haven")
-# install.packages("tidyverse")
+install.packages("haven")
+install.packages("tidyverse")
 ```
 
 *Exercise* Install package "readxl".
