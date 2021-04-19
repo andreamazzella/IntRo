@@ -50,7 +50,7 @@ A chunk looks like this:
 ```
 Please note that those three signs are not normal apostrophes ('): they are "backticks" (`). On a Windows keyboard, the key is to the left of the number 1.
 
-To run code in a chunk, you click on the *Run* (green triangle) button at the top right of the chunk (or you place your cursor inside it and press *Ctrl+Shift+Enter*).
+To run code in a chunk, you click on the *Run* (green triangle) button at the top right of the chunk (or you place your cursor inside it and press *Ctrl+Shift+Enter* (on Mac: *Cmd+Shift+Enter*).
 
 *Exercise*
 Run this chunk. Where is the output displayed?
@@ -58,7 +58,7 @@ Run this chunk. Where is the output displayed?
 5 - 1
 ```
 
-To run just part of the chunk, you can select the code of interest (or just place your cursor on any line) and press *Ctrl+Enter*.
+To run just part of the chunk, you can select the code of interest (or just place your cursor on any line) and press *Ctrl+Enter* (on Mac: *Cmd+Enter*).
 
 *Exercise*
 Only run the second line of this chunk.
