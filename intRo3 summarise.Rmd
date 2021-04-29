@@ -28,6 +28,7 @@ output: html_notebook
 # Install new packages
 install.packages("magrittr")
 install.packages("summarytools")
+# install.packages("epiDisplay") # install this if you have problems with {summarytools}
 ```
 
 ```{r}
@@ -109,6 +110,7 @@ dm %$% mean(height) %>% sqrt() %>% log()
 
 *Exercise*
 Rewrite this chunk in just one line by using two pipes. You can break it down into two steps if you prefer.
+(`aov()` is a function that performs the statistical test ANOVA, analysis of variance), and takes as argument two variables separated by operator ~).
 ```{r ex2}
 # ANOVA in base R
 anova1 <- aov(dm$bmi ~ dm$diet)
@@ -122,10 +124,10 @@ summary(anova1)
 So you can also use `%>%` for any function that takes the dataset as its first argument (like all functions in the tidyverse, for example `ggplot()`.
 ```{r}
 # Without a pipe
-ggplot(dm, aes(x = gender)) + geom_bar()
+ggplot(dm, aes(gender)) + geom_bar()
 
 # With a pipe
-dm %>% ggplot(aes(x = gender)) + geom_bar()
+dm %>% ggplot(aes(gender)) + geom_bar()
 ```
 
 -------------------------------------------------------------------------------
@@ -148,7 +150,7 @@ summary(dm)
 
 ## Summarising categorical variables: frequency tables
 
-To tabulate categorical data, we have many options, among which `table()` from base R and `freq()` from package summarytools.
+To tabulate categorical data, we have many options, among which `table()` from base R, `freq()` from package {summarytools}, `tab1()` from {epiDisplay}.
 
 *Exercise*
 Run this chunk and compare the output from those three functions.
@@ -160,7 +162,9 @@ Run this chunk and compare the output from those three functions.
 table(dm$gender)
 freq(dm$gender)
 epiDisplay::tab1(dm$gender, graph = F)
+```
 
+```{r}
 # More complex frequency tables
 table(dm$sexual_orien, useNA = "ifany")
 freq(dm$sexual_orien, report.nas = TRUE, cumul = TRUE)
@@ -175,8 +179,11 @@ What percentage of all people in this sample has a mild disability?
 
 ## Summarising categorical variables: cross-tabulation
 
-To make two-way tables you can again use `table()` from base R, but it doesn't calculate percentages for you.
-You can use `ctable()` from {summarytools}; it's a very customisable function.
+To make two-way tables you can use
+* `table()` from base R, but it doesn't calculate percentages for you.
+* `ctable()` from {summarytools}; it's a very customisable function. 
+* `tabpct()` from {epiDisplay}.
+
 ```{r}
 # Base R
 dm %$% table(diet, diabetes, useNA = "ifany")
