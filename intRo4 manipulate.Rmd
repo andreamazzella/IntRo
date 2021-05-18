@@ -41,7 +41,7 @@ library("forcats")   # dealing with factors
 Let's import `diab_stata.dta` and let's have a look at the data.
 ```{r}
 # Data import
-dm <- read_stata("diab_stata.dta") %>% mutate_if(is.labelled, as_factor)
+dm <- read_stata("diab_stata.dta") %>% mutate_if(is.labelled, as_factor) # mutate_if adds value labels from the Stata format
 summary(dm)
 ```
 
@@ -76,7 +76,7 @@ dm <- mutate(dm, height_m = height / 100)
 *Exercise*
 Convert weight into pounds (1kg = 2.20462 lbs).
 
-(If you make a mistake and you want to recalculate the variable, you don't need to drop the old one first. When you assign it again, R will overwrite the old variable)
+(Note for Stata users: if you make a mistake and you want to recalculate the variable, you don't need to drop the old one first. When you assign it again, R will overwrite the old variable)
 ```{r new_variable}
 
 ```
@@ -101,7 +101,7 @@ Now we can calculate each observation's age as of 07/05/2020. Dealing with dates
 # Create a calculated age variable
 dm %<>% mutate(age = ((dmy("7/5/2020") - date_birth) / 365.25) %>% # yr diff.ce
                as.numeric() %>%      # make it a number
-               round(digits = 1))   # round it 1 sign.t digit
+               round(digits = 1))   # round it to 1 decimal digit
 ```
 
 *Exercise*
@@ -119,6 +119,7 @@ dm %<>% mutate(bmi_group = cut(bmi_dc,
                                breaks = c(0, 18.5, 25, 30, +Inf),
                                labels = c("underwt", "normal wt", "overwt", "obese")))
 
+# The code below is used to check that the new variable was created correctly:
 dm %>% group_by(bmi_group) %>% summarise("min BMI" = min(bmi_dc) %>% round(2),
                                          "max BMI" = max(bmi_dc) %>% round(2))
 ```
@@ -173,7 +174,7 @@ In order to categorise into three levels or more, you can either nest one `ifels
 
 (The `~` sign can be inserted by pressing `Alt 126` in Windows, `Alt 5` with Mac)
 
-For example, the first line of the `mutate()` function reads: create a new variable called "continent_2", and when the value in variable "continent" is "n_america", or `|` when the continent is "s_america", use the new value "americas".
+For example, the first line of the `mutate()` function reads: create a new variable called "continent_2", and when the value in variable "continent" is "n_america", or when the continent is "s_america", insert the new value "americas".
 ```{r}
 # Explore levels
 table(dm$continent)
