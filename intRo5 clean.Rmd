@@ -48,10 +48,10 @@ dm_new <- readr::read_csv("diab_new.csv")
 # Old dataset
 dm_stata <- read_stata("diab_stata.dta") %>% mutate_if(is.labelled, as_factor)
 ```
-You might have noticed some warnings. Disregard them for now, and try summarising the new dataset the way we did for the .dta file. You can also use `View()` to look at the data.
+You might have noticed some warnings. Disregard them for now, and try summarising the new dataset with the same functions that we used in the previous sessions with the .dta file. You can also use `View()` to look at the data.
 
 *Exercise 1*
-How many major differences can you spot between the two summaries?
+How many major differences can you spot between the two summaries below?
 
 ```{r}
 # What's happening?
@@ -67,7 +67,7 @@ We'll now work on "cleaning" this new dataset, to make it more useful.
 
 ## Deleting variables
 
-It looks like X18, X19 and test_delete don't contain any data:
+It looks like `X18`, `X19` and `test_delete` don't contain any data:
 ```{r}
 dm_new %>% select(c(X18, X19, test_delete))
 ```
@@ -75,8 +75,8 @@ dm_new %>% select(c(X18, X19, test_delete))
 
 Let's remove these empty variables from the dataset.
 
-You technically assign it a NULL value (note that it's uppercase, and different to NA, which is a missing value).
-A "tidyverse" alternative consists of selecting all variables except these three, and reassigning this as our dataset.
+You technically assign it a `NULL` value (note that it's uppercase, and different to `NA`, which is a missing value).
+A {tidyverse} alternative consists of selecting all variables except these three, and reassigning this as our dataset.
 ```{r}
 #--- Delete variables from the dataset
 dm_new$X18 <- NULL
@@ -119,7 +119,7 @@ R data classes that are relevant to Epidemiology are:
  - double (numbers with decimal digits)
 * *date*
 * *character* (letters)
-* *logical* (TRUE, FALSE, NA)
+* *logical* (possible values: `TRUE`, `FALSE`, `NA`)
 
 To check which class an object is, you use `class()`:
 ```{r}
@@ -151,7 +151,9 @@ class(dm_new$ID)
 
 ### Factors
 
-These are stored as factors. Factors have "levels" indicated by integers (1, 2, 3...) and corresponding "labels" which contain text. Functions `as.factor()` and `factor()` change the class into a factor.
+These are stored as factors. Factors have "levels" indicated by integers (1, 2, 3...) and corresponding "labels" which contain text. For example, in a "outcome" variable, level 1 can represent "alive", level 2 can represent "dead".
+
+Functions `as.factor()` and `factor()` change the class into a factor.
 
 *Exercise 3*
 Try summarising the variable `religion` and check its output. Then change its class to factor, and summarise it again.
@@ -239,7 +241,7 @@ As you can see, after telling R what the correct class is, it can summarise the 
 Some variables have unclear, long or uppercase names. Let's rename them so they're easier to understand, or to type.
 You can either do this in two ways:
 * in base R, by assigning the variable to a new name and then removing the old variable;
-* in package dplyr, by using function `rename()` and assigning it to our dataset name.
+* in package {dplyr}, by using function `rename()` and assigning it to our dataset name.
 ```{r}
 # Method 1: base R
 dm_new$height <- dm_new$ht
