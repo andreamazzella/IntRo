@@ -63,6 +63,7 @@ dm <- mutate(dm, height_m = height / 100)
 # Base R
 # dm$height_m <- dm$height / 100
 ```
+NB: There is no output to this. If you want to check whether it worked, you can have a look at the dataset.
 
 `%<>%` is another pipe from package magrittr. It combines the assignment operator `<-` and the forward pipe `%>%`, so it's used as shorthand instead of `data <- data %>%`. For example, we can replace the dplyr line of code above with:
 ```{r}
@@ -112,7 +113,7 @@ Explore the distribution of age with a histogram.
 
 ## Categorise continuous variables
 
-We might also want to transform a continuous variable into a categorical one, for example to reflect clinically meaningful groups. The function we nest in `mutate()` is `cut()`: the `breaks` indicate which values delimit groups, and `labels` indicate, well, the value labels.
+We might also want to transform a continuous variable into a categorical one, for example to reflect clinically meaningful groups. The function we nest in `mutate()` is `cut()`: the `breaks` indicate which values delimit groups, and `labels` indicate how each group be called.
 
 ```{r}
 dm %<>% mutate(bmi_group = cut(bmi_dc,
@@ -123,8 +124,6 @@ dm %<>% mutate(bmi_group = cut(bmi_dc,
 dm %>% group_by(bmi_group) %>% summarise("min BMI" = min(bmi_dc) %>% round(2),
                                          "max BMI" = max(bmi_dc) %>% round(2))
 ```
-
->
 (I really recommend this paper on why categorising continuous variables is potentially problematic:
 Turner E, Dobson J & Pocock S. (2010). "Categorisation of continuous risk factors in epidemiological publications: A survey of current practice." Epidemiologic perspectives & innovations ).
 
