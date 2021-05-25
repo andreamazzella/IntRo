@@ -38,7 +38,7 @@ install.packages("haven")
 install.packages("tidyverse")
 ```
 
-*Exercise* Install package "readxl".
+*Exercise* Install package "readxl" (NB: the last character is a lowercase L, not a digit 1.)
 ```{r}
 
 ```
