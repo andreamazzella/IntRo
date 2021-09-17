@@ -295,8 +295,9 @@ ggsave("rel_continent.png")
 
 I recommend these resources:
 
-* R for Data Science, [chapter 3: Data visualisation](https://r4ds.had.co.nz/data-visualisation.html)
-* The BBC Visual and Data Journalism cookbook for R graphics [link](https://bbc.github.io/rcookbook/)
+* (Basics) R for Data Science, [chapter 3: Data visualisation](https://r4ds.had.co.nz/data-visualisation.html)
+* (Intermediate) The BBC Visual and Data Journalism cookbook for R graphics [link](https://bbc.github.io/rcookbook/)
+* (Advanced) Data Visualisation with R, by Rob Kabacoff [link](https://rkabacoff.github.io/datavis/)
 * RStudio Data Visualisation Cheat Sheet [link](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf)
 
 -------------------------------------------------------------------------------
