@@ -41,7 +41,7 @@ library("forcats")   # dealing with factors
 Let's import `diab_stata.dta` and let's have a look at the data.
 ```{r}
 # Data import
-dm <- read_stata("diab_stata.dta") %>% mutate_if(is.labelled, as_factor) # mutate_if adds value labels from the Stata format
+dm <- read_stata("data/diabetes.dta") %>% mutate_if(is.labelled, as_factor) # mutate_if adds value labels from the Stata format
 summary(dm)
 ```
 
