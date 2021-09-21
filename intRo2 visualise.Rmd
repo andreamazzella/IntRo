@@ -53,11 +53,8 @@ options(digits = 2, scipen = 10) # reduce signif digits and scientific notation
 
 Once you have loaded a package, you can use its functions freely.
 
-Conflict between packages: if two packages contain two functions with the same name, R will use the function from the package that you loaded last. For this reason, always load the tidyverse library last (tidyverse contains loads of important functions). You can also force R to use the package from a specific dataset by prefacing the function with `packagename::`. For example,
-```{example}
-dplyr::select(...)
-```
-
+*Want to know more?*
+Conflict between packages: if two packages contain two functions with the same name, R will use the function from the package that you loaded last. For this reason, always load the tidyverse library last (tidyverse contains loads of important functions). You can also force R to use the package from a specific dataset by prefacing the function with `packagename::`. For example, `dplyr::select(...)`
 
 -------------------------------------------------------------------------------
 
@@ -68,20 +65,20 @@ Now let's import an external dataset. The way you do this with .Rmd notebooks is
 1. You move your dataset to the same folder as the .Rmd file;
 2. You run a function to load the specific data format your data in saved as, and assign it to a name.
 
-For example, make sure the `diab.csv`, `diab_excel.xlsx`, and `diab_stata.dta` files are in the same folder as this .Rmd. (They are simulated datasets containing the same data). Then run this chunk:
+For example, make sure that this .Rmd file is saved in the same folder as a "data" folder containing `ambition.csv`, `diab_excel.xlsx`, and `diab_stata.dta` files (They are simulated datasets containing the same data). Then run this chunk:
+
 ```{r message=FALSE, warning=FALSE}
 # Comma-separated value files
-diab_csv <- read_csv("diab_old.csv")
+ambition <- read_csv("data/ambition.csv") # NB: the location HAS TO be in quotes
 
 # Excel files
-diab_xlsx <- read_excel("diab_excel.xlsx")
+syph <- read_excel("data/syphilis.xlsx")
 
 # Stata files
-diab <- read_dta("diab_stata.dta")
-diab <- mutate_if(diab, is.labelled, as_factor) # this simply applies labels to values
+diab <- read_dta("data/diabetes.dta")
+diab <- mutate_if(diab, is.labelled, as_factor) # disregard for now (it simply applies labels to values)
 ```
-You will note that now these three datasets have been imported in your Environment, in the top right of your window (they actually contain the same data, that I made up).
-NB: the location needs to be in quotes.
+You will note that now these three datasets have been imported in your Environment, in the top right of your window.
 
 *Exercise*
 Insert a new chunk below, and use it to import the `poo.csv` dataset:
@@ -92,8 +89,8 @@ Insert a new chunk below, and use it to import the `poo.csv` dataset:
 Let's now focus on the diabetes dataset in its Stata version, and let's remove the other two versions from the Environment. You do this with `remove()` (or `rm()`) which you can use to remove any kind of object from your environemnt, not only data.
 ```{r}
 # Removing objects from the environment
-remove(diab_csv)
-rm(diab_xlsx)
+remove(ambition)
+rm(syph)
 ```
 
 -------------------------------------------------------------------------------
@@ -164,14 +161,14 @@ ggplot(diab, aes(bmi)) +
 ```
 
 *Exercise*
-This chunk won't execute. Can you spot the three (tiny) bugs that break the code, and fix them so that you can have a histogram _with a title_?
-(Hint: RStudio will help with two of these bugs. Look at the left of the chunk).
+This chunk won't execute. Can you spot the *four* bugs that break the code, and fix them so that you can have a histogram _with a title_?
+(Hint: RStudio will help with some of these bugs. Look at the left of the chunk).
 ```{r bugs}
 ggplot(diab, aes(height))
-  geom_histogram() +
-  labs(title = "Height distribution",
-       x = "Height (cm)"
-       y = "Frequency",
+  geom_histogram() 
+  labs(title = "Height distribution"
+       x = "Height (cm)",
+       y = "Frequency"
 ```
 
 
