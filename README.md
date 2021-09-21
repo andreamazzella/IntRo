@@ -7,6 +7,7 @@ Markdown notebooks illustrating the basics of R and the tidyverse for Epidemiolo
 2. **Data import and visualisation** (Using packages; data import with csv/xls/dta; basics of {ggplot2} for histograms, scatterplots, and bar charts)
 3. **Data summarisation** (summarising continuous and categorical variables; subsetting data; `%>%` and `%$%` pipes)
 4. **Data manipulation and export** (basics of {dplyr}: calculate new variables, categorise continuous variables, regroup a categorical variable; `%<>%` pipe)
-5. **Data cleaning**: (deleting and renaming variables; data classes; factors; labelling and recoding values)
+5. **Data cleaning** (deleting and renaming variables; data classes; factors; labelling and recoding values)
+6. **Data analysis of continuous outcomes** (data visualisation; t-test; linear regression)
 
 Author: [Andrea Mazzella](https://github.com/andreamazzella)
