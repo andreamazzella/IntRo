@@ -33,6 +33,7 @@ install.packages("summarytools")
 
 ```{r}
 # Load packages
+library("haven")                 # read .dta files
 library("magrittr")              # provides %$% pipe
 library("summarytools")          # better tables
 library("tidyverse")             # %>% pipe and much more
@@ -41,10 +42,10 @@ options(digits = 2, scipen = 10) # reduce signif digits and scientific notation
 
 NB: there seems to be an issue with summarytools on Mac computers. If this happens to you, try this solution: https://community.rstudio.com/t/problem-in-installing-summary-tools-package-in-mac/38387. If you still can't work it out, install and load package "epiDisplay" instead, it has similar tabulation functions.
 
-Let's import othe diab_stata dataset. The `read_dta()` function is part of package "haven", that we haven't imported. We can still use this function by prefixing it with the name of the package and `::` (as long as we've installed the package)
+Let's import the diabetes dataset. The `read_dta()` function is part of package "haven".
 ```{r}
 # Import and label
-dm <- haven::read_dta("diab_stata.dta") %>% mutate_if(haven::is.labelled, as_factor)
+dm <- read_dta("data/diabetes.dta") %>% mutate_if(is.labelled, as_factor)
 
 # Preview the first 10 rows and columns
 dm
