@@ -36,17 +36,17 @@ library("forcats")   # dealing with factors
 
 ## Exploring messy & dirty data
 
-So far we've worked on the `diab_stata.dta` dataset. Now imagine that data collection has progressed, and now there some new variables.
+So far we've worked on the `diabetes.dta` dataset. Now imagine that data collection has progressed, and now there are some new variables.
 
 Unfortunately Bradley, the PI, thought it was a good idea to ask for the data collection to be done in Excel, and he hasn't prepared a data dictionary.
 
 Load the new `diab_new.csv` dataset, along with the old one.
 ```{r}
 # Data import
-dm_new <- readr::read_csv("diab_new.csv")
+dm_new <- readr::read_csv("data/diab_new.csv")
 
 # Old dataset
-dm_stata <- read_stata("diab_stata.dta") %>% mutate_if(is.labelled, as_factor)
+dm_stata <- read_stata("data/diabetes.dta") %>% mutate_if(is.labelled, as_factor)
 ```
 You might have noticed some warnings. Disregard them for now, and try summarising the new dataset with the same functions that we used in the previous sessions with the .dta file. You can also use `View()` to look at the data.
 
@@ -67,9 +67,9 @@ We'll now work on "cleaning" this new dataset, to make it more useful.
 
 ## Deleting variables
 
-It looks like `X18`, `X19` and `test_delete` don't contain any data:
+It looks like `...18`, `...19` and `test_delete` don't contain any data:
 ```{r}
-dm_new %>% select(c(X18, X19, test_delete))
+dm_new %>% select(c(...18, ...19, test_delete))
 ```
 (If you're wondering: "what's `c()`"? See below).
 
@@ -79,8 +79,8 @@ You technically assign it a `NULL` value (note that it's uppercase, and differen
 A {tidyverse} alternative consists of selecting all variables except these three, and reassigning this as our dataset.
 ```{r}
 #--- Delete variables from the dataset
-dm_new$X18 <- NULL
-dm_new$X19 <- NULL
+dm_new$...19 <- NULL
+dm_new$...19 <- NULL
 ```
 
 *Exercise 2*
@@ -399,7 +399,7 @@ dm_new %<>% mutate(height = recode(height, `1777` = 177))
 
 ```{r Challenge exercise solution}
 # Import and explore
-poo <- readr::read_csv("poo.csv")
+poo <- readr::read_csv("data/poo.csv")
 poo
 
 # Change data classes
@@ -421,5 +421,5 @@ poo %$% summarytools::ctable(bristol, colour, prop = "c")
 poo %>% ggplot(aes(temperature, sex)) + geom_boxplot()
 
 # Export to Stata
-poo %>% haven::write_dta("poo_cleaned.dta")
+poo %>% haven::write_dta("data/poo_cleaned.dta")
 ```
