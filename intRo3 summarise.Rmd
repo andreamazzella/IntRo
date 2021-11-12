@@ -64,7 +64,17 @@ We're going to use two pipes: `%$%` and `%>%`.
 
 ## %$% pipe
 
-THe `%$%` pipe, from package magrittr, takes what's on its left (usually, the dataset name) and moves it inside the function, before each argument, and adds a `$` in between. It lets you avoid typing the dataset name and `$` twice, and it makes the true arguments of the function stand out.
+You will remember that `data$variable1` subsets the variable called "variable1" from the dataset "data".
+```{r}
+dm$diet
+```
+
+We use this when a function requires a variable (and not the whole dataset); for example, if we want to get the frequencies, we can use the syntax below.
+```{r}
+table(dm$diet)
+```
+
+The `%$%` pipe, from package magrittr, takes what's on its left (usually, the dataset name) and moves it inside the function, before each argument, and adds a `$` in between. It lets you avoid typing the dataset name and `$` twice, and it makes the true arguments of the function stand out.
 It's particularly useful when a function uses multiple variables, because otherwise you would need to specify which dataset is each variable from – this would quickly become verbose.
 The two commands below generate the same output.
 ```{r}
@@ -90,7 +100,7 @@ mean(dm$height)
 # %>% pipe
 
 The `%>%` takes what's on the left and it moves it inside the brackets on the right, and follows it with a comma.
-It's really helpful to avoid using too many nested functions, or assigning too often. There's a keyboard shorcut for it: *Ctrl + Shift + M* (on Mac: *Ctrl + Shift + M*).
+It's really helpful to avoid using too many nested functions, or assigning too often. There's a keyboard shorcut for it: *Ctrl + Shift + M* (on Mac: *Cmd + Shift + M*).
 
 These options produce the same output:
 ```{r}
@@ -151,7 +161,7 @@ summary(dm)
 
 ## Summarising categorical variables: frequency tables
 
-To tabulate categorical data, we have many options, among which `table()` from base R, `freq()` from package {summarytools}, `tab1()` from {epiDisplay}.
+To tabulate categorical data, we have many options, among which `table()` from base R, `count()` from {dplyr}, `freq()` from package {summarytools}, `tab1()` from {epiDisplay}.
 
 *Exercise*
 Run this chunk and compare the output from those three functions.
@@ -161,6 +171,7 @@ Run this chunk and compare the output from those three functions.
 ```{r}
 # Simple frequency table
 table(dm$gender)
+count(dm, gender)
 freq(dm$gender)
 epiDisplay::tab1(dm$gender, graph = F)
 ```
@@ -182,12 +193,16 @@ What percentage of all people in this sample has a mild disability?
 
 To make two-way tables you can use
 * `table()` from base R, but it doesn't calculate percentages for you.
+* `count()` from {dplyr}, but it's in nested rows and doesn't give you percentages.
 * `ctable()` from {summarytools}; it's a very customisable function. 
 * `tabpct()` from {epiDisplay}.
 
 ```{r}
 # Base R
 dm %$% table(diet, diabetes, useNA = "ifany")
+
+# Package dplyr
+dm %>% count(diet, diabetes)
 
 # Package summarytools
 dm %$% ctable(diet, diabetes, headings = FALSE, prop = "c", useNA = "no")
@@ -196,8 +211,14 @@ dm %$% ctable(diet, diabetes, headings = FALSE, prop = "c", useNA = "no")
 dm %$% epiDisplay::tabpct(diet, diabetes, graph = F, percent = "col")
 ```
 
+You will note that different functions have slightly different ways of doing some things:
+- including or omitting missing values (e.g. useNA in table() and ctable())
+- deciding whether to show column or row percentages/proportions (e.g. prop = "c" or "r" in ctable(), percent = "col" or "row" in tabpct()). 
+
+
 *Exercise*
 What percentage of trans people is atheist?
+Hint: if you can't remember the names of your variables, you can use function `names()`, which takes the dataset name as its argument.
 ```{r ex contingency}
 
 ```
@@ -267,6 +288,7 @@ dm %>% filter(gender == "female", bmi < 18.5)
 
 *Exercise*
 Filter Christian men shorter than 170 cm with a mild disability. How many are in our dataset?
+Hint: if you need to check which values are possible in a categorical variable, you can use `levels()`, which takes the variable as an argument.
 ```{r filter}
 
 ```
