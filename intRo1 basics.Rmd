@@ -52,7 +52,7 @@ A chunk looks like this:
 ```
 Please note that those three signs are not normal apostrophes ('): they are "backticks" (`). On a Windows keyboard, the key is to the left of the number 1.
 
-To run code in a chunk, you click on the *Run* (green triangle) button at the top right of the chunk (or you place your cursor inside it and press *Ctrl+Shift+Enter* (on Mac: *Cmd+Shift+Enter*).
+To run code in a chunk, you click on the *Run* (green triangle) button at the top right of the chunk (or you place your cursor inside it and press *Ctrl+Shift+Enter* (on Mac: *Cmd+Option+Enter*).
 
 *Exercise*
 Run this chunk. Where is the output displayed?
@@ -90,7 +90,7 @@ We won't be using R scripts in this course, but you might see them elsewhere.
 
 # Assignment
 
-You can tell R that something has a name; R will remember it and you can use that later in your code. This is called *assignment* and is done by using the arrow <-. Assignment creates a new "object".
+You can tell R that something has a name; R will remember it and you can use that later in your code. This is called *assignment* and is done by using the arrow <- (keyboard shortcut: *Alt+-* on Windows, *Option+-* on Macs) Assignment creates a new "object".
 The following code means: "radius" gets the value of 5.7. "radius" is a new object.
 
 *Exercise*
@@ -130,7 +130,7 @@ sqrt(64)
 ```
 
 *Exercise*
-Create a new chunk below, and use it to calculate the square root of 5.7, without typing 5.7.
+Create a new chunk below, and use it to calculate the square root of 6.58, without typing 6.58.
 
 
 
