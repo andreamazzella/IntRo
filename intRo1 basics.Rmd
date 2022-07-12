@@ -2,7 +2,6 @@
 title: "1: The basics"
 subtitle: "Introduction to R"
 author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
-output: html_notebook
 ---
 
 -------------------------------------------------------------------------------
@@ -21,7 +20,17 @@ output: html_notebook
 # User interface
 
 The RStudio interface is divided into four parts:
-- *top left*: the code script (*.R) or notebook (like this one, intRo1.Rmd) you're working on.
+`+--------------+-------------+`
+`| Code,        | Environment |`
+`| Viewer       |             |`
+`|              |             |`
+`+--------------+-------------+`
+`| Console      | Files,      |`
+`|              | Packages,   |`
+`|              | Help        |`
+`+--------------+-------------+`
+
+- *top left*: the code script  or notebook you're working on (like this one: `intRo1 basics.Rmd`).
 - *bottom left*: the console (where you can input your commands)
 - *top right*: Environment (where your datasets and other "objects" are stored)
 - *bottom right*: help (and other stuff)
@@ -33,9 +42,13 @@ The RStudio interface is divided into four parts:
 The console is used to run simple commands that you don't need to save.
 
 *Exercise*
-In the console below, add 3 and 5. You do this by using it as a calculator: 3+5 Enter.
+In the console, add 3 and 5. You do this by using it as a calculator: 3+5 Enter.
 
-Now forget about the console forever – it's better to keep your code in a notebook (or in a script), like in Stata you would with a .do file.
+Now forget about the console – it's better to keep your code in a notebook (or in a script). This is for many reasons:
+
+1. Easily editing your code when it doesn't work the first time you run it.
+2. Keeping track of your work so you don't have to restart from scratch every time.
+3. Sharing your work with others
 
 -------------------------------------------------------------------------------
 
@@ -50,12 +63,12 @@ A chunk looks like this:
 ```{r}
 
 ```
-Please note that those three signs are not normal apostrophes ('): they are "backticks" (`). On a Windows keyboard, the key is to the left of the number 1.
+Please note that those three signs are not normal apostrophes ('): they are "backticks" (`). On a UK/US Windows keyboard and US Mac keyboard, the key is to the left of the number 1. On a UK Mac keyboard, the key is to the left of Z.
 
 To run code in a chunk, you click on the *Run* (green triangle) button at the top right of the chunk (or you place your cursor inside it and press *Ctrl+Shift+Enter* (on Mac: *Cmd+Option+Enter*).
 
 *Exercise*
-Run this chunk. Where is the output displayed?
+Run this chunk. Note where is the output displayed.
 ```{r}
 5 - 1
 ```
@@ -65,15 +78,15 @@ To run just part of the chunk, you can select the code of interest (or just plac
 *Exercise*
 Only run the second line of this chunk.
 ```{r}
-# Area of a circle
+# Area of two circles
 pi * 4 ^2
 pi * 5.7 ^2
 ```
 
-To add a new chunk, you click on the toolbar: Code -> Insert Chunk.
+To add a new chunk, you click on the toolbar: `Code` -> `Insert Chunk`.
 
 *Exercise*
-Add a new chunk in the space below, and use it to calculate the area of a rectangle of length 3.1 cm and width 7.5 cm (multiply).
+Add a new chunk in the space below, and use it to divide 6 by 2.
 
 
 
@@ -82,15 +95,17 @@ Add a new chunk in the space below, and use it to calculate the area of a rectan
 
 # R scripts (.R)
 
-An R script, for example `analysis.R`, mainly contains code, and any non-code text needs to be highlighted with a preceding `#`. You can think of R scripts as a very large chunk.
+An R script, for example `analysis.R`, mainly contains code, and any non-code text needs to be highlighted with a preceding `#`. The output will only appear in the console.
 
-We won't be using R scripts in this course, but you might see them elsewhere. 
+We won't be using R scripts in this course, but you might see them elsewhere.
+
+To create a new R script, you go in the toolbar: `File` -> `New File` -> `R Script`, or with a keyboard short-cut: `Ctrl` + `Shift` + `N` on Windows.
 
 -------------------------------------------------------------------------------
 
 # Assignment
 
-You can tell R that something has a name; R will remember it and you can use that later in your code. This is called *assignment* and is done by using the arrow <- (keyboard shortcut: *Alt+-* on Windows, *Option+-* on Macs) Assignment creates a new "object".
+You can tell R that something has a name; R will remember it and you can use that later in your code. This is called *assignment* and is done by using the arrow <- (keyboard shortcut: `Alt` + `*` on Windows, `Option` + `*` on Mac) Assignment creates a new "object".
 The following code means: "radius" gets the value of 5.7. "radius" is a new object.
 
 *Exercise*
@@ -99,7 +114,7 @@ Run this chunk. In which part of the screen is R storing this value?
 # Assigning a value to "radius"
 radius <- 5.7
 
-# Visualising the value of "radius"
+# Visuaising the value of "radius"
 radius
 ```
 
@@ -108,7 +123,7 @@ From now, you can use the object "radius" in the rest of your code, and R will k
 *Exercise*
 Calculate the circumference of a circle of radius 5.7, without typing 5.7 (Formula: twice the radius times pi)
 ```{r}
-
+# ...
 ```
 
 Note that assigning a new value to an existing object will permanently replace the old version.
@@ -138,51 +153,66 @@ Create a new chunk below, and use it to calculate the square root of 6.58, witho
 
 # Datasets
 
-Some sample datasets are available in R. Let's import "Theoph", a small dataset regarding the pharmacokinetics of theophylline, into our Environment. (It's a default R dataset, so R already knows what it is). We will call it "data_theo" but we could call it whatever name we like.
+R is mostly built around dataframes: data in table format.
+
+Some dataframes are included in R so we can practice.
+
+For example, let's explore `ToothGrowth`, a small dataset from an experiment on the impact of vitamin C supplementation on tooth length among 60 guinea pigs.
+
+Calling just the name of the dataset will show us a preview:
+
+To have a look at this dataset, you can call its name or you can use the function `View()`. Caution: R is case-sensitive!
 
 ```{r}
-data_theo <- Theoph
+ToothGrowth
 ```
+
+```{r}
+# This will open a new tab!
+View(ToothGrowth)
+```
+
+A dataframe has columns called *variables*. These are the variables in `ToothGrowth`:
+* `len`: tooth cell length
+* `supp`: supplement type (VC = vitamin C; OJ = orange juice)
+* `dose`: dose of vitamin C in mg/day
+
+
+## Using functions on a dataset column
+
+Now let's use the `mean()` and `sd()` functions to calculate the average tooth cell length and its standard deviation.
+
+R can work with more than one dataset at the time. For this reason, every time you refer to a variable, you also need to tell R which dataset is that variable from. You do this by typing a `$` sign between the dataset and the variable name.
+(The `$` sign is technically called the "exposition operator").
+```{r}
+mean(ToothGrowth$len)
+# The above reads: calculate the mean of a variable taken from `ToothGrowth` and called `len`.
+
+sd(ToothGrowth$len)
+```
+
 
 *Exercise*
-Import "chickwts", another default dataset containing information on chicken feeds and weights. You can assign it to whatever name you prefer.
+Let's use another dataset, `chickwts`. This contains info on chicken weights (in grams) and their feed type.
+
+1. Calculate the `median` chicken weight.
+2. Calculate the standard deviation of chicken weight.
 ```{r}
+# Preview the dataframe
+chickwts
 
-```
+# Median chicken weight
+# ...
 
-
-To visualise this dataset, you can run its name, or you can either click on it in the Environment or you can use the function View(). Caution: R is case-sensitive, so you need to type this with an upper-case V, otherwise it won't work.
-
-*Exercise*
-Visualise this dataset in one of these two ways. Which one do you prefer?
-```{r}
-data_theo
-View(data_theo)
-```
-
-Now let's use the `mean()` and `sd()` functions to calculate the average theophylline concentration and its standard deviation. That variable is called "conc" in this dataset.
-R can work with more than one dataset at the time. For this reason (unlike Stata) every time you refer to a variable, you also need to tell R which dataset is that variable from. You do this by typing a `$` sign between the dataset and the variable name.
-(The $ sign is technically called the "exposition operator")
-```{r}
-mean(data_theo$conc)
-sd(data_theo$conc)
-```
-
-*Exercise*
-1. Calculate the `median` chicken weight, and convert it from grams into kilograms
-2. Use the function `table()` to tabulate the types of chicken feeds. This function can use the same syntax as the functions above.
-```{r}
-# Median chicken weight (in kg)
-
-
-# Chicken feed frequencies
-
+# Standard deviation
+# ...
 
 ```
 
 *Recap exercise*
-Use the theophylline dataset and calculate the mean subject weight, and convert it into pounds. There are a few ways of coding this and the choice is yours :)
-(1 kg = 2.20462 pounds)
+1. Explore the `Theoph` dataset
+2. Calculate the mean weight of its study participants
+3. Convert this mean weight from kilograms to pounds. (1 kg = approx. 2.2 pounds)
 
 -------------------------------------------------------------------------------
 
@@ -190,21 +220,22 @@ Use the theophylline dataset and calculate the mean subject weight, and convert 
 
 ```{r}
 # Second-to-last exercise
-median(chickwts$weight) * 0.001
-table(chickwts$feed)
+median(chickwts$weight)
+sd(chickwts$weight)
 
 # Recap exercise
+# 1. Explore dataset
+View(Theoph)
 
-# Multiple ways of doing this calculation
-# Option 1: all in one line
-mean(data_theo$Wt) * 2.20462
+# 2. Calculate mean weight
+mean(Theoph$Wt)
 
-# Option 2: break it down
-mean_kg <- mean(data_theo$Wt) # calculate the mean weight in kilograms and assign this
+# 3. Convert mean weight to pounds
+mean(Theoph$Wt) * 22
 
-mean_lb <- mean_kg * 2.20462   # convert into pounds and assign this
-
-mean_lb                       # visualise result
+# An alternative way
+mean_kg <- mean(Theoph$Wt)
+mean_kg * 2.2
 ```
 
 -------------------------------------------------------------------------------

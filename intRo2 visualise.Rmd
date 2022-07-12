@@ -2,7 +2,6 @@
 title: "2: Data import and visualisation"
 subtitle: "Introduction to R"
 author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
-output: html_notebook
 ---
 
 -------------------------------------------------------------------------------
@@ -10,206 +9,227 @@ output: html_notebook
 # What you will learn
 
 * Using packages
-
-* Data import
- - {readr}
- - {haven}
  
 * Data exploration
- - `View()`
- - `names()`
- - `glimpse()`
 
-* Data visualisation with {ggplot}
+* Data visualisation with `ggplot2`
+ - Bar charts
  - Histograms
  - Scatterplots
- - Bar charts
  - Saving a plot
 
 -------------------------------------------------------------------------------
 
 # Using packages
 
-R has some core functions, like the ones we've used so far: sqrt(), mean(), table() and some more advanced ones (for example, the function for logistic regression). There are also extra functions made by programmers and grouped into "packages", which need to be downloaded (and loaded) separately.
+R has some core functions, like the ones we've used so far: `sqrt()`, `mean()`, `table()` and some more advanced ones (for example, the function for logistic regression). There are also extra functions made by programmers and grouped into "packages", which need to be downloaded (and loaded) separately.
 
-To install a package, one uses the `install.packages()` function, adding the package name in quotes. This might take a bit of time if the packages are large.
-```{r message=FALSE, include=FALSE}
-install.packages("haven")
-install.packages("tidyverse")
-```
+## Step 1: Download and install a package
 
-*Exercise* Install package "readxl" (NB: the last character is a lowercase L, not a digit 1.)
+To download and install a package, one uses the `install.packages()` function, adding the package name in quotes. This might take a bit of time if the packages are large.
 ```{r}
-
+install.packages("ggplot2")
 ```
 
-You only need to install packages once, but then you need to load them every time you open R. You do this with `library()` - without quotes. So, you put a chunk with the packages you need to load at the start of each Notebook.
-```{r message=FALSE}
-library("readxl")    # to import Excel spreadsheets
-library("haven")     # to import Stata datasets
-library("tidyverse") # ggplot visualisations and much more
-options(digits = 2, scipen = 10) # reduce signif digits and scientific notation
-```
-
-Once you have loaded a package, you can use its functions freely.
-
-*Want to know more?*
-Conflict between packages: if two packages contain two functions with the same name, R will use the function from the package that you loaded last. For this reason, always load the tidyverse library last (tidyverse contains loads of important functions). You can also force R to use the package from a specific dataset by prefacing the function with `packagename::`. For example, `dplyr::select(...)`
-
--------------------------------------------------------------------------------
-
-# Data import
-
-We've previously seen how to import sample datasets which are already loaded in R.
-Now let's import an external dataset. The way you do this with .Rmd notebooks is:
-1. You move your dataset to the same folder as the .Rmd file;
-2. You run a function to load the specific data format your data in saved as, and assign it to a name.
-
-For example, make sure that this .Rmd file is saved in the same folder as a "data" folder containing `ambition.csv`, `diab_excel.xlsx`, and `diab_stata.dta` files (They are simulated datasets containing the same data). Then run this chunk:
-
-```{r message=FALSE, warning=FALSE}
-# Comma-separated value files
-ambition <- read_csv("data/ambition.csv") # NB: the location HAS TO be in quotes
-
-# Excel files
-syph <- read_excel("data/syphilis.xlsx")
-
-# Stata files
-diab <- read_dta("data/diabetes.dta")
-diab <- mutate_if(diab, is.labelled, as_factor) # disregard for now (it simply applies labels to values)
-```
-You will note that now these three datasets have been imported in your Environment, in the top right of your window.
+You may also do this via the RStudio user interface: in the bottom right quarter of the screen, you click on `Packages` and then `Install`. You type the name of the package in the empty field and then click on the `Install` button.
 
 *Exercise*
-Insert a new chunk below, and use it to import the `poo.csv` dataset:
+Install package `dplyr` with either method.
 
 
+## Step 2: Load a package
 
-
-Let's now focus on the diabetes dataset in its Stata version, and let's remove the other two versions from the Environment. You do this with `remove()` (or `rm()`) which you can use to remove any kind of object from your environemnt, not only data.
+You can then load (open) the package with `library()` so that you can use its functions.
 ```{r}
-# Removing objects from the environment
-remove(ambition)
-rm(syph)
+library(ggplot2)
 ```
+
+You only need to install packages once, but you then need to open it every time you want to use some of its functions. So, when you create a new R script or notebook, you always start with one `library()` call for each package that you will use.
 
 -------------------------------------------------------------------------------
 
 # Data exploration
 
-From now on, you can refer to this dataset by typing the name you gave it: `diab`.
-For example, in order to simply have a look at the dataset:
+For this session we will use a sample dataset called `msleep`.
+
+It contains data on sleep for 83 different mammal species.
+
 ```{r}
-# Option A: view in a separate window (similar to Stata "browse")
-View(diab)
+# Preview of dataset
+msleep
 
-# Option B: view below (similar to Stata "list")
-diab
+# RStudio Viewer
+View(msleep)
 
-# List of variable names
-names(diab)
-```
-```{r}
-# Variable names and data types
-glimpse(diab)
-```
-
-*Exercise*
-Explore the "poo" dataset.
-- How many observations does it contain?
-- How many variables?
-- What are the variables called?
-```{r}
-
+# More information
+help(msleep)
 ```
 
 -------------------------------------------------------------------------------
 
-* Data visualisation with ggplot
+# Data visualisation with `ggplot2`
 
-Package {ggplot} from the {tidyverse} can make stunning graphs – plotting is one of the areas in which R shines.
+Package `ggplot2` can make stunning graphs – plotting is one of the areas in which R shines.
 It works in "layers" separated by `+` signs: you can have a very simple graph with just two layers, or a very complex one with many more.
 Let's start with something simple and work on it.
 
 -------------------------------------------------------------------------------
 
-## Histograms
- 
+## Bar charts
+
+Bar charts are useful to visualise frequencies of a categorical variable, such as diet type in our dataset (`vore`). (Say NO to pie charts!)
+
+They are made by using `geom_bar()`. This is how to make a basic bar chart in `ggplot2`:
 ```{r}
-# A simple ggplot histogram
-ggplot(diab, aes(bmi)) +        # dataset and variable to plot
-  geom_histogram()              # type of graph
+# You start with the dataset and variable to plot
+ggplot(msleep, aes(x = vore)) +
+  # You then add the type of graph
+  geom_bar()
 ```
 Let's break this code down.
-`ggplot()` is the base function: it needs as arguments the dataset and the numerical variable that will be on your x-axis. aes() stands for "aesthetics", and basically means what we want to appear on the graph.
-`geom_histogram` is the geometry function: it specificies that we want the variable above to be represented in a histogram.
-A `+` sign links the base function with the geometry function.
+* `ggplot()` is the base function: it needs as arguments:
+ - the dataset name (`msleep`)
+ - `aes()` stands for "aesthetics", and basically means what we want to appear on the graph. `x = vore` means that we want variable `vore` to be plotted on the x-axis.
+* `geom_bar` is a geometry function: it specifies that we want the variable above to be represented in a bar chart.
+* The `+` sign links the base function with the geometry function.
+
+Note that code can span over more than one line - it makes it more readible.
+
+### Bugs 
+
+Computers take your instructions very literally, so tiny mistakes can easily break some code.
+
+*Debugging exercise*
+This chunk won't execute. Can you spot the *three* bugs that break the code, and fix them?
+
+```{r exercise2}
+ggplot(msleep, aes(x = Vore)
+  geom_bar()
+```
+(Hint: RStudio will *sometimes* help with some of these bugs. Look at the left of the chunk. Sometimes the advice can actually be misleading, so take with a pinch of salt).
 
 *Exercise*
-Make a histogram of another variable of your choice.
-```{r}
+Visualise the conservation status of the mammals in this dataset with a bar chart.
+Hint: you can run the dataset name if you don't know what the variables are called.
+```{r exercise1}
 
 ```
 
-Now let's add a title and rename the axes. You do this by adding another `+` sign and then the `labs()` function. Let's also reduce the number of bins to 10, by adding this as an argument in the geom_histogram() function.
-```{r}
-ggplot(diab, aes(bmi)) +
-  geom_histogram(bins = 10) +                      # how many bins
-  labs(title = "Body Mass Index distribution",     # title
-       x = "BMI (kg/m²)",                          # legend
-       y = "Frequency")
-```
-
-*Exercise*
-This chunk won't execute. Can you spot the *four* bugs that break the code, and fix them so that you can have a histogram _with a title_?
-(Hint: RStudio will help with some of these bugs. Look at the left of the chunk).
-```{r bugs}
-ggplot(diab, aes(height))
-  geom_histogram() 
-  labs(title = "Height distribution"
-       x = "Height (cm)",
-       y = "Frequency"
-```
-
-
-
-{ggplot2} lets you customise your graphs in a lot of detail. For example, let's now:
-* stratify by a categorical variable: physical exercise. We do this by adding a `fill` argument to the aes();
-* change the bins so that each has a width of 2. We do this by chaning the `bins` argument to `binwidth`;
-* add some vertical lines to highlight the BMI categories. We do this by adding a `geom_vline()` layer.
-
-*Exercise*
-a. run this chunk as-is.
-b. change `fill` with `colour`. What happens?
-c. make bins wider.
-d. add another vertical line at BMI 20.
-```{r}
-ggplot(diab, aes(bmi, fill = exercise)) +                       # stratify
-  geom_histogram(binwidth = 2) +                                # width
-  labs(title = "Body Mass Index distribution according to exercise frequency",
-       x = "BMI (kg/m²)",
-       y = "Frequency") +
-  geom_vline(xintercept = c(18.5, 25, 30), linetype = "dashed") # vertical lines
-```
- In order to `save` this graph, you can right click on it -> "Save image as...".
+### Colour as decoration
  
-*Recap exercise*
-- Make a new histogram of a continuous variable of your choice, in how many bins you want, stratified by a categorical variable of your choice.
-- Rename your axes appropriately
-- Save your beautiful pooled histogram on your computer.
+We can build on these simple graphs by adding some optional arguments.
+ 
+For example, let's change the fill colour from the default gray.
+ 
+```{r histogram3}
+ggplot(msleep, aes(x = vore)) +
+  geom_bar(fill = "darkgreen")
+```
+
+### Colour that conveys information
+
+However colour can also be use to convey information - for example, to stratify a plot by a categorical variable.
+
+To do this, we add `fill` to the `aes()` function, rather than keeping it outside of it, and we link it to a variable name, rather than to a specific colour. This will also add a legend.
+
+```{r histogram3}
+ggplot(msleep, aes(x = vore, fill = conservation)) +
+  geom_bar()
+```
+
+
+### Changing value labels
+
+We can further customise the graph by adding more *layers*: you add a `+` at the end of a line and then add more functions.
+
+For example, let's change the value labels for the categorical variables so that they are more easily understandable.
+
+- in the axes, by using `scale_x_discrete()`;
+- in the `fill` legend, by using `scale_fill_discrete()`.
+
+```{r}
+ggplot(msleep, aes(x = vore, fill = conservation)) +
+  geom_bar() +
+  scale_x_discrete(labels = c("carni" = "Carnivore",
+                              "herbi" = "Herbivore",
+                              "insecti" = "Insectivore",
+                              "omni" = "Omnivore")) +
+  scale_fill_discrete(labels = c("cd" = "conservation-dependent",
+                                 "en" = "endangered",
+                                 "lc" = "least concern",
+                                 "nt" = "near threatened",
+                                 "vu" = "vulnerable"
+                                 ))
+```
+
+*Exercise*
+Now create the opposite bar chart: get count numbers for conservation, stratified by diet type.
 ```{r}
 
 ```
 
 -------------------------------------------------------------------------------
+
+## Histograms
+
+Histograms are helpful when we want to check the distribution of a continuous variable - for example, hours of sleep.
+
+The simplest histogram we can draw with `ggplot2` is this:
+ 
+```{r histogram1}
+ggplot(msleep, aes(x = sleep_total)) +
+  geom_histogram()
+```
+### Bins
+
+A histogram is similar to a bar chart, but it first needs to cut the continuous variable into "bins". By default, `geom_histogram()` uses 30 bins, but you can customise it by adding a `bins =`value. Or you can say how wide each bin should be, with `binwidth =`.
+
+```{r}
+ggplot(msleep, aes(x = sleep_total)) +
+  geom_histogram(bins = 10)
+```
+
+
+### Labels
+
+Now let's add a plot title and rename the axes.
+
+You do this by adding another `+` sign and then the `labs()` function - which can include a `title =`, `x =`, `subtitle =`, `caption =`...
+
+```{r histogram2}
+ggplot(msleep, aes(x = sleep_total)) +
+  geom_histogram() +
+  labs(title = "Daily hours of sleep among 83 mammal species",
+       x = "Sleep duration (h)")
+```
+ 
+*Exercise*
+
+- Make a new histogram of a continuous variable of your choice.
+- Change the number of bins.
+- Rename the x-axis appropriately.
+- Add a title.
+
+Hint: do it layer by layer, so that if it doesn't work, you can try and fix it more easily, before making it very complex.
+```{r}
+# Dataframe and variable
+
+# Graph type and bins
+
+# Labels for x-axis and title
+
+```
+
+-------------------------------------------------------------------------------
+
 
 ## Scatterplots
 
 You can plot two continuous variables against each other in a scatterplot.
 The function is `geom_point()`; a basic scatterplot is made this way:
 ```{r}
-ggplot(diab, aes(exercise_weekly, bmi)) +               # axes
-  geom_point()                                          # scatterplot
+ggplot(msleep, aes(x = sleep_total, y = sleep_rem)) +
+  geom_point()
 ```
 
 *Exercise*
@@ -219,76 +239,56 @@ Add a title and rename the axes on the scatterplot above.
 ```
 
 
-We can also stratify by a categorical variable thanks to the `colour` aesthetic:
+We can also stratify by a categorical variable thanks to the `colour` aesthetic.
 ```{r}
-ggplot(diab, aes(exercise_weekly, bmi)) +
-  geom_point(aes(colour = gender)) +                # stratify by gender
-  labs(
-    title = "Physical exercise and BMI",
-    subtitle = "Imaginary data from a study that never happened",
-    x = "Weekly physical exercise (minutes)",
-    y = "Body Mass Index (kg/m²)",
-    colour = "Gender"                               # label legend title
-  )
+ggplot(msleep, aes(x = sleep_total, y = sleep_rem)) +
+  geom_point(aes(colour = vore))
 ```
 
 *Exercise*
-Stratify by `diabetes`, using a `shape` aesthetic.
+Show different diet types (`vore`) with different *shapes*, rather than different colours.
 ```{r}
 
 ```
 
-We can also fit a linear regression line with its confidence intervals with `geom_smooth()`, and change the overall layout colour scheme:
+### More customisation
+
+`ggplot2` allows you to customise your graphs to a great extent. 
+
+Run this chunk and then try to understand what each line does. 
 ```{r}
-ggplot(diab, aes(exercise_weekly, bmi)) +
-  geom_point(aes(shape = diabetes, colour = gender)) +
-  geom_smooth(method = "lm") +                           # regression line
-  labs(
-    title = "Physical exercise and BMI",
-    subtitle = "Imaginary data from a study that never happened",
-    x = "Weekly physical exercise (minutes)",
-    y = "Body Mass Index (kg/m²)",
-    shape = "Diabetes",
-    colour = "Gender"
-  ) +
-  theme_bw() +                                            # layout colour
-  scale_colour_brewer(palette  = "Dark2")                 # point colours
-```
-
--------------------------------------------------------------------------------
-
-## Bar charts
-
-Bar charts are made by using `geom_bar()`. This is how to make a basic bar chart with ggplot:
-```{r}
-ggplot(diab, aes(religion)) +
-  geom_bar()
-```
-
-*Exercise*
-Run the following chunk, compare the graph with the previous one, and try to dissect the code to understand what each bit does.
-```{r}
-ggplot(drop_na(diab, religion), aes(fct_infreq(religion))) +
-  geom_bar(aes(fill = continent)) +
-  labs(title = "Religion and continent of origin",
-       subtitle = "A colourful bar chart of dubious usefulness",
-       x = "Religion",
-       y = "Frequency") +
-  theme_minimal() +
-  scale_fill_brewer(palette = "Set2")
+  ggplot(msleep, aes(x = sleep_total, y = sleep_rem)) +
+  geom_smooth(method = "lm", colour = "darkgrey", linetype = "dashed") +
+  geom_point(aes(shape = vore, colour = conservation)) +
+  labs(title = "Relationship between total and REM sleep duration",
+       subtitle = "Among 83 mammal species",
+       x = "Daily hours of sleep",
+       y = "Daily hours of REM sleep",
+       colour = "Conservation\nstatus",
+       shape = "Diet type",
+       caption = "Data: Savage & West 2007, 'A quantitative, theoretical framework for understanding mammalian sleep'"
+       ) +
+  theme_bw() +
+  scale_colour_brewer(palette  = "Dark2")
 ```
 
 -------------------------------------------------------------------------------
 
 ## Saving a plot
 
-In order to save the last plot, you use `ggsave()`. You can save to pdf, jpeg, png, svg, and other formats, and you can change height and width.
+You can save a plot with function `ggsave()`. You need to specify the name of the file and its extension.
+By default, it will save:
+- the last plot you've generated
+- into the current directory (i.e. the same directory as this .Rmd file).
 ```{r}
-ggsave("rel_continent.png")
+ggsave("REM_mammals_scatterplot.png")
 ```
+You can save to pdf, jpeg, png, svg, and other formats, and you can change height and width. See `help(ggsave)` for more options.
+
+
 -------------------------------------------------------------------------------
 
-## Want more ggplot?
+## Want more `ggplot2`?
 
 I recommend these resources:
 
@@ -297,16 +297,11 @@ I recommend these resources:
 * (Advanced) Data Visualisation with R, by Rob Kabacoff [link](https://rkabacoff.github.io/datavis/)
 * RStudio Data Visualisation Cheat Sheet [link](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf)
 
+
 -------------------------------------------------------------------------------
 
 ## Solutions
 
-```{r bugs solution}
-ggplot(diab, aes(height)) +            # a + was missing
-  geom_histogram() +
-  labs(title = "Height distribution",
-       x = "Height (cm)",              # a comma was missing
-       y = "Frequency")                # replaced comma with )
-```
+
 
 -------------------------------------------------------------------------------

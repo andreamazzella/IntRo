@@ -1,397 +1,310 @@
 ---
-title: "3: Summarising data"
+title: "3A: Subsetting data"
 subtitle: "Introduction to R"
 author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
-output: html_notebook
 ---
 
 -------------------------------------------------------------------------------
 
 # What you will learn
 
-* Pipes
- - Exposition pipe: `%$%`
- - Forward pipe: `%>%`
- 
-* Data summarisation
- - Categorical variables
- - Continuous variables
- - Grouped summaries with {dplyr}
-
-* Subsetting a dataset with {dplyr}
+* Data subsets with `dplyr`
  - Filtering rows
  - Selecting columns
+ 
+* Conditions in R
+ 
+* Pipes
+ - `|>`
 
 -------------------------------------------------------------------------------
 
-```{r}
-# Install new packages
-install.packages("magrittr")
-install.packages("summarytools")
-# install.packages("epiDisplay") # install this if you have problems with {summarytools}
-```
 
 ```{r}
 # Load packages
-library("haven")                 # read .dta files
-library("magrittr")              # provides %$% pipe
-library("summarytools")          # better tables
-library("tidyverse")             # %>% pipe and much more
-options(digits = 2, scipen = 10) # reduce signif digits and scientific notation
+library(dplyr)
+library(ggplot2)
 ```
 
-NB: there seems to be an issue with summarytools on Mac computers. If this happens to you, try this solution: https://community.rstudio.com/t/problem-in-installing-summary-tools-package-in-mac/38387. If you still can't work it out, install and load package "epiDisplay" instead, it has similar tabulation functions.
+*Want to know more?*
+Conflict between packages: if two packages contain two functions with the same name, R will use the function from the package that you loaded last. If you want to force R to use the function from a specific package, you can preface the function with `packagename::`. For example, `dplyr::filter(...)` will tell R to specifically use the `filter()` function from `dplyr` (and not the one from `stats`).
 
-Let's import the diabetes dataset. The `read_dta()` function is part of package "haven".
+
+-------------------------------------------------------------------------------
+
+# Data subsets with `dplyr`
+
+`dplyr` is a package that makes manipulating data easier.
+
+In this session we'll focus on two main tasks for which this package is helpful: reducing rows (`filter()`) and reducing columns (`select()`). We'll continue to use dataset `msleep` from last session.
+
+## Filter rows
+
+Sometimes you don't need to use all the observations (rows) in your dataset, but only a group of those: for example, you might want to plot sleep duration only among herbivores.
+
+The function `filter()` lets you do just that: it filters your dataset according to a condition.
+Its first argument is the dataset name, just like function `ggplot()`.
+Its second argument is a condition.
+
 ```{r}
-# Import and label
-dm <- read_dta("data/diabetes.dta") %>% mutate_if(is.labelled, as_factor)
-
-# Preview the first 10 rows and columns
-dm
+# Only keep herbivores
+filter(msleep, vore == "omni")
+# note that it's a double = sign!
 ```
+
+Note that now there are only 32 rows (down from 83) because all non-herbivores were excluded.
+
+This is a temporary change. `msleep` stayed the same:
+```{r}
+msleep
+```
+
+If you want to keep a copy of a filtered dataset, you need to assign it a name.
+```{r}
+msleep_herbi <- filter(msleep, vore == "herbi")
+```
+
+
+You can use filtered data in a plot: you simply replace the dataset name with the new filtered dataset as the first `ggplot()` argument.
+
+```{r}
+# Plotting all mammals
+ggplot(msleep,
+       aes(sleep_rem, awake, colour = vore)) + geom_point()
+
+# Plotting only herbivores
+ggplot(filter(msleep, vore == "herbi"),
+       aes(sleep_rem, awake, colour = vore)) + geom_point() +
+  scale_colour_manual(values = "#7CAE00") + coord_cartesian(xlim = c(0, 6.5), ylim = c(4, 22)) # this line will make the two graphs more comparable
+```
+
+Common conditions in R:
+`==` (NB: *two* equal signs) - can be used for numbers or text.
+`!=`: different than - can be used for numbers or text.
+`>`, `<`, `>=`, `<=` like in maths.
+`is.na()` - is this a missing value?
+`!is.na()` - is this a non-missing value?
+`%in% c(3, 7)` - is this value present in this list?
+
+For example, we can use `!is.na()` to only keep observation with non-missing sleep cycle data:
+```{r}
+filter(msleep, !is.na(sleep_cycle))
+```
+
+
+You can also filter on more than one condition; for example, you might want to only filter herbivores that sleep more than 15 hours a day.
+```{r}
+filter(msleep, vore == "herbi" & sleep_total > 15)
+```
+
+Linking two conditions:
+`&`: and. The overall condition will be TRUE only if both conditions are TRUE.
+`|`: or. The overall condition will be TRUE if either condition is TRUE.
+
+*Exercise*
+Filter domesticated mammals that weight more than 50 kg. Which are they?
+
+```{r filter}
+filter(msleep, conservation == "domesticated" & bodywt > 50)
+```
+
+*Exercise*
+Make a bar chart of diet type, but only for mammals whose brain weighs less than 50 grams.
+
+```{r}
+ggplot(msleep, aes(vore)) + geom_bar()
+
+ggplot(filter(msleep, brainwt < 50/1000), aes(vore)) + geom_bar()
+```
+
+
+-------------------------------------------------------------------------------
+
+## Select columns
+
+Function `select()` keeps only certain variables (columns), and removes the rest. The first argument is (again) the dataset name. All the other arguments are the names of the variables we want to keep.
+
+Imagine we wanted a dataset containing only information about mammal `name` and `order`:
+
+```{r}
+select(msleep, name, order)
+```
+
+We can add as many variables as we need.
+
+*Exercise*
+Select only variables with brain and body weight, as well as mammal name.
+```{r select}
+select(msleep, name, brainwt, bodywt)
+```
+
+
+
+There are a number of functions to help us select more efficiently; for example, `starts_with()`:
+```{r}
+msleep |> select(name, starts_with("sleep"))
+```
+
 
 -------------------------------------------------------------------------------
 
 
 # Pipes
 
-In the chunk above you might have noticed a weird `%>%`. What was that?
+In the chunk above you might have noticed a weird `|>`. What was that?
 
-"Pipes" are operators that make your code quicker to write and easier to read.
-They're *optional*: base R doesn't have them.
-We're going to use two pipes: `%$%` and `%>%`.
+## `|>` pipe
 
-## %$% pipe
+The "native" R pipe is `|>`. It makes your code quicker to write and most importantly, easier to read.
 
-You will remember that `data$variable1` subsets the variable called "variable1" from the dataset "data".
+The `|>` does this:
+1. It takes what's on its left hand-side
+2. It moves it inside the brackets in the function on its right hand-side
+3. It adds a comma.
+
+Examples:
+
 ```{r}
-dm$diet
+# Code with the pipe
+msleep |> filter(order == "Primates")
+
+# Code without the pipe
+filter(msleep, order == "Primates")
+```
+In the chunk above, the `|>` pipe takes `msleep` and shifts it inside `filter()`, in first position, and then adds a comma.
+It effectively makes `msleep` the first argument of `filter()`.
+
+You might think that it's not particularly helpful in this case. However, it can simplify more complex code - for example, think about doing plots with an intermediate subsetting step. You have three options which produce the same result.
+
+*Don't* run the chunk: focus on the syntax.
+```{r}
+# Option 1: nested functions
+ggplot(filter(msleep, vore == "herbi"), aes(sleep_rem, awake, colour = vore)) +
+  geom_point()
+
+# Option 2: intermediate assignment
+msleep_herbi <- filter(msleep, vore == "herbi")
+ggplot(msleep_herbi, aes(sleep_rem, awake, colour = vore)) +
+  geom_point()
+
+# Option 3: piping
+msleep |> 
+  filter(vore == "herbi") |> 
+  ggplot(aes(sleep_rem, awake, colour = vore)) +
+  geom_point()
+```
+An explanation of the code above.
+1. Make a plot of a filtered version of `msleep`. This makes code more difficult to read - you don't immediately understand which dataset is being plotted.
+2. Create a new object called `msleep_herbi` and make it a filtered version of `msleep`. Then make a plot of `msleep_herbi`. This is clearer, but you risk ending up with a very busy Environment if you create a lot of new objects.
+3. You take `msleep` *and then* you `filter()` it, *and then* you use that in a `ggplot()`.
+
+*Exercise*
+Rewrite this command using a pipe.
+```{r}
+# Code without a pipe
+select(msleep, name)
+
+# Code with a pipe
+
 ```
 
-We use this when a function requires a variable (and not the whole dataset); for example, if we want to get the frequencies, we can use the syntax below.
+*Exercise*
+Rewrite this command without the pipe.
 ```{r}
-table(dm$diet)
+msleep |> filter(awake > 21)
 ```
 
-The `%$%` pipe, from package magrittr, takes what's on its left (usually, the dataset name) and moves it inside the function, before each argument, and adds a `$` in between. It lets you avoid typing the dataset name and `$` twice, and it makes the true arguments of the function stand out.
+
+You can combine `select()` and `filter()` by piping. For example, you might want to only focus on weight information for animals with missing `conservation` data. 
+```{r}
+msleep |>
+  filter(is.na(conservation)) |> 
+  select(name, ends_with("wt"))
+```
+
+-------------------------------------------------------------------------------
+
+*Recap exercise*
+1. Create a new dataset called `sleepy` containing only data on genus and order - just for insectivores who sleep at least 9 hours per day.
+2. How many mammals satisfy these filters?
+3. Which animal orders do they belong to?
+```{r recap}
+msleep |>
+  filter(vore == "insecti" & sleep_total >= 13) |>
+  select(name, genus, order)
+```
+
+-------------------------------------------------------------------------------
+
+## When you can't use the native pipe
+
+All packages in the `tidyverse` (`ggplot2`, `dplyr`, `tidyr`) and many others use this philosophy - the first argument of a function that uses data as input should be the dataset name. When this happens, you can use the pipe syntax.
+
+Unfortunately, many R functions don't follow this philosophy.
+
+For example, the function for linear regression, `lm()`, requires the formula as a first argument, and data as the second. You can't use the `|>` pipe for this.
+
+Another example is the `table()` function. If you want to have a 2x2 table, its arguments need to be the columns as identified by the `$` operator, for example, `table(msleep$conservation, msleep$vore)`. This means that you can't use the native pipe: `msleep |> table(conservation, vore)` would transform into `table(msleep, conservation, vore)` which is not what the `table()` function is expecting.
+
+
+-------------------------------------------------------------------------------
+
+## Other pipes
+
+
+You will sometimes see other pipes. The two more common ones are:
+- `%>%` - in most circumstances it works the same as `|>`. It's very popular because it was created before `|>`.
+- `%$%` - this is the equivalent of `|>` for functions that require columns to be identified with `$`.
+
+I don't think it's important to know more about these pipes at this stage.
+
+*But if you're a keen bean and want to know more...*
+
+### `%>%` pipe
+
+`%>%` is originally from package `magrittr` but it's also loaded whenever you use any `tidyverse` package.
+
+It is slightly more flexible than `|>` because it can also push what's on the left to arguments of the function on the right *that are not in the first position* - you indicate the exact position with a place-holding dot.
+
+```{r}
+# Base R
+lm(sleep_rem ~ brainwt, data = msleep)
+
+# Pipe
+msleep %>% lm(sleep_rem ~ brainwt, data = .)
+```
+
+
+### `%$%` pipe
+
+You might remember the `$` operator, which extracts a variable from a dataset: `data$variable1` subsets the variable called `variable1` from the dataset `data`.
+```{r}
+msleep$vore
+```
+
+We use this syntax when a function requires a variable (and not the whole dataset); for example, if we want to get the frequencies, we can use the syntax below.
+```{r}
+table(msleep$vore)
+```
+
+The `%$%` pipe, from package `magrittr`, takes what's on its left (usually, the dataset name) and moves it inside the function, before each argument, and adds a `$` in between. It lets you avoid typing the dataset name and `$` twice, and it makes the true arguments of the function stand out.
 It's particularly useful when a function uses multiple variables, because otherwise you would need to specify which dataset is each variable from – this would quickly become verbose.
 The two commands below generate the same output.
 ```{r}
 # Without a pipe (= base R)
-table(dm$diet, dm$exercise)
+table(msleep$conservation, msleep$vore)
 
 # With the %$% pipe
-dm %$% table(diet, exercise)
-```
-
-*Exercise*
-Rewrite the following code using %$%.
-```{r ex1}
-# Mean height
-mean(dm$height)
-
-# With a %$%
-
-```
-
-
-
-# %>% pipe
-
-The `%>%` takes what's on the left and it moves it inside the brackets on the right, and follows it with a comma.
-It's really helpful to avoid using too many nested functions, or assigning too often. There's a keyboard shorcut for it: *Ctrl + Shift + M* (on Mac: *Cmd + Shift + M*).
-
-These options produce the same output:
-```{r}
-# Nested functions
-log(sqrt(mean(dm$height)))
-
-# Over-assignment
-mean_height <- mean(dm$height)
-root_mean_ht <- sqrt(mean_height)
-log(root_mean_ht)
-
-# Code with %>% pipe
-mean(dm$height) %>% sqrt() %>% log()
-
-# Code with two pipes
-dm %$% mean(height) %>% sqrt() %>% log()
-```
-
-*Exercise*
-Rewrite this chunk in just one line by using two pipes. You can break it down into two steps if you prefer.
-(`aov()` is a function that performs the statistical test ANOVA, analysis of variance), and takes as argument two variables separated by operator ~).
-```{r ex2}
-# ANOVA in base R
-anova1 <- aov(dm$bmi ~ dm$diet)
-summary(anova1)
-
-# ANOVA with two pipes
-
-```
-
-
-So you can also use `%>%` for any function that takes the dataset as its first argument (like all functions in the tidyverse, for example `ggplot()`.
-```{r}
-# Without a pipe
-ggplot(dm, aes(gender)) + geom_bar()
-
-# With a pipe
-dm %>% ggplot(aes(gender)) + geom_bar()
+library(magrittr)
+msleep %$% table(conservation, vore)
 ```
 
 -------------------------------------------------------------------------------
 
 
-# Data summarisation
-
-`summary()` is a useful function that lets you summarise your entire dataset (or just a single variable)
-
-*Exercise*
-Run the following chunk.
-- What is R doing to each variable?
-- What is the median BMI?
-- How many missing values does the "exercise" variable have?
-```{r}
-summary(dm)
-```
-
-*NB:* this only works if the variables are coded in the correct data classes, so it will not work well with csv datasets without cleaning them first. See `intRo5 clean.Rmd` for how to do this.
-
-## Summarising categorical variables: frequency tables
-
-To tabulate categorical data, we have many options, among which `table()` from base R, `count()` from {dplyr}, `freq()` from package {summarytools}, `tab1()` from {epiDisplay}.
-
-*Exercise*
-Run this chunk and compare the output from those three functions.
-- What's the difference?
-- Which function do you prefer?
-- What does the `useNA` argument do? (Try removing it, run the code again, and see what happens)
-```{r}
-# Simple frequency table
-table(dm$gender)
-count(dm, gender)
-freq(dm$gender)
-epiDisplay::tab1(dm$gender, graph = F)
-```
-
-```{r}
-# More complex frequency tables
-table(dm$sexual_orien, useNA = "ifany")
-freq(dm$sexual_orien, report.nas = TRUE, cumul = TRUE)
-```
-
-*Exercise*
-What percentage of all people in this sample has a mild disability?
-```{r ex freq}
-
-```
-
-
-## Summarising categorical variables: cross-tabulation
-
-To make two-way tables you can use
-* `table()` from base R, but it doesn't calculate percentages for you.
-* `count()` from {dplyr}, but it's in nested rows and doesn't give you percentages.
-* `ctable()` from {summarytools}; it's a very customisable function. 
-* `tabpct()` from {epiDisplay}.
-
-```{r}
-# Base R
-dm %$% table(diet, diabetes, useNA = "ifany")
-
-# Package dplyr
-dm %>% count(diet, diabetes)
-
-# Package summarytools
-dm %$% ctable(diet, diabetes, headings = FALSE, prop = "c", useNA = "no")
-
-# Package epiDisplay
-dm %$% epiDisplay::tabpct(diet, diabetes, graph = F, percent = "col")
-```
-
-You will note that different functions have slightly different ways of doing some things:
-- including or omitting missing values (e.g. useNA in table() and ctable())
-- deciding whether to show column or row percentages/proportions (e.g. prop = "c" or "r" in ctable(), percent = "col" or "row" in tabpct()). 
-
-
-*Exercise*
-What percentage of trans people is atheist?
-Hint: if you can't remember the names of your variables, you can use function `names()`, which takes the dataset name as its argument.
-```{r ex contingency}
-
-```
-
-## Summarising continuous variables
-
-As we've seen previously, to summarise continuous variables, you can use functions `mean()`, `median()`, `sd()` – or you can use `summary()` again:
-```{r}
-mean(dm$weight)
-median(dm$height)
-sd(dm$bmi)
-summary(dm$exercise_weekly)
-```
-
-# Grouped summaries with {dplyr}
-
-What if we wanted to calculate the mean weight according to continent?
-
-We can use two powerful functions from package {dplyr}, part of the {tidyverse}: `group_by()` and `summarise()`. Combined, these two functions collapse the dataset according to a categorical variable, and summarise it with on or more other functions.
-
-```{r}
-dm %>% group_by(continent) %>% 
-       summarise(mean(weight))
-```
-
-We can also summarise more than one variable:
-```{r}
-dm %>% group_by(diabetes) %>% 
-       summarise(mean(height),
-                 median_exercise = median(exercise_weekly, na.rm = T))
-```
-
-And we can group by more than one variable. In these cases it's useful to have a count of individuals in that combination, with `n()`.
-```{r}
-dm %>% group_by(diabetes, diet) %>% 
-       summarise(count = n(),
-                 median_BMI = median(bmi))
-```
-
-You can summarise with any of these functions:
-- `mean()`, `median()`,
-- `sd()`, `IQR()`,
-- `min()`, `max()`,
-- `n()`, `n_distinct()`
-
--------------------------------------------------------------------------------
-
-# Transforming data with dplyr
-
-## Filter rows
-
-Sometimes you don't need to use all the observations (rows) in your dataset, but only a group of those: for example, you might want to check the median height only in women. The function `filter()` lets you do just that: it filters your dataset according to a condition. You can then pipe this into any other function.
-
-```{r}
-# Only keep females
-dm %>% filter(gender == "female")
-# note that it's a double = sign!
-
-# Pipe this filtered dataset into the median() function
-dm %>% filter(gender == "female") %$% median(height)
-```
-
-You can also filter on more than one condition; for example, you might want to only filter underweight women.
-```{r}
-dm %>% filter(gender == "female", bmi < 18.5)
-```
-
-*Exercise*
-Filter Christian men shorter than 170 cm with a mild disability. How many are in our dataset?
-Hint: if you need to check which values are possible in a categorical variable, you can use `levels()`, which takes the variable as an argument.
-```{r filter}
-
-```
-
-
-
-
-`filter()` can be very useful to make graphs with only a subgroup of data. Compare these two pieces of code:
-```{r}
-# Plotting all observations
-dm %>% ggplot(aes(exercise_weekly, bmi)) +
-  geom_point(aes(shape = diabetes, colour = gender)) +
-  geom_smooth(method = "lm")
-
-# Filtering out inactive people
-dm %>% filter(exercise_weekly > 0) %>%
-  ggplot(aes(exercise_weekly, bmi)) +
-  geom_point(aes(shape = diabetes, colour = gender)) +
-  geom_smooth(method = "lm")
-```
-
-*Exercise*
-Create the same scatterplot, but without men.
-```{r scatter}
-# Base scatterplot
-dm %>% ggplot(aes(height, weight)) + geom_point(aes(colour = gender)) + ylim(c(25,125)) + xlim(c(130,200))
-
-# Scatteplot without men
-
-```
-
-
-## Select columns
-
-Function `select()` selects only certain columns (variables). Imagine we wanted a dataset containing only information about ID and height:
-
-```{r}
-dm %>% select(id, height)
-```
-
-We can add as many variables as we need.
-
-*Exercise*
-Select only variables with nutritional information.
-```{r select}
-
-```
-
-You can combine `select()` and `filter()` by piping. For example, you might want to only keep information on exercise and diabetes for Hindu men:
-```{r}
-dm %>% filter(religion == "hindu", gender == "male") %>% 
-  select(id, exercise, exercise_weekly, diabetes)
-```
-
-Note that `filter()` and `select()`, like the other {dplyr} functions, _do not_ change the original dataset permanently. If you want to keep a copy of a transformed dataset, you need to assign it a name.
-```{r}
-dm_overweight <- dm %>% filter(bmi >= 25 & bmi < 30) %>%
-                        select(id, gender, bmi, diabetes)
-```
-
-*Recap exercise*
-1. Create a new dataset called "dm_tall" containing only data on ID, gender, cis/trans, sexual orientation, and religion, only for able-bodied people who are 1.95 metres tall or above.
-2. How many people satisfy these filters?
-3. What are their IDs?
-```{r recap}
-
-```
-
--------------------------------------------------------------------------------
 
 # Solutions
 
-```{r ex2 solution}
-dm %$% aov(height ~ weight) %>% summary()
-```
 
-```{r ex freq solution}
-freq(dm$disability, report.nas = TRUE, cumul = F)
-```
-
-```{r ex contingency solution}
-dm %$% ctable(religion, cistrans, total = FALSE, headings = FALSE, prop = "c")
-```
-
-```{r filter solution}
-dm %>% filter(gender == "male", height < 170, disability == "mild")
-
-```
-
-```{r scatter solution}
-dm %>% filter(gender != "male") %>% ggplot(aes(height, weight)) + geom_point(aes(colour = gender)) + ylim(c(25, 125)) + xlim(c(130,200))
-```
-
-```{r select solution}
-dm %>% select(id, weight, bmi, diet, diabetes)
-```
-
-```{r recap solution}
-dm_tall <- dm %>%
-  filter(disability == "able-bodied", height > 195) %>%
-  select(id, gender, cistrans, sexual_orien, religion)
-
-dm_tall
-```
 
 -------------------------------------------------------------------------------
