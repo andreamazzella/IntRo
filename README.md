@@ -1,7 +1,7 @@
 # IntRo: An introduction to R for epidemiologists
 Markdown notebooks illustrating the basics of R and the tidyverse for Epidemiology & related fields. Simulated health data.
 
-*Where to start*: after installing R and RStudio, download these files (Click "Clone or download", "Download ZIP"), unzip, and open `intRo1 basics.Rmd`.
+*Where to start*: after installing R and RStudio, download these files (Click the green "Code" button, "Download ZIP"), unzip, and open `intRo1 basics.Rmd`.
 
 1. **The basics** (User interface; R Markdown notebooks and R scripts; assignment (`<-`); using functions and datasets)
 2. **Data visualisation** (Using packages; basics of {ggplot2} for histograms, scatterplots, and bar charts)
