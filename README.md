@@ -3,10 +3,10 @@ Markdown notebooks illustrating the basics of R and the tidyverse for Epidemiolo
 
 *Where to start*: after installing R and RStudio, download these files (Click "Clone or download", "Download ZIP"), unzip, and open `intRo1 basics.Rmd`.
 
-1. **The basics** (User interface; R Markdown notebooks and R scripts; assignment; using functions and datasets)
-2. **Data import and visualisation** (Using packages; data import with csv/xls/dta; basics of {ggplot2} for histograms, scatterplots, and bar charts)
-3. **Data summarisation** (summarising continuous and categorical variables; subsetting data; `%>%` and `%$%` pipes)
-4. **Data manipulation and export** (basics of {dplyr}: calculate new variables, categorise continuous variables, regroup a categorical variable; `%<>%` pipe)
+1. **The basics** (User interface; R Markdown notebooks and R scripts; assignment (`<-`); using functions and datasets)
+2. **Data visualisation** (Using packages; basics of {ggplot2} for histograms, scatterplots, and bar charts)
+3. **Data subsetting** (filtering rows and selecting columns with {dplyr}; `|>`, `%>%`, and other pipes)
+4. **Data manipulation and export** (basics of {dplyr}: calculate new variables, categorise continuous variables, regroup a categorical variable)
 5. **Data cleaning** (deleting and renaming variables; data classes; factors; labelling and recoding values)
 6. **Data analysis of continuous outcomes** (data visualisation; t-test; linear regression)
 
