@@ -2,7 +2,6 @@
 title: "6: Analysing continuous outcomes"
 subtitle: "Introduction to R"
 author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
-output: html_notebook
 ---
 
 -------------------------------------------------------------------------------
@@ -17,8 +16,8 @@ output: html_notebook
 -------------------------------------------------------------------------------
 
 ```{r}
-library("magrittr")
-library("tidyverse")
+library(magrittr)
+library(tidyverse)
 options(scipen = 99, digits = 2)
 ```
 

@@ -1,0 +1,174 @@
+---
+title: "5: Data cleaning"
+subtitle: "Introduction to R"
+author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
+---
+
+-------------------------------------------------------------------------------
+
+# What you will learn
+
+Join multiple datasets
+- Adding rows
+- Adding columns
+
+Reshape a dataset
+
+
+
+-------------------------------------------------------------------------------
+
+```{r}
+library(readr)
+library(dplyr)
+library(tidyr)
+```
+
+```{r}
+dat <- tribble(
+    ~id, ~age, ~pcr, ~hb_1, ~hb_2,
+        1, 65, "neg", , "neg",
+        2, 21, "pos", "neg", "neg",
+        3, 57, "pos", "pos", "neg",
+        4, 84, "neg", "neg", "pos",
+        5, 75, "neg", "pos", "neg"
+        )
+
+dat2 <- tibble(
+  id = 1:5,
+  gender = sample(c("f", "m"), replace = T, size = 5),
+  age = c(63, 81, 73, 75, 86),
+  creat = c(55, 47, 54, 77, 241)
+) |> 
+  mutate(
+    creat_2 = creat + rnorm(n = 1, mean = 12, sd = 4) |> round()
+  )
+
+dat2
+```
+
+```{r}
+antib_A <- dat |> select(-IgM) |> filter(id < 4)
+ren <- dat2 |> select(-creat_2) |> filter(id < 4)
+ren
+```
+
+```{r}
+antib_B <- dat |> select(-IgM) |> filter(id > 3)
+ren_more_pts <- dat2 |> select(-creat_2) |> filter(id >3 )
+ren_more_pts
+```
+
+```{r}
+antib_2 <- dat |> select(id, IgM) |> filter(id < 4)
+ren_yr2 <- dat2 |> select(id, creat_2) |> filter(id != 5) |> bind_rows(tibble(id = 6, creat_2 = 21))
+ren_yr2
+```
+
+
+-------------------------------------------------------------------------------
+
+# Joining data
+
+Often we don't get all the data in a single dataset - we need to join data from different files.
+
+This can be either because there are *more observations* (extra rows), or because there are *more variables* (extra columns), or both.
+
+
+-------------------------------------------------------------------------------
+
+## Joining extra rows
+
+Suppose we have some initial data on serum creatinine levels in a group of outpatients.
+```{r}
+# TODO: add read_csv(...)
+ren
+```
+
+The PI decides to extend recruitment and you're sent a new dataset that only contains the new observations. Note that there are overlapping columns.
+
+```{r}
+ren_more_pts
+```
+
+We now need to combine these two datasets into one.
+
+`bind_rows()` from package `dplyr` can do that. It takes as arguments the two datasets.
+
+```{r}
+ren_all_pts <- bind_rows(ren, ren_more_pts)
+ren_all_pts
+```
+
+This function works even if there is not complete column overlap - but in that case some missing values will be generated.
+
+
+-------------------------------------------------------------------------------
+
+## Join extra columns
+
+Now imagine that these patients have been followed up for a year and their creatinine levels were measured again.
+
+You have this data in a new dataset:
+```{r}
+ren_yr2
+```
+
+Note that:
+1. Both datasets share a unique `id` variable;
+2. the patient with id 5 is not present in this dataset (they did not attend the follow-up appointment), so another participant was recruited (id 6) and their demographics were recorded.
+
+We now need to decide how to join these two datasets.
+
+Options:
+1. Only include participants from the original dataset, with their updated creatinine measurements. `left_join()`.
+
+
+
+```{r}
+left_join(ren_all_pts, ren_yr2, by = "id")
+```
+
+
+
+```{r}
+right_join(ren_all_pts, ren_yr2, by = "id")
+```
+
+
+
+```{r}
+full_join(ren_all_pts, ren_yr2, by = "id")
+```
+
+
+
+
+```{r}
+inner_join(ren_all_pts, ren_yr2, by = "id")
+```
+
+
+
+-------------------------------------------------------------------------------
+
+# Reshape data
+
+
+-------------------------------------------------------------------------------
+
+## Pivot longer
+
+
+-------------------------------------------------------------------------------
+
+## Pivot wider
+
+
+
+-------------------------------------------------------------------------------
+
+
+
+
+

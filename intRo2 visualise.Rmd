@@ -1,5 +1,5 @@
 ---
-title: "2: Data import and visualisation"
+title: "2: Data visualisation"
 subtitle: "Introduction to R"
 author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 ---
@@ -14,7 +14,7 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 
 * Data visualisation with `ggplot2`
  - Bar charts
- - Histograms
+ - Box plots
  - Scatterplots
  - Saving a plot
 
@@ -50,7 +50,7 @@ You only need to install packages once, but you then need to open it every time 
 
 # Data exploration
 
-For this session we will use a sample dataset called `msleep`.
+For this topic, we will use a sample dataset called `msleep`.
 
 It contains data on sleep for 83 different mammal species.
 
@@ -170,55 +170,72 @@ Now create the opposite bar chart: get count numbers for conservation, stratifie
 
 -------------------------------------------------------------------------------
 
-## Histograms
+## Box plots
 
-Histograms are helpful when we want to check the distribution of a continuous variable - for example, hours of sleep.
+Box plots are helpful to compactly display the distribution of a continuous variable. The ggplot2 function is `geom_boxplot()`.
 
-The simplest histogram we can draw with `ggplot2` is this:
- 
-```{r histogram1}
-ggplot(msleep, aes(x = sleep_total)) +
-  geom_histogram()
+In its simplest form, you have a single Box plot. For example, we can display the distribution of hours of sleep (regardless of animal type):
+
+```{r boxplot1}
+ggplot(msleep, aes(y = sleep_total)) +
+  geom_boxplot()
 ```
-### Bins
 
-A histogram is similar to a bar chart, but it first needs to cut the continuous variable into "bins". By default, `geom_histogram()` uses 30 bins, but you can customise it by adding a `bins =`value. Or you can say how wide each bin should be, with `binwidth =`.
+A Box plot shows:
 
-```{r}
-ggplot(msleep, aes(x = sleep_total)) +
-  geom_histogram(bins = 10)
+1. The thick _central line_ indicates the _median_
+2. The _lower and upper hinges_ indicate the _25th and 75th percentile_ respectively - so the distance between them is the interquartile range (IQR)
+3. The _upper whisker_: extends to the largest value no further than _1.5×IQR_ from the hinge
+
+If there are any data points that are beyond the whiskers, they will be individually displayed as _dots_.
+
+
+### Stratified Box plots
+
+However, Box plots are more helpful to compare the distribution of a continuous variable across different groups.
+
+For example, we can show how animals of different eating behaviours differ in terms of sleeping duration. 
+
+```{r boxplot2}
+ggplot(msleep, aes(x = vore, y = sleep_total)) +
+  geom_boxplot()
 ```
+
 
 
 ### Labels
 
 Now let's add a plot title and rename the axes.
 
-You do this by adding another `+` sign and then the `labs()` function - which can include a `title =`, `x =`, `subtitle =`, `caption =`...
+You do this by adding another `+` sign and then the `labs()` function - which can include a `title =`, `x =`, and many other arguments.
 
-```{r histogram2}
-ggplot(msleep, aes(x = sleep_total)) +
-  geom_histogram() +
-  labs(title = "Daily hours of sleep among 83 mammal species",
-       x = "Sleep duration (h)")
+```{r labels}
+ggplot(msleep, aes(x = vore, y = sleep_total)) +
+  geom_boxplot() +
+  labs(title = "Eating behaviour and sleep across 83 mammal species",
+       x = "Eating behaviour",
+       y = "Sleep duration (h)")
 ```
- 
+
+
 *Exercise*
 
-- Make a new histogram of a continuous variable of your choice.
-- Change the number of bins.
-- Rename the x-axis appropriately.
+- Make a new boxplot of a continuous variable of your choice.
+- Stratify it by a categorical variable of your choice.
+- Rename the axes appropriately.
 - Add a title.
 
 Hint: do it layer by layer, so that if it doesn't work, you can try and fix it more easily, before making it very complex.
-```{r}
-# Dataframe and variable
 
-# Graph type and bins
+```{r ex}
+# Dataframe and variables
 
-# Labels for x-axis and title
+# Graph type
+
+# Labels
 
 ```
+
 
 -------------------------------------------------------------------------------
 
@@ -260,16 +277,36 @@ Run this chunk and then try to understand what each line does.
   ggplot(msleep, aes(x = sleep_total, y = sleep_rem)) +
   geom_smooth(method = "lm", colour = "darkgrey", linetype = "dashed") +
   geom_point(aes(shape = vore, colour = conservation)) +
+  coord_cartesian(xlim = c(0, 20)) +
   labs(title = "Relationship between total and REM sleep duration",
        subtitle = "Among 83 mammal species",
        x = "Daily hours of sleep",
        y = "Daily hours of REM sleep",
        colour = "Conservation\nstatus",
-       shape = "Diet type",
+       shape = "Eating behaviour",
        caption = "Data: Savage & West 2007, 'A quantitative, theoretical framework for understanding mammalian sleep'"
        ) +
   theme_bw() +
   scale_colour_brewer(palette  = "Dark2")
+```
+
+*Want to learn more?*
+`c()` and vectors
+A "vector" is an ordered list containing objects (of the same data type).
+You create a vector with function `c()` – which stands for "concatenate" or "combine".
+Vectors are often used when we want to apply a function to more than one object, or when the argument of a function needs to contain more than one element.
+```{r}
+# A vector of numbers
+c(6, 7, 8)
+
+# A vector of names
+c("cirrhosis", "fibrosis")
+
+# A function that will apply to each element separately
+log(c(6, 7, 8))
+
+# A function that will summarise all elements of a vector
+mean(c(6, 7, 8))
 ```
 
 -------------------------------------------------------------------------------

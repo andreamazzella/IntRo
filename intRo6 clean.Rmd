@@ -1,0 +1,476 @@
+---
+title: "6: Cleaning data"
+subtitle: "Introduction to R"
+author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
+---
+
+-------------------------------------------------------------------------------
+
+# What you will learn
+
+* Data import/export
+ - `.csv`
+ - `.xlsx`
+ - SAS, SPSS, Stata formats
+
+* Data cleaning
+ - Messy & dirty data
+ - Delete variables
+ - Rename variables
+ - Data classes
+ - Label categorical values
+ - Recode categorical values
+ - Relevel categorical values
+
+-------------------------------------------------------------------------------
+
+```{r}
+library(readr)  # to import various data file formats
+library(readxl)    # to import Excel spreadsheets
+library(janitor)
+library(lubridate) # dealing with dates
+library(magrittr)  # %$% pipe
+library(dplyr)     # data wrangling (part of the tidyverse)
+library(ggplot2)   # graphs
+library(forcats)   # dealing with factors
+```
+
+-------------------------------------------------------------------------------
+
+
+# Data import
+
+In the previous topic, we've worked on the `diabetes.rds` dataset, which we imported with function `readRDS()`.
+
+Now imagine that data collection has progressed, and now there are some new variables.
+
+Unfortunately Bradley, the PI, thought it was a good idea to ask for the data collection to be done in Excel.
+
+Usually, each file format requires a specific function; for example:
+
+- Excel: `read_excel()` from package `readxl`
+- `.csv`: `read_csv` from package `readr` (or `read.csv` for base R).
+- SAS, SPSS, and Stata formats with package `haven`
+
+Now let's import this new dataset, `Diabetes_new_Brad_FINAL.xlsx`, and compare it with the old one.
+
+```{r}
+dm_new <- read_excel("data/Diabetes_new_Brad_FINAL.xlsx")
+
+# Old dataset
+dm_old <- readRDS("data/diabetes.rds")
+```
+
+
+*Exercise*
+Insert a new chunk below, and use it to import the dataset `bristol.csv`:
+
+
+-------------------------------------------------------------------------------
+
+# Data cleaning
+
+## Exploring messy & dirty data
+
+Unfortunately Bradley hasn't sent us a data dictionary.
+
+Let's explore the new `diab_raw` dataset, along with the old one - for example, you can use `head()`, `summary()`, `View()`...
+
+*Exercise 1*
+How many major differences can you spot between the two summaries below?
+
+```{r}
+# What's happening?
+summary(dm_new)
+
+# Compare with 
+summary(dm_old)
+```
+
+We'll now work on "cleaning" this new dataset, to make it more useful.
+
+-------------------------------------------------------------------------------
+
+## Rename variables
+
+Some variables have unclear, long or upper-case names. Let's rename them so they're easier to understand, or to type.
+
+A helpful function to clean all variable names at once is `clean_names()` from package `janitor`.
+
+```{r}
+names(dm_new)
+
+dm_new <- dm_new |> clean_names()
+
+names(dm_new)
+```
+
+Note that this converted all upper-case letters to lower-case, it changed spaces into underscores, and it replaced triple dots with an `x`. This is a good start.
+
+Now we can make custom changes, in two ways:
+
+* in package `dplyr`, by using function `rename()` and assigning it to our dataset name.
+ - The pattern is `newname = oldname`
+* in base R, by assigning the variable to a new name (you will later need to remove the old variable)
+```{r}
+# dplyr
+dm_new <- dm_new |> rename(id = patient_id,
+                           hypertens = htn,
+                           height = ht,
+                           weight = wt,
+                           chron_heart_dis = chd,
+                           date_birth = date_of_birth)
+
+# Alternative: base R
+# dm_new$height <- dm_new$ht
+
+names(dm_new)
+```
+
+*Exercise 5*
+Rename variable `body_mass_index` with any method you want.
+```{r}
+
+```
+
+-------------------------------------------------------------------------------
+
+## Deleting variables
+
+It looks like `x15`, `x16` and `test_delete` don't contain any data:
+```{r}
+dm_new |> select(x15, x16, test_delete) |> summary()
+```
+
+Let's remove these empty variables from the dataset.
+
+You can do this:
+- in `dplyr`, by using `select()` with a `-` sign before the variables you want to remove;
+- in base R, you technically assign `NULL` to it (note that it's upper-case, and different to `NA`, which is a missing value).
+```{r}
+# dplyr
+dm_new <- dm_new |> select(-c(x15, x16, test_delete))
+
+# base R
+# dm_new$x15 <- NULL
+```
+
+
+
+## Deleting rows
+
+It looks like the first row does not actually contain an observation, so we need to remove it.
+
+*Exercise*
+Remove the first row using `filter()`.
+
+```{r}
+dm_new <- dm_new |> filter(id != "I highlighted in orange the patients who died. -- Brad")
+
+# An alternative
+# dm_new <- dm_new |> slice(-1)
+```
+
+
+-------------------------------------------------------------------------------
+
+## Data classes
+
+One of the main reasons for so many problems with the new dataset is that its *data classes* are not specified.
+
+We know that some variables are categorical, some are ordered, some are quantitative, but Excel or `.csv` files do not hold this information. Certain R functions are designed to work with only specific data classes.
+
+R data classes that are relevant to health data analysis are:
+
+* *factor* (categorical variable)
+* *numeric* (continuous variable)
+ - integer
+ - double (numbers with decimal digits)
+* *date*
+* *character* (letters)
+* *logical* (possible values: `TRUE`, `FALSE`, `NA`)
+
+To check which class an object is, you use `class()`:
+```{r}
+class(3)
+class("Pão de Açúcar")
+class(dm_old$gender)
+class(dm_old$date_birth)
+```
+
+So, after we import a raw dataset, we need to tell R which classes the variables actually are – and we can decide to give labels to categorical variables, to make our lives easier when we're running the analyses.
+
+In base R, the way we change a variable's class is by running a function on the variable and assigning it to the same variable. For example, to change a variable into a character class:
+```{r}
+# Check class before
+class(dm_new$id)
+
+# Change class - dplyr
+dm_new <- dm_new |> mutate(id = as.character(id))
+
+# Base R
+# dm_new$id <- as.character(dm_new$id)
+
+# Check class after
+class(dm_new$id)
+```
+
+-------------------------------------------------------------------------------
+
+### Factors
+
+Categorical variables are stored as factors. Factors have "levels" indicated by integers (1, 2, 3...) and corresponding "labels" which contain text. For example, in a "outcome" variable, level 1 can represent "alive", level 2 can represent "dead".
+
+Functions `as.factor()` and `factor()` change the class into a factor.
+```{r}
+dm_new |> mutate(continent = factor(continent),
+                 diet = factor(continent),
+                 exercise = factor(continent))
+```
+
+
+*Want to learn more?*
+There are faster ways of doing this if you have many columns to change.
+```{r}
+# cat_variables <- c("continent", "diet", "exercise")
+
+# dplyr
+# dm_new <- dm_new |> mutate(across(all_of(cat_variables), factor))
+
+# base R
+# dm_new[cat_variables] <- lapply(dm_new[cat_variables], factor)
+```
+
+-------------------------------------------------------------------------------
+
+
+### Value labels
+
+Some categorical variables can be coded with integers: for example, `0` means "no", and `1` means "yes". This can facilitate data entry (it will reduce typos) but it can be less clear, especially if there are more values.
+
+You assign labels with function `factor()` by specifying which labels correspond to which levels. Note that any levels that you don't label will be trated as `NA`s.
+
+```{r}
+# Check before
+count(dm_new, disability)
+
+# Change to categorical and label values
+dm_new <- dm_new |>
+  mutate(disability = factor(disability,
+                             levels = c(0, 1, 2),
+                             labels = c("able-bodied", "mild", "severe")))
+
+# Check after
+count(dm_new, disability)
+
+# Repeat
+dm_new <- dm_new |>
+  mutate(hypertens = factor(hypertens,
+                            levels = c(0, 1),
+                            labels = c("no", "yes")),
+         chron_heart_dis = factor(chron_heart_dis,
+                                  levels = c(0, 1),
+                                  labels = c("no", "yes")))
+```
+
+*Exercise 4* 
+Now do the same with variable "gender" (1: female, 2: male, 3: non-binary)
+```{r}
+
+```
+
+-------------------------------------------------------------------------------
+
+### Dates
+
+Dates are usually imported as character strings; we need to tell R they're, in fact, dates. Remember function `dmy()` from package `lubridate`? It transforms dates stored in any day-month-year format into the correct date class.
+```{r}
+# Summary before
+summary(dm_new$)
+class(dm_new$DOB)
+
+# Change to date format
+dm_new$DOB <- dmy(dm_new$DOB)
+
+# Summary after
+summary(dm_new$DOB)
+class(dm_new$DOB)
+```
+As you can see, after telling R what the correct class is, it can summarise the variable in a much more meaningful way.
+
+-------------------------------------------------------------------------------
+
+
+
+-------------------------------------------------------------------------------
+
+## Recoding values 
+
+Now let's have a look at variable "diabetes".
+```{r}
+dm_new |> count(diabetes)
+```
+It looks like there two "0" values were mistyped as "0-". Let's fix this with `recode()`, and let's make it a factor variable.
+
+```{r}
+# Change a single value: with dplyr
+dm_new <- dm_new |> mutate(diabetes = recode(diabetes, "0-" = "0") |>
+                                      factor(levels = c(0, 1),
+                                             labels = c("no", "yes")))
+# Check it worked
+dm_new |> count(diabetes)
+
+# Base R
+# dm_new$diabetes[dm_new$diabetes == "0-"] <- "0"
+# dm_new$diabetes <- factor(dm_new$diabetes,
+                            # levels = c(0, 1),
+                            # labels = c("no", "yes"))
+```
+
+Now let's try exploring the values of "height" with a Box plot.
+```{r}
+ggplot(dm_new, aes(height, gender)) + geom_boxplot()
+```
+
+It looks like there is an extreme outlier. Let's identify it with function `max()`.
+*Exercise 6* Let's correct this value. Note that you need backticks (`) to identify the integer to recode.
+```{r}
+# Identify the wrong value
+max(dm_new$height)
+
+# Correct an integer value
+
+```
+
+-------------------------------------------------------------------------------
+
+## Relevelling factors
+
+Finally, we might sometimes need to reorder the strata in an ordered variable, for example because R has ordered it alphabetically.
+We use function `fct_relevel()` from package `forcats`.
+```{r}
+# Demonstrate wrong order
+ggplot(dm_new, aes(exercise)) + geom_bar()
+
+# Reorder the levels in an ordered variable
+dm_new$exercise <- fct_relevel(dm_new$exercise, "none", "sporadic", "regular")
+
+# Check it worked
+ggplot(dm_new, aes(exercise)) + geom_bar()
+```
+
+-------------------------------------------------------------------------------
+
+
+## Data export
+
+Other than R's native `.rds` format, can export files to many formats, including:
+- `.csv`, with `write_csv()` from `readr` or `write.csv()` from base R - NB: this format will not preserve data classes
+- SAS, SPSS, and Stata formats, with package `haven`
+
+```{r}
+# dm_new |> write_csv("data/diabetes_new.csv")
+```
+
+
+
+-------------------------------------------------------------------------------
+
+*Challenge exercise*
+1. Import the `bristol.csv` dataset and briefly explore it.
+2. Change the data classes to the correct ones.
+3. Create a new variable with the age at admission.
+4. Cross-tabulate Bristol type with colour, with column percentages.
+5. Explore the distribution of temperature according to gender with a Box plot.
+6. Save to file as `bristol_clean.dta` so you can send it to your colleague Karen, who only uses Stata.
+
+```{r}
+# Import and explore
+
+
+# Change data classes
+
+
+# Calculate age
+
+
+# Age and sex Box plot
+
+
+# Export to Stata
+
+
+```
+
+
+-------------------------------------------------------------------------------
+
+## Solutions
+
+*move solution*
+```{r}
+dm_new |> filter(id != "I highlighted in orange the patients who died. -- Brad")
+
+# An alternative
+dm_new |> slice(-1)
+```
+
+*Ex 1 solution*
+ * In the new dataset there are 5 new columns: HTN, CHD (which contain meaningful data), X18, X19, test_delete (which do not);
+ * There is no meaningful summary for many variables, which now read "class: character".
+ * The values of some categorical variables have no labels, only numbers.
+ * The variable names are slightly different (capital letters, abbreviations or longer names)
+
+
+
+
+```{r Ex 3 solution}
+# Summary before
+summary(dm_new$religion)
+
+# Change to factor
+dm_new$religion <- as.factor(dm_new$religion)
+
+# Summary after
+summary(dm_new$religion)
+```
+
+```{r Ex 4 solution}
+table(dm_new$gender, useNA = "ifany")
+
+dm_new$gender <- factor(dm_new$gender,
+                            levels = c(1, 2, 3),
+                            labels = c("female", "male", "non-binary"))
+```
+
+```{r Ex 5 solution}
+dm_new <- dm_new |> rename(date_birth = date_of_birth, bmi = body_mass_index) 
+```
+
+```{r Ex 6 solution}
+dm_new <- dm_new |> mutate(height = recode(height, `1777` = 177))
+```
+
+```{r Challenge exercise solution}
+# Import and explore
+bristol <- readr::read_csv("data/bristol.csv")
+bristol
+
+# Change data classes
+bristol <- bristol |> mutate(bed_number = factor(bed_number),
+                             ward_bay = factor(ward_bay),
+                             sex = factor(sex),
+                             date_birth = dmy(date_birth),
+                             date_admission = dmy(date_admission),
+                             bristol_type = factor(bristol_type),
+                             colour = factor(colour))
+
+# Calculate age on admission
+bristol <- bristol |> mutate(age = (interval(date_birth, date_admission) / years(1)) |> round(1))
+
+# Age and sex Box plot
+bristol |> ggplot(aes(age, sex)) + geom_boxplot()
+
+# Export to Stata
+# poo |> haven::write_dta("data/poo_cleaned.dta")
+```
