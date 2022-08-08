@@ -30,7 +30,7 @@ Let's load the Ambition dataset. This contains some simulated result of the AMBI
 
 LAmB is nephrotoxic, so we're interested in the renal function in these two groups.
 ```{r}
-load("data/ambition.RData")
+amb <- readRDS("data/ambition.rds")
 ```
 
 Just to familiarise yourself with the dataset:

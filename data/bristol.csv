@@ -1,4 +1,4 @@
-bed_number,ward_bay,sex,date_birth,date_admission,motions,bristol,colour,wbc,temperature
+bed_number,ward_bay,sex,date_birth,date_admission,motions,bristol_type,colour,wbc,temperature
 1,1,m,07/11/1948,01/02/2020,1,2,brown,11.3,36.9
 2,1,m,22/10/1950,03/02/2020,1,2,brown,9.7,36.9
 3,1,m,19/08/1940,31/01/2020,0,NA,brown,2.2,36.2

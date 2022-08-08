@@ -405,6 +405,17 @@ Other than R's native `.rds` format, can export files to many formats, including
 
 -------------------------------------------------------------------------------
 
+
+## More resources
+
+* Package [`here`](https://here.r-lib.org/) helps referencing file paths - useful when importing and exporting objects as files.
+* Package [`rio`](https://github.com/leeper/rio) lets you import and export with only two functions, regardless of file format.
+* R for Data Science, [Chapter 11: Data import](https://r4ds.had.co.nz/data-import.html)
+* Epi R Handbook, [Chapter 8: Cleaning data](https://www.epirhandbook.com/en/cleaning-data-and-core-functions.html)
+
+-------------------------------------------------------------------------------
+
+
 ## Solutions
 
 *move solution*
