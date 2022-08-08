@@ -1,52 +1,60 @@
 ---
 title: "2: Data visualisation"
-subtitle: "Introduction to R"
+subtitle: "Introduction to R for health data"
 author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 ---
 
--------------------------------------------------------------------------------
+------------------------------------------------------------------------
 
 # What you will learn
 
-* Using packages
- 
-* Data exploration
+-   Using packages
+-   Data exploration
+-   Data visualisation with `ggplot2`
+    -   Bar charts
+    -   Box plots
+    -   Scatterplots
+    -   Saving a plot
 
-* Data visualisation with `ggplot2`
- - Bar charts
- - Box plots
- - Scatterplots
- - Saving a plot
+------------------------------------------------------------------------
 
--------------------------------------------------------------------------------
+# Recap from topic 1
+
+Write some code to calculate the median tooth length in the dataframe `ToothGrowth`.
+
+```{r}
+
+```
+
+------------------------------------------------------------------------
 
 # Using packages
 
-R has some core functions, like the ones we've used so far: `sqrt()`, `mean()`, `table()` and some more advanced ones (for example, the function for logistic regression). There are also extra functions made by programmers and grouped into "packages", which need to be downloaded (and loaded) separately.
+R has some core functions, like the ones we've used so far: `sqrt()`, `mean()`, `table()` and several more advanced ones (for example, the function for logistic regression). There are also extra functions made by programmers and grouped into "packages", which need to be downloaded (and loaded) separately.
 
 ## Step 1: Download and install a package
 
 To download and install a package, one uses the `install.packages()` function, adding the package name in quotes. This might take a bit of time if the packages are large.
+
 ```{r}
 install.packages("ggplot2")
 ```
 
-You may also do this via the RStudio user interface: in the bottom right quarter of the screen, you click on `Packages` and then `Install`. You type the name of the package in the empty field and then click on the `Install` button.
+You may also do this via the RStudio graphical interface: in the bottom right quarter of the screen, you click on `Packages` and then `Install`. You type the name of the package in the empty field and then click on the `Install` button.
 
-*Exercise*
-Install package `dplyr` with either method.
-
+*Exercise 1.* Install package `dplyr` with either method.
 
 ## Step 2: Load a package
 
 You can then load (open) the package with `library()` so that you can use its functions.
+
 ```{r}
 library(ggplot2)
 ```
 
 You only need to install packages once, but you then need to open it every time you want to use some of its functions. So, when you create a new R script or notebook, you always start with one `library()` call for each package that you will use.
 
--------------------------------------------------------------------------------
+------------------------------------------------------------------------
 
 # Data exploration
 
@@ -65,63 +73,75 @@ View(msleep)
 help(msleep)
 ```
 
--------------------------------------------------------------------------------
+------------------------------------------------------------------------
 
 # Data visualisation with `ggplot2`
 
-Package `ggplot2` can make stunning graphs – plotting is one of the areas in which R shines.
-It works in "layers" separated by `+` signs: you can have a very simple graph with just two layers, or a very complex one with many more.
-Let's start with something simple and work on it.
+Package `ggplot2` can make stunning graphs -- plotting is one of the areas in which R shines.
 
--------------------------------------------------------------------------------
+It works in "layers" separated by `+` signs: you can have a very simple graph with just two layers, or a very complex one with many more. Let's start with something simple and work on it.
+
+------------------------------------------------------------------------
 
 ## Bar charts
 
-Bar charts are useful to visualise frequencies of a categorical variable, such as diet type in our dataset (`vore`). (Say NO to pie charts!)
+Say NO to pie charts.
+
+Bar charts are useful to visualise frequencies of a categorical variable, such as diet type in our dataset (`vore`).
 
 They are made by using `geom_bar()`. This is how to make a basic bar chart in `ggplot2`:
+
 ```{r}
 # You start with the dataset and variable to plot
 ggplot(msleep, aes(x = vore)) +
   # You then add the type of graph
   geom_bar()
 ```
+
 Let's break this code down.
-* `ggplot()` is the base function: it needs as arguments:
- - the dataset name (`msleep`)
- - `aes()` stands for "aesthetics", and basically means what we want to appear on the graph. `x = vore` means that we want variable `vore` to be plotted on the x-axis.
-* `geom_bar` is a geometry function: it specifies that we want the variable above to be represented in a bar chart.
-* The `+` sign links the base function with the geometry function.
+
+-   `ggplot()` is the base function; it needs as arguments:
+-   the dataset name (`msleep`)
+-   `aes()` stands for "aesthetics", and basically means what we want to appear on the graph. `x = vore` means that we want variable `vore` to be plotted on the x-axis.
+-   `geom_bar` is a geometry function: it specifies that we want the variable above to be represented in a bar chart.
+-   The `+` sign links the base function with the geometry function.
 
 Note that code can span over more than one line - it makes it more readible.
 
-### Bugs 
+### Bugs
 
 Computers take your instructions very literally, so tiny mistakes can easily break some code.
 
-*Debugging exercise*
-This chunk won't execute. Can you spot the *three* bugs that break the code, and fix them?
+*Exercise 2.*
 
-```{r exercise2}
-ggplot(msleep, aes(x = Vore)
-  geom_bar()
+1.  Remove the two `#` from this chunk.
+2.  You will see that this chunk won't run properly.
+3.  Can you spot the *three* bugs that break the code, and fix them?
+
+```{r}
+# ggplot(msleep, aes(x = Vore)
+#   geom_bar()
 ```
+
 (Hint: RStudio will *sometimes* help with some of these bugs. Look at the left of the chunk. Sometimes the advice can actually be misleading, so take with a pinch of salt).
 
-*Exercise*
+*Exercise 3.*
+
 Visualise the conservation status of the mammals in this dataset with a bar chart.
+
 Hint: you can run the dataset name if you don't know what the variables are called.
-```{r exercise1}
+
+```{r}
 
 ```
 
 ### Colour as decoration
- 
+
 We can build on these simple graphs by adding some optional arguments.
- 
+
 For example, let's change the fill colour from the default gray.
- 
-```{r histogram3}
+
+```{r}
 ggplot(msleep, aes(x = vore)) +
   geom_bar(fill = "darkgreen")
 ```
@@ -132,11 +152,10 @@ However colour can also be use to convey information - for example, to stratify 
 
 To do this, we add `fill` to the `aes()` function, rather than keeping it outside of it, and we link it to a variable name, rather than to a specific colour. This will also add a legend.
 
-```{r histogram3}
+```{r}
 ggplot(msleep, aes(x = vore, fill = conservation)) +
   geom_bar()
 ```
-
 
 ### Changing value labels
 
@@ -144,8 +163,8 @@ We can further customise the graph by adding more *layers*: you add a `+` at the
 
 For example, let's change the value labels for the categorical variables so that they are more easily understandable.
 
-- in the axes, by using `scale_x_discrete()`;
-- in the `fill` legend, by using `scale_fill_discrete()`.
+-   in the axes, by using `scale_x_discrete()`;
+-   in the `fill` legend, by using `scale_fill_discrete()`.
 
 ```{r}
 ggplot(msleep, aes(x = vore, fill = conservation)) +
@@ -162,13 +181,13 @@ ggplot(msleep, aes(x = vore, fill = conservation)) +
                                  ))
 ```
 
-*Exercise*
-Now create the opposite bar chart: get count numbers for conservation, stratified by diet type.
+*Exercise 4.* Now create the opposite bar chart: get count numbers for conservation, stratified by diet type.
+
 ```{r}
 
 ```
 
--------------------------------------------------------------------------------
+------------------------------------------------------------------------
 
 ## Box plots
 
@@ -176,32 +195,29 @@ Box plots are helpful to compactly display the distribution of a continuous vari
 
 In its simplest form, you have a single Box plot. For example, we can display the distribution of hours of sleep (regardless of animal type):
 
-```{r boxplot1}
+```{r}
 ggplot(msleep, aes(y = sleep_total)) +
   geom_boxplot()
 ```
 
 A Box plot shows:
 
-1. The thick _central line_ indicates the _median_
-2. The _lower and upper hinges_ indicate the _25th and 75th percentile_ respectively - so the distance between them is the interquartile range (IQR)
-3. The _upper whisker_: extends to the largest value no further than _1.5×IQR_ from the hinge
+1.  The thick *central line* indicates the *median*
+2.  The *lower and upper hinges* indicate the *25th and 75th percentile* respectively - so the distance between them is the interquartile range (IQR)
+3.  The *upper whisker*: extends to the largest value no further than *1.5×IQR* from the hinge
 
-If there are any data points that are beyond the whiskers, they will be individually displayed as _dots_.
-
+If there are any data points that are beyond the whiskers, they will be individually displayed as *dots*.
 
 ### Stratified Box plots
 
 However, Box plots are more helpful to compare the distribution of a continuous variable across different groups.
 
-For example, we can show how animals of different eating behaviours differ in terms of sleeping duration. 
+For example, we can show how animals of different eating behaviours differ in terms of sleeping duration.
 
-```{r boxplot2}
+```{r}
 ggplot(msleep, aes(x = vore, y = sleep_total)) +
   geom_boxplot()
 ```
-
-
 
 ### Labels
 
@@ -209,7 +225,7 @@ Now let's add a plot title and rename the axes.
 
 You do this by adding another `+` sign and then the `labs()` function - which can include a `title =`, `x =`, and many other arguments.
 
-```{r labels}
+```{r}
 ggplot(msleep, aes(x = vore, y = sleep_total)) +
   geom_boxplot() +
   labs(title = "Eating behaviour and sleep across 83 mammal species",
@@ -217,17 +233,16 @@ ggplot(msleep, aes(x = vore, y = sleep_total)) +
        y = "Sleep duration (h)")
 ```
 
+*Exercise 5.*
 
-*Exercise*
-
-- Make a new boxplot of a continuous variable of your choice.
-- Stratify it by a categorical variable of your choice.
-- Rename the axes appropriately.
-- Add a title.
+-   Make a new boxplot of a continuous variable of your choice.
+-   Stratify it by a categorical variable of your choice.
+-   Rename the axes appropriately.
+-   Add a title.
 
 Hint: do it layer by layer, so that if it doesn't work, you can try and fix it more easily, before making it very complex.
 
-```{r ex}
+```{r}
 # Dataframe and variables
 
 # Graph type
@@ -236,45 +251,48 @@ Hint: do it layer by layer, so that if it doesn't work, you can try and fix it m
 
 ```
 
-
--------------------------------------------------------------------------------
-
+------------------------------------------------------------------------
 
 ## Scatterplots
 
-You can plot two continuous variables against each other in a scatterplot.
-The function is `geom_point()`; a basic scatterplot is made this way:
+You can plot two continuous variables against each other in a scatterplot. The function is `geom_point()`; a basic scatterplot is made this way:
+
 ```{r}
 ggplot(msleep, aes(x = sleep_total, y = sleep_rem)) +
   geom_point()
 ```
 
-*Exercise*
+*Exercise 6.*
+
 Add a title and rename the axes on the scatterplot above.
+
 ```{r}
 
 ```
 
-
 We can also stratify by a categorical variable thanks to the `colour` aesthetic.
+
 ```{r}
 ggplot(msleep, aes(x = sleep_total, y = sleep_rem)) +
   geom_point(aes(colour = vore))
 ```
 
-*Exercise*
+*Exercise 7.*
+
 Show different diet types (`vore`) with different *shapes*, rather than different colours.
+
 ```{r}
 
 ```
 
 ### More customisation
 
-`ggplot2` allows you to customise your graphs to a great extent. 
+`ggplot2` allows you to customise your graphs to a great extent.
 
-Run this chunk and then try to understand what each line does. 
+Run this chunk and then try to understand what each line does.
+
 ```{r}
-  ggplot(msleep, aes(x = sleep_total, y = sleep_rem)) +
+ggplot(msleep, aes(x = sleep_total, y = sleep_rem)) +
   geom_smooth(method = "lm", colour = "darkgrey", linetype = "dashed") +
   geom_point(aes(shape = vore, colour = conservation)) +
   coord_cartesian(xlim = c(0, 20)) +
@@ -291,10 +309,15 @@ Run this chunk and then try to understand what each line does.
 ```
 
 *Want to learn more?*
+
 `c()` and vectors
-A "vector" is an ordered list containing objects (of the same data type).
-You create a vector with function `c()` – which stands for "concatenate" or "combine".
+
+In computer science a "vector" is an ordered list containing objects of the same data type.
+
+In R, you create a vector with function `c()` -- which stands for "concatenate" or "combine".
+
 Vectors are often used when we want to apply a function to more than one object, or when the argument of a function needs to contain more than one element.
+
 ```{r}
 # A vector of numbers
 c(6, 7, 8)
@@ -309,36 +332,60 @@ log(c(6, 7, 8))
 mean(c(6, 7, 8))
 ```
 
--------------------------------------------------------------------------------
+------------------------------------------------------------------------
 
 ## Saving a plot
 
 You can save a plot with function `ggsave()`. You need to specify the name of the file and its extension.
+
 By default, it will save:
-- the last plot you've generated
-- into the current directory (i.e. the same directory as this .Rmd file).
+
+-   the last plot you've generated
+-   into the current directory (i.e. the same directory as this .Rmd file)
+
 ```{r}
 ggsave("REM_mammals_scatterplot.png")
 ```
-You can save to pdf, jpeg, png, svg, and other formats, and you can change height and width. See `help(ggsave)` for more options.
 
+You can save to pdf, jpeg, png, svg, and other formats, and you can change height and width.
 
--------------------------------------------------------------------------------
+See `help(ggsave)` for more options.
+
+*Exercise 8.*
+
+Save a plot of your choice in pdf format.
+
+```{r}
+
+```
+
+------------------------------------------------------------------------
 
 ## Want more `ggplot2`?
 
 I recommend these resources:
 
-* (Basics) R for Data Science, [chapter 3: Data visualisation](https://r4ds.had.co.nz/data-visualisation.html)
-* (Intermediate) The BBC Visual and Data Journalism cookbook for R graphics [link](https://bbc.github.io/rcookbook/)
-* (Advanced) Data Visualisation with R, by Rob Kabacoff [link](https://rkabacoff.github.io/datavis/)
-* RStudio Data Visualisation Cheat Sheet [link](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf)
+-   (Basics) R for Data Science, [chapter 3: Data visualisation](https://r4ds.had.co.nz/data-visualisation.html)
+-   (Intermediate) The BBC Visual and Data Journalism cookbook for R graphics [link](https://bbc.github.io/rcookbook/)
+-   (Advanced) Data Visualisation with R, by Rob Kabacoff [link](https://rkabacoff.github.io/datavis/)
+-   RStudio Data Visualisation Cheat Sheet [link](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf)
 
-
--------------------------------------------------------------------------------
+------------------------------------------------------------------------
 
 ## Solutions
 
+```{r}
+# Exercise 2
+ggplot(msleep, aes(x = vore)) +
+   geom_bar()
 
+# Exercise 3
+ggplot(msleep, aes(x = conservation)) +
+   geom_bar()
 
--------------------------------------------------------------------------------
+# Exercise 4
+ggplot(msleep, aes(x = conservation, fill = vore)) +
+  geom_bar() 
+```
+
+------------------------------------------------------------------------

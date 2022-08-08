@@ -1,97 +1,91 @@
 ---
 title: "1: The basics"
-subtitle: "Introduction to R"
+subtitle: "Introduction to R for health data"
 author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 ---
 
--------------------------------------------------------------------------------
+------------------------------------------------------------------------
 
 # What you will learn
 
-* User interface
-* Console
-* R Markdown notebooks
-* Assignment
-* Functions
-* Datasets
+-   User interface
+-   Console
+-   R Markdown notebooks
+-   Assignment
+-   Functions
+-   Datasets
 
--------------------------------------------------------------------------------
+------------------------------------------------------------------------
 
 # User interface
 
 The RStudio interface is divided into four parts:
-`+--------------+-------------+`
-`| Code,        | Environment |`
-`| Viewer       |             |`
-`|              |             |`
-`+--------------+-------------+`
-`| Console      | Files,      |`
-`|              | Packages,   |`
-`|              | Help        |`
-`+--------------+-------------+`
 
-- *top left*: the code script  or notebook you're working on (like this one: `intRo1 basics.Rmd`).
-- *bottom left*: the console (where you can input your commands)
-- *top right*: Environment (where your datasets and other "objects" are stored)
-- *bottom right*: help (and other stuff)
+| Code, viewer | Environment           |
+|--------------|-----------------------|
+| Console      | Files, packages, help |
 
--------------------------------------------------------------------------------
+-   *top left*: the code script or notebook you're working on (like this one: `intRo1 basics.Rmd`).
+-   *bottom left*: the console (where you can input your commands)
+-   *top right*: Environment (where your datasets and other "objects" are stored)
+-   *bottom right*: help (and other stuff)
+
+------------------------------------------------------------------------
 
 # Console
 
 The console is used to run simple commands that you don't need to save.
 
-*Exercise*
-In the console, add 3 and 5. You do this by using it as a calculator: 3+5 Enter.
+*Exercise 1.* In the console, add 3 and 5. You do this by using it as a calculator:
 
-Now forget about the console – it's better to keep your code in a notebook (or in a script). This is for many reasons:
+3 + 5 Enter
 
-1. Easily editing your code when it doesn't work the first time you run it.
-2. Keeping track of your work so you don't have to restart from scratch every time.
-3. Sharing your work with others
+Now forget about the console -- it's better to keep your code in a notebook (or in a script). This is for many reasons:
 
--------------------------------------------------------------------------------
+1.  Easily editing your code when it doesn't work the first time you run it.
+2.  Keeping track of your work so you don't have to restart from scratch every time.
+3.  Sharing your work with others
+
+------------------------------------------------------------------------
 
 # R Notebooks (.Rmd)
 
 A notebook, like this one (`intRo1 basics.Rmd`) is composed of two things:
 
-* Text, which is the main component
-* "Chunks", which contain code (and comments, which are preceded by #)
+-   Text, which is the main component
+-   "Chunks", which contain code (and comments, which are preceded by a hash symbol, \#)
 
 A chunk looks like this:
+
 ```{r}
 
 ```
-Please note that those three signs are not normal apostrophes ('): they are "backticks" (`). On a UK/US Windows keyboard and US Mac keyboard, the key is to the left of the number 1. On a UK Mac keyboard, the key is to the left of Z.
+
+Please note that those three signs are not normal apostrophes ('): they are "backticks" (\`). On a UK/US Windows keyboard and US Mac keyboard, the key is to the left of the number 1. On a UK Mac keyboard, the key is to the left of Z.
 
 To run code in a chunk, you click on the *Run* (green triangle) button at the top right of the chunk (or you place your cursor inside it and press *Ctrl+Shift+Enter* (on Mac: *Cmd+Option+Enter*).
 
-*Exercise*
-Run this chunk. Note where is the output displayed.
+*Exercise 2.* Run this chunk. Note where is the output displayed.
+
 ```{r}
 5 - 1
 ```
 
 To run just part of the chunk, you can select the code of interest (or just place your cursor on any line) and press *Ctrl+Enter* (on Mac: *Cmd+Enter*).
 
-*Exercise*
-Only run the second line of this chunk.
+*Exercise 3.* Only run the second line of this chunk.
+
 ```{r}
 # Area of two circles
 pi * 4 ^2
 pi * 5.7 ^2
 ```
 
-To add a new chunk, you click on the toolbar: `Code` -> `Insert Chunk`.
+To add a new chunk, you click on the toolbar: `Code` → `Insert Chunk`.
 
-*Exercise*
-Add a new chunk in the space below, and use it to divide 6 by 2.
+*Exercise 4.* Add a new chunk in the space below, and use it to divide 6 by 2.
 
-
-
-
--------------------------------------------------------------------------------
+------------------------------------------------------------------------
 
 # R scripts (.R)
 
@@ -99,17 +93,16 @@ An R script, for example `analysis.R`, mainly contains code, and any non-code te
 
 We won't be using R scripts in this course, but you might see them elsewhere.
 
-To create a new R script, you go in the toolbar: `File` -> `New File` -> `R Script`, or with a keyboard short-cut: `Ctrl` + `Shift` + `N` on Windows.
+To create a new R script, you go in the toolbar: `File` → `New File` → `R Script`, or with a keyboard short-cut: `Ctrl` + `Shift` + `N` on Windows.
 
--------------------------------------------------------------------------------
+------------------------------------------------------------------------
 
 # Assignment
 
-You can tell R that something has a name; R will remember it and you can use that later in your code. This is called *assignment* and is done by using the arrow <- (keyboard shortcut: `Alt` + `*` on Windows, `Option` + `*` on Mac) Assignment creates a new "object".
-The following code means: "radius" gets the value of 5.7. "radius" is a new object.
+You can tell R that something has a name; R will remember it and you can use that later in your code. This is called *assignment* and is done by using the arrow `<-` (keyboard shortcut: `Alt` + `*` on Windows, `Option` + `*` on Mac) Assignment creates a new "object". The following code means: "radius" gets the value of 5.7. "radius" is a new object.
 
-*Exercise*
-Run this chunk. In which part of the screen is R storing this value?
+*Exercise 5.* Run this chunk. In which part of the screen is R storing this value?
+
 ```{r}
 # Assigning a value to "radius"
 radius <- 5.7
@@ -120,70 +113,72 @@ radius
 
 From now, you can use the object "radius" in the rest of your code, and R will know what you mean.
 
-*Exercise*
-Calculate the circumference of a circle of radius 5.7, without typing 5.7 (Formula: twice the radius times pi)
+*Exercise 6.* Calculate the circumference of a circle of radius 5.7, without typing 5.7 (Formula: C = 2πr).
+
 ```{r}
-# ...
+
 ```
 
 Note that assigning a new value to an existing object will permanently replace the old version.
+
 ```{r}
-radius <- 6.58
+radius <- 18
 radius
 ```
 
-
--------------------------------------------------------------------------------
+------------------------------------------------------------------------
 
 # Functions
 
-In programming, a function is like a verb. It takes something (its "arguments"), it does something to it, and gives you back an output.
-In R, the arguments of a function are written in brackets.
+In programming, a function is like a verb. It takes something (its "arguments"), it does something to it, and gives you back an output. In R, the arguments of a function are written in brackets.
+
+The square root function, `sqrt()`, is very simple: it takes a single argument (a number) and it returns its square root.
+
 ```{r}
 # Square root function
 sqrt(64)
 ```
 
-*Exercise*
-Create a new chunk below, and use it to calculate the square root of 6.58, without typing 6.58.
+*Exercise 7.*
 
+1. Create a new chunk below
+2. Use it to calculate the natural logarithm of 100.
 
-
--------------------------------------------------------------------------------
+------------------------------------------------------------------------
 
 # Datasets
 
 R is mostly built around dataframes: data in table format.
 
-Some dataframes are included in R so we can practice.
+Some dataframes are included in R so we can use them to practise.
 
 For example, let's explore `ToothGrowth`, a small dataset from an experiment on the impact of vitamin C supplementation on tooth length among 60 guinea pigs.
 
-Calling just the name of the dataset will show us a preview:
-
-To have a look at this dataset, you can call its name or you can use the function `View()`. Caution: R is case-sensitive!
+To have a look at this dataset, you can "call" its name or you can use the function `View()`. (Caution: R is case-sensitive)
 
 ```{r}
+# Option 1: dataframe name
 ToothGrowth
 ```
 
 ```{r}
-# This will open a new tab!
+# Option 2: using View().
+# NB - this will open a new tab
 View(ToothGrowth)
 ```
 
 A dataframe has columns called *variables*. These are the variables in `ToothGrowth`:
-* `len`: tooth cell length
-* `supp`: supplement type (VC = vitamin C; OJ = orange juice)
-* `dose`: dose of vitamin C in mg/day
 
+-   `len`: tooth cell length
+-   `supp`: supplement type (VC = vitamin C; OJ = orange juice)
+-   `dose`: dose of vitamin C in mg/day
 
 ## Using functions on a dataset column
 
 Now let's use the `mean()` and `sd()` functions to calculate the average tooth cell length and its standard deviation.
 
-R can work with more than one dataset at the time. For this reason, every time you refer to a variable, you also need to tell R which dataset is that variable from. You do this by typing a `$` sign between the dataset and the variable name.
-(The `$` sign is technically called the "exposition operator").
+R can work with more than one dataset at the time. For this reason, every time you refer to a variable, you also need to tell R which dataset is that variable from. You do this by typing a `$` sign between the dataset and the variable name. (The `$` sign is technically called the "exposition operator").
+
 ```{r}
 mean(ToothGrowth$len)
 # The above reads: calculate the mean of a variable taken from `ToothGrowth` and called `len`.
@@ -191,12 +186,11 @@ mean(ToothGrowth$len)
 sd(ToothGrowth$len)
 ```
 
+*Exercise 8.* Let's use another dataset, `chickwts`. This contains info on chicken weights (in grams) and their feed type.
 
-*Exercise*
-Let's use another dataset, `chickwts`. This contains info on chicken weights (in grams) and their feed type.
+1.  Calculate the `median` chicken weight.
+2.  Calculate the standard deviation of chicken weight.
 
-1. Calculate the `median` chicken weight.
-2. Calculate the standard deviation of chicken weight.
 ```{r}
 # Preview the dataframe
 chickwts
@@ -209,21 +203,28 @@ chickwts
 
 ```
 
-*Recap exercise*
-1. Explore the `Theoph` dataset
-2. Calculate the mean weight of its study participants
-3. Convert this mean weight from kilograms to pounds. (1 kg = approx. 2.2 pounds)
+*Final exercise.*
 
--------------------------------------------------------------------------------
+1.  Explore the `Theoph` dataset
+2.  Calculate the mean weight of its study participants
+3.  Convert this mean weight from kilograms to pounds. (1 kg = approx. 2.2 pounds)
+
+------------------------------------------------------------------------
 
 # Solutions
 
 ```{r}
-# Second-to-last exercise
+# Exercise 6
+2 * radius * pi
+
+# Exercise 7
+log(100)
+
+# Exercise 8
 median(chickwts$weight)
 sd(chickwts$weight)
 
-# Recap exercise
+# Final exercise
 # 1. Explore dataset
 View(Theoph)
 
@@ -238,4 +239,4 @@ mean_kg <- mean(Theoph$Wt)
 mean_kg * 2.2
 ```
 
--------------------------------------------------------------------------------
+------------------------------------------------------------------------
