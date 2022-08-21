@@ -1,19 +1,22 @@
 ---
-title: "5: Data cleaning"
-subtitle: "Introduction to R"
+title: "7: Reshaping data"
+subtitle: "Introduction to R for health data"
 author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 ---
+
+NB: work in progress
 
 -------------------------------------------------------------------------------
 
 # What you will learn
 
-Join multiple datasets
-- Adding rows
-- Adding columns
+* Join multiple datasets
+- Append rows
+- Add columns: left join
 
-Reshape a dataset
-
+* Reshape a dataset
+- Pivot longer
+- Pivot wider
 
 
 -------------------------------------------------------------------------------
@@ -24,10 +27,13 @@ library(dplyr)
 library(tidyr)
 ```
 
+
+TODO: decide which dataset you want to use.
+
 ```{r}
 dat <- tribble(
     ~id, ~age, ~pcr, ~hb_1, ~hb_2,
-        1, 65, "neg", , "neg",
+        1, 65, "neg", "neg", "neg",
         2, 21, "pos", "neg", "neg",
         3, 57, "pos", "pos", "neg",
         4, 84, "neg", "neg", "pos",
@@ -45,6 +51,17 @@ dat2 <- tibble(
   )
 
 dat2
+
+
+data.frame(
+  patient_id = c("a", "a", "b", "b", "b"),
+  species = c("C. albicans", "C. glabrata", "C. albicans", "C. krusei", "C. parapsilosis"),
+  date_sampling = lubridate::dmy(c("01/05/2022", "06/03/2022", "14/05/2022", "18/08/2022", "23/11/2022")),
+  mic_1 = c("S", "R", "S", "R", "I"),
+  mic_2 = c("S", "R", "I", "R", "R")
+)
+
+
 ```
 
 ```{r}
@@ -72,7 +89,7 @@ ren_yr2
 
 Often we don't get all the data in a single dataset - we need to join data from different files.
 
-This can be either because there are *more observations* (extra rows), or because there are *more variables* (extra columns), or both.
+This can be either because there are *new observations* (rows), or because there are *new variables* (columns), or both.
 
 
 -------------------------------------------------------------------------------

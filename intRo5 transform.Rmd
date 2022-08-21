@@ -1,8 +1,10 @@
 ---
 title: "5: Transforming data"
-subtitle: "Introduction to R"
+subtitle: "Introduction to R for health data"
 author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 ---
+
+NB: work in progress
 
 -------------------------------------------------------------------------------
 
