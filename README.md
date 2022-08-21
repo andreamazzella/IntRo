@@ -1,13 +1,16 @@
-# IntRo: An introduction to R for epidemiologists
-Markdown notebooks illustrating the basics of R and the tidyverse for Epidemiology & related fields. Simulated health data.
+# IntRo: An introduction to R for health data
+Markdown notebooks illustrating the basics of R, RStudio and the tidyverse for medical research, epidemiology & related fields. Simulated health data.
 
 *Where to start*: after installing R and RStudio, download these files (Click the green "Code" button, "Download ZIP"), unzip, and open `intRo1 basics.Rmd`.
 
-1. **The basics** (User interface; R Markdown notebooks and R scripts; assignment (`<-`); using functions and datasets)
-2. **Data visualisation** (Using packages; basics of {ggplot2} for histograms, scatterplots, and bar charts)
-3. **Data subsetting** (filtering rows and selecting columns with {dplyr}; `|>`, `%>%`, and other pipes)
-4. **Data manipulation and export** (basics of {dplyr}: calculate new variables, categorise continuous variables, regroup a categorical variable)
-5. **Data cleaning** (deleting and renaming variables; data classes; factors; labelling and recoding values)
-6. **Data analysis of continuous outcomes** (data visualisation; t-test; linear regression)
+1. **The basics** (Using RStudio; R Markdown notebooks and R scripts; assignment (`<-`); using functions and datasets)
+2. **Data visualisation** (Using packages; making bar charts, Box plots and scatterplots with `ggplot2`)
+3. **Data summaries** (Summarising continuous and categorical data; grouped summaries with `dplyr`, table 1 with `gtsummary`)
+4  **Data subsets** (Filtering rows and selecting columns with `dplyr` and base R)
+5. **Data transformation** (Importing rds data; calculate new variables, categorise continuous variables, regroup a categorical variable)
+6. **Data cleaning** (Importing Excel and csv data; deleting and renaming variables; data classes; factors; labelling and recoding values)
+7. **Data reshaping** (Joining datasets; wide and long formats; reshaping wide to long and vice versa)
+8. **Data analysis of continuous outcomes** (data visualisation; t-test; linear regression)
+9. **Data analysis of categorical outcomes** (work in progress)
 
 Author: [Andrea Mazzella](https://github.com/andreamazzella)

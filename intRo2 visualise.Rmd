@@ -20,7 +20,13 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 
 # Recap from topic 1
 
-Write some code to calculate the median tooth length in the dataframe `ToothGrowth`.
+Calculate the median tooth length in the dataframe `ToothGrowth`.
+
+```{r}
+
+```
+
+Create a new object called "median_length" that contains this value.
 
 ```{r}
 
@@ -77,15 +83,13 @@ help(msleep)
 
 # Data visualisation with `ggplot2`
 
-Package `ggplot2` can make stunning graphs -- plotting is one of the areas in which R shines.
+Package `ggplot2` can make stunning graphs.
 
 It works in "layers" separated by `+` signs: you can have a very simple graph with just two layers, or a very complex one with many more. Let's start with something simple and work on it.
 
 ------------------------------------------------------------------------
 
 ## Bar charts
-
-Say NO to pie charts.
 
 Bar charts are useful to visualise frequencies of a categorical variable, such as diet type in our dataset (`vore`).
 
@@ -187,6 +191,8 @@ ggplot(msleep, aes(x = vore, fill = conservation)) +
 
 ```
 
+[Friends don't let friends make pie charts](https://scc.ms.unimelb.edu.au/resources/data-visualisation-and-exploration/no_pie-charts).
+
 ------------------------------------------------------------------------
 
 ## Box plots
@@ -235,7 +241,7 @@ ggplot(msleep, aes(x = vore, y = sleep_total)) +
 
 *Exercise 5.*
 
--   Make a new boxplot of a continuous variable of your choice.
+-   Make a new Box plot of a continuous variable of your choice.
 -   Stratify it by a categorical variable of your choice.
 -   Rename the axes appropriately.
 -   Add a title.
@@ -314,17 +320,22 @@ ggplot(msleep, aes(x = sleep_total, y = sleep_rem)) +
 
 In computer science a "vector" is an ordered list containing objects of the same data type.
 
-In R, you create a vector with function `c()` -- which stands for "concatenate" or "combine".
-
-Vectors are often used when we want to apply a function to more than one object, or when the argument of a function needs to contain more than one element.
+In R, you create a vector with function `c()` -- which stands for "combine".
 
 ```{r}
 # A vector of numbers
 c(6, 7, 8)
 
-# A vector of names
-c("cirrhosis", "fibrosis")
+# A vector of characters
+c("cirrhosis", "fibrosis", "hepatitis")
+```
 
+Vectors are often used when:
+
+- we want to apply a function to more than one object,
+- when the argument of a function needs to contain more than one element.
+
+```{r}
 # A function that will apply to each element separately
 log(c(6, 7, 8))
 
@@ -361,14 +372,15 @@ Save a plot of your choice in pdf format.
 
 ------------------------------------------------------------------------
 
-## Want more `ggplot2`?
+## More resources
 
-I recommend these resources:
+I recommend these resources for `ggplot2` and data visualisation:
 
 -   (Basics) R for Data Science, [chapter 3: Data visualisation](https://r4ds.had.co.nz/data-visualisation.html)
--   (Intermediate) The BBC Visual and Data Journalism cookbook for R graphics [link](https://bbc.github.io/rcookbook/)
--   (Advanced) Data Visualisation with R, by Rob Kabacoff [link](https://rkabacoff.github.io/datavis/)
--   RStudio Data Visualisation Cheat Sheet [link](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf)
+-   (Intermediate) The BBC [Visual and Data Journalism cookbook](https://bbc.github.io/rcookbook/) for R graphics 
+-   (Advanced) [Data Visualisation with R](https://rkabacoff.github.io/datavis/), by Rob Kabacoff 
+-   RStudio [Data Visualisation Cheat Sheet](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf)
+-   [From Data to Viz](https://www.data-to-viz.com/) - how to choose which graph to use according to the type of data you have
 
 ------------------------------------------------------------------------
 

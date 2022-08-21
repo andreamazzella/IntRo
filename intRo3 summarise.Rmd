@@ -1,88 +1,108 @@
 ---
 title: "3: Summarising data"
-subtitle: "Introduction to R"
+subtitle: "Introduction to R for health data"
 author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 ---
 
--------------------------------------------------------------------------------
+------------------------------------------------------------------------
 
 # What you will learn
 
-* Data summarisation
- - Categorical variables
- - Continuous variables
- - Grouped summaries with `dplyr`
+-   Data summarisation
+    -   Categorical variables
+    -   Continuous variables
+    -   Grouped summaries with `dplyr`
+-   Data visualisation
+    -   Histograms
+-   Table 1 with `gtsummary`
 
-* Data visualisation
- - Histograms
- - Table 1 with `gtsummary`
+------------------------------------------------------------------------
 
--------------------------------------------------------------------------------
+# Recap from topic 2
 
+Explore `Theoph`, a dataset with information on the serum concentration of a drug at different time points in 12 participants.
 
 ```{r}
-library(janitor)
+
+```
+
+Create a concentration-time graph with `ggplot2`:
+
+-   time from dose will be on the x-axis
+-   concentration will be on the y-axis
+-   each point will represent a concentration at a specific time for a given participant
+-   participants will be represented with different colours
+-   *bonus*: connect all points from the same participant with a line.
+
+```{r}
+
+```
+
+------------------------------------------------------------------------
+
+Load packages
+
+```{r}
 library(dplyr)
 library(ggplot2)
+library(janitor)
 library(gtsummary)
 library(summarytools)
 ```
 
-NB: there seems to be an issue with `summarytools` on Mac computers. If this happens to you, try this solution: (https://community.rstudio.com/t/problem-in-installing-summary-tools-package-in-mac/38387). If you still can't work it out, install and load package `epiDisplay` instead, it has similar tabulation functions.
+NB: there seems to be an issue with `summarytools` on Mac computers. If this happens to you, try [this solution](https://community.rstudio.com/t/problem-in-installing-summary-tools-package-in-mac/38387). If you still can't work it out, install and load package `epiDisplay` instead, it has similar tabulation functions.
 
-*Want to know more?*
-Conflict between packages: if two packages contain two functions with the same name, R will use the function from the package that you loaded last. If you want to force R to use the function from a specific package, you can preface the function with `packagename::`. For example, `dplyr::filter(...)` will tell R to specifically use the `filter()` function from `dplyr` (and not the one from `stats`).
+*"The following objects are masked from package [...]" - what does it mean?*
 
--------------------------------------------------------------------------------
+Two packages can contain a function with the same name - for example, `filter()` is present in both the base R module `stats` and in `dplyr`. If you load `dplyr`, R will warn you that from now on, every time you call `filter()`, it will use its `dplyr` form. In the rare cases in which you want to force R to use the function from a specific package, you can preface the function with `packagename::`. For example, `stats::filter(...)` will tell R to specifically use the `filter()` function from `stats` (and not the one from `dplyr`).
 
-For this topic, we'll use `trial`, a sample dataset from package `gtsummary`. This contains the baseline characteristics of 200 patients who received two different cancer drugs (`trt`) and treatment outcomes: `response` and `death`.
-Check its documentation to learn more.
+------------------------------------------------------------------------
+
+For this topic, we'll use `trial`, a sample dataset from package `gtsummary`. This contains the baseline characteristics of 200 patients who received two different cancer drugs (`trt`) and treatment outcomes: `response` and `death`. Check its documentation to learn more.
 
 ```{r}
-# trial$trt <- factor(trial$trt)
-# trial$response <- factor(trial$response, labels = c("no", "yes"))
-# trial$death <- factor(trial$death, labels = c("no", "yes"))
-
 trial
 help(trial)
 ```
 
-
--------------------------------------------------------------------------------
+------------------------------------------------------------------------
 
 # Data summarisation
 
 `summary()` is a useful function that lets you get a quick summary of your entire dataset (or just a single variable).
 
-*Exercise*
-Run the following chunk.
-- What is R doing to each variable?
-- What is the median `age`?
-- How many missing values does the `response` variable have?
+*Exercise 1.*
+
+-   Run the following chunk.
+-   What is R doing to each variable?
+-   What is the median `age`?
+-   How many missing values does the `response` variable have?
+
 ```{r}
 summary(trial)
 ```
 
 *Want to know more?*
-This only works well if the variables are coded in the correct data classes, so it will not work well with datasets that have not been cleaned first. That's what those earlier `factor()` functions were doing. See `intRo5 clean.Rmd` for how to do this.
 
-
+This only works well if the variables are coded in the correct data classes, so it will not work well with datasets that have not been cleaned first. That's what those earlier `factor()` functions were doing. See `intRo6 clean.Rmd` for how to do this.
 
 ## Frequency tables
 
 To tabulate categorical data, we have many options, among which:
 
-* `table()` from base R,
-* `count()` from `dplyr`,
-* `tabyl()` from `janitor`,
-* `freq()` from package `summarytools`.
+-   `table()` from base R,
+-   `count()` from `dplyr`,
+-   `tabyl()` from `janitor`,
+-   `freq()` from package `summarytools`.
 
-*Exercise*
+*Exercise 2.*
+
 Run these lines of code *one at a time* and compare their outputs.
 
-- What's the difference?
-- Which function do you prefer?
-- What does the `useNA` argument do?
+-   What's the difference?
+-   Which function do you prefer?
+-   What does the `useNA` argument do?
+
 ```{r}
 # Basic frequency table
 table(trial$response)
@@ -94,30 +114,31 @@ count(trial, response)
 tabyl(trial, response)
 ```
 
-*Exercise*
-1. Write a line of code that will calculate the percentage of patients with each cancer `stage`.
-2. Show the same with an appropriate graph.
+*Exercise 3.*
 
-```{r ex freq}
+1.  Write a line of code that will calculate the percentage of patients with each cancer `stage`.
+2.  Show the same with an appropriate graph.
+
+```{r}
 # 1. Frequency table
-tabyl(trial, stage)
+
 
 # 2. Bar plot
-ggplot(trial, aes(y = stage)) + geom_bar()
-```
 
+```
 
 ## Cross-tabulation
 
 We're often interested in showing the distribution of *two* categorical variables against each other, i.e., cross-tabulation (two-way tables). This way we can check counts and percentages of each possible combination of factors.
 
-To make two-way tables you can use
-* `table()` from base R, but it doesn't calculate percentages.
-* `count()` from `dplyr`, but it returns an output in long format and without percentages.
-* `tabyl()` from `janitor`
-* `ctable()` from `summarytools`; it's a very customisable function. 
+To make two-way tables you can use:
 
-```{r crosstab}
+-   `table()` from base R, but it doesn't calculate percentages.
+-   `count()` from `dplyr`, but it returns an output in long format and without percentages.
+-   `tabyl()` from `janitor`
+-   `ctable()` from `summarytools`; it's a very customisable function.
+
+```{r}
 table(trial$trt, trial$response, useNA = "ifany")
 
 trial |> count(trt, response)
@@ -129,33 +150,26 @@ trial |> tabyl(trt, response) |>
 
 # With row percentages
 # NB: summarytools 1.0.1 has an issue with R 4.1 - the following two lines do not work
-summarytools::ctable(trial$trt, trial$response, useNA = "no")
+ctable(trial$trt, trial$response, useNA = "no")
 
 # With column percentages (proportions)
 ctable(trial$trt, trial$response, prop = "c", useNA = "no")
 ```
 
-*Exercise*
-Write some code to calculate the percentage of people with `grade` I cancer who were alive at the end of the study.
-(If you can't remember the names of your variables, you can run `names(trial)`.
-```{r ex contingency}
-# With `tabyl`
-trial |> tabyl(grade, death) |>
-  adorn_totals(c("row", "col")) |> 
-  adorn_percentages() |>
-  adorn_pct_formatting() |>
-  adorn_ns(position = "front")
+*Exercise 4.*
 
-# With `ctable`
-ctable(trial$grade, trial$death, useNA = "no")
+Write some code to calculate the percentage of people with `grade` `I` cancer who were alive at the end of the study. (If you can't remember the names of your variables, you can run `names(trial)`.
+
+```{r}
+
 ```
-
 
 ## What is `|>`?
 
 `|>` is called a *pipe*; it's a programming tool that helps improve code readability. It was introduced in R version 4.1.
 
 These two lines are equivalent:
+
 ```{r}
 trial |> count(response)
 
@@ -165,6 +179,7 @@ count(trial, response)
 You can see that the pipe is taking what's before it and it's shifting it as the first argument of the function that follows.
 
 You can also have more than one pipe. These are equivalent:
+
 ```{r}
 # Option 1: two pipes
 trial |> tabyl(grade) |> adorn_totals()
@@ -182,31 +197,31 @@ adorn_totals(table1)
 
 We'll cover pipes in more detail in the next topic.
 
-
 ## Summarising continuous variables
 
-As we've seen previously, to summarise continuous variables, you can use functions `mean()`, `median()`, `sd()` – or you can use `summary()` again:
+As we've seen previously, to summarise continuous variables, you can use functions `mean()`, `median()`, `sd()` -- or you can use `summary()` again:
+
 ```{r}
 mean(trial$ttdeath)
 median(trial$ttdeath)
 sd(trial$ttdeath)
 ```
 
-*Exercise*
-1. Try and calculate the average age with `mean()`.
-2. Why do you get this result?
-3. Use `help(mean)` to see if you can figure out how to fix this.
+*Exercise 5.*
+
+1.  Try and calculate the average age with `mean()`.
+2.  Why do you get this result?
+3.  Use `help(mean)` to see if you can figure out how to fix this.
+
 ```{r}
 
 ```
 
-
 You can also get many summary measures in one go by passing a variable to `summary()`.
+
 ```{r}
 summary(trial$marker)
 ```
-
-
 
 ## Histograms
 
@@ -214,8 +229,7 @@ Histograms are helpful when we want to check the distribution of a continuous va
 
 A histogram is similar to a bar chart, but it first needs to cut the continuous variable into "bins". By default, `geom_histogram()` uses 30 bins, but you can customise it by adding a `bins =` value. Or you can say how wide each bin should be, with `binwidth =`.
 
- 
-```{r histogram1}
+```{r}
 ggplot(trial, aes(marker)) +
   geom_histogram(bins = 10)
 ```
@@ -231,8 +245,7 @@ ggplot(data.frame(marker2 = rnorm(1000, 2)), aes(marker2)) +
 
 This looks normally distributed, so mean and standard deviation would be good summary measures.
 
--------------------------------------------------------------------------------
-
+------------------------------------------------------------------------
 
 # Grouped summaries with `dplyr`
 
@@ -246,17 +259,11 @@ trial |>
   summarise(mean(age, na.rm = TRUE))
 ```
 
-
 (NB: `summarise()` is different from the function we used above, `summary()`!)
 
-You can summarise with any of these functions:
-- `mean()`, `median()`,
-- `sd()`, `IQR()`,
-- `min()`, `max()`,
-- `n()`, `n_distinct()`
+You can summarise with any of these functions: - `mean()`, `median()`, - `sd()`, `IQR()`, - `min()`, `max()`, - `n()`, `n_distinct()`
 
-We can use as many of these as you want in a single `summarise()` call, and you can also summarise more than one variable at the same time.
-`n()` will count the observations in that group.
+We can use as many of these as you want in a single `summarise()` call, and you can also summarise more than one variable at the same time. `n()` will count the observations in that group.
 
 ```{r}
 trial |>
@@ -267,46 +274,36 @@ trial |>
             sd_follow_up = sd(ttdeath))
 ```
 
-Remember that we can visualise the distribution of a continuous variable across a categorical variable with Box plots.
-
-*Recall exercise*
-
-Make a Box plot to show the distribution of age across the two treatment groups in the `trial` dataset.
+Remember that we can visualise the distribution of a continuous variable across a categorical variable with Box plots:
 
 ```{r}
 trial |> ggplot(aes(age, trt)) +
   geom_boxplot()
 ```
 
+We can also group by more than one variable.
 
-And we can group by more than one variable.
 ```{r}
 trial |>
   group_by(trt, death) |> 
   summarise(avg_follow_up = mean(ttdeath, na.rm = T) |> round(1))
 ```
 
-*Exercise*
+*Exercise 6.*
+
 Calculate the median age and the age interquartile range in the two response groups.
+
 ```{r}
-trial |>
-  group_by(response) |>
-  summarise(mean(age, na.rm = TRUE),
-            IQR(age, na.rm = TRUE))
 
 ```
 
-
-
--------------------------------------------------------------------------------
-
+------------------------------------------------------------------------
 
 # Summary tables
 
 Summary data is often presented in a "Table 1": this contains a summary of the baseline characteristics, with frequencies and percentages for categorical variables, and means or medians with a measure of variability for continuous variables. Usually these are painful to prepare because you need to do a lot of calculations and then painstakingly copy them into a table. Also, if the data changes (new data, or new variables) you need to redo it from scratch.
 
 Package `gtsummary()` allows us to programmatically create publication-ready summary tables that can be automatically exported into .html or .doc formats.
-
 
 ## Basic `gtsummary` table
 
@@ -321,8 +318,6 @@ trial |>
 ```
 
 Note that the variables have been renamed, e.g., "Tumor Response" rather than `response`. This is because this dataset is in a special "labelled" format. This won't happen automatically with your data, unless you pre-process it with package `labelled` - by default, the variable names will be displayed in the table.
-
-
 
 ## Stratified `gtsummary` table
 
@@ -347,7 +342,10 @@ final_table <- trial |>
 final_table
 ```
 
-*Exercise*
+*Exercise 7.*
+
+Create a table 1 of the `ToothGrowth` dataset, stratifying by supplement type but keeping an overall column.
+
 ```{r}
 
 ```
@@ -362,45 +360,60 @@ final_table |>
   gt::gtsave("table1.html")
 ```
 
--------------------------------------------------------------------------------
+------------------------------------------------------------------------
 
 ## Learn more
 
 I recommend these resources:
 
-* R for Data Science
- - [chapter 7: Exploratory data analysis](https://r4ds.had.co.nz/exploratory-data-analysis.html)
- - [chapter 5.6: Grouped summaries with `summarise`](https://r4ds.had.co.nz/transform.html#grouped-summaries-with-summarise)
-* `gtsummary` documentation, [Tutorial: `tbl_summary`](https://www.danieldsjoberg.com/gtsummary/articles/tbl_summary.html)
+-   R for Data Science
+    -   [chapter 7: Exploratory data analysis](https://r4ds.had.co.nz/exploratory-data-analysis.html)
+    -   [chapter 5.6: Grouped summaries with `summarise`](https://r4ds.had.co.nz/transform.html#grouped-summaries-with-summarise)
+-   `gtsummary` documentation, [Tutorial: `tbl_summary`](https://www.danieldsjoberg.com/gtsummary/articles/tbl_summary.html)
 
-
--------------------------------------------------------------------------------
+------------------------------------------------------------------------
 
 ## Solutions
 
+```{r include=FALSE}
+# Recap - part 1
+Theoph
+help(Theoph)
 
+# Recap - part 2
+Theoph |>
+  ggplot(aes(x = Time, y = conc, colour = Subject)) +
+  geom_point() +
+  geom_line()
 
--------------------------------------------------------------------------------
+# Exercise 3
+tabyl(trial, stage)
+ggplot(trial, aes(x = stage)) + geom_bar()
 
+# Exercise 4
+  # With `tabyl`
+trial |> tabyl(grade, death) |>
+  adorn_totals(c("row", "col")) |> 
+  adorn_percentages() |>
+  adorn_pct_formatting() |>
+  adorn_ns(position = "front")
 
+  # With `ctable`
+ctable(trial$grade, trial$death, useNA = "no")
 
+# Exercise 5
+mean(trial$age, na.rm = TRUE)
 
+# Exercise 6
+trial |>
+  group_by(response) |>
+  summarise(mean_age = mean(age, na.rm = TRUE),
+            IQR_age = IQR(age, na.rm = TRUE))
 
+# Exercise 7
+ToothGrowth |> 
+  tbl_summary(by = supp) |> 
+  add_overall()
+```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+------------------------------------------------------------------------
