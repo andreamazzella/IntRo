@@ -63,7 +63,7 @@ A chunk looks like this:
 
 Please note that those three signs are not normal apostrophes ('): they are "backticks" (\`). On a UK/US Windows keyboard and US Mac keyboard, the key is to the left of the number 1. On a UK Mac keyboard, the key is to the left of Z.
 
-To run code in a chunk, you click on the *Run* (green triangle) button at the top right of the chunk (or you place your cursor inside it and press *Ctrl+Shift+Enter* (on Mac: *Cmd+Option+Enter*).
+To **run all the code in a chunk**, you click on the green triangle button at the top right of the chunk (or you place your cursor inside it and press on Windows `Ctrl` + `Shift` + `Enter`; on Mac: `⌘` + `⌥` + `Enter`.
 
 *Exercise 2.* Run this chunk. Note where is the output displayed.
 
@@ -71,17 +71,29 @@ To run code in a chunk, you click on the *Run* (green triangle) button at the to
 5 - 1
 ```
 
-To run just part of the chunk, you can select the code of interest (or just place your cursor on any line) and press *Ctrl+Enter* (on Mac: *Cmd+Enter*).
+To **run a single line**, you can click on it and press `Ctrl` + `Enter`, on Mac, `⌘` + `Enter`.
 
-*Exercise 3.* Only run the second line of this chunk.
+To **run any part of the code** (like two lines), you can select the code of interest and press the key combinations as above.
+
+*Exercise 3.* Only run the line of this chunk that calculates the area of a circle - not the whole chunk.
 
 ```{r}
-# Area of two circles
-pi * 4 ^2
-pi * 5.7 ^2
+strsplit("erom ecno yrt - knuhc elohw eht nur ev'uoy snaem ti siht ees uoy fi", NULL) |> 
+  unlist() |> rev() |> paste(collapse = "")
+
+# Area of a circle
+pi * 1.4 ^2
 ```
 
-To add a new chunk, you click on the toolbar: `Code` → `Insert Chunk`.
+To add a new chunk, you can:
+
+- go to the toolbar, click `Code` → `Insert Chunk`.
+- go to the top right of the window, click on an icon with a green `+c` → `R`
+- use a keyboard shortcut
+   -   Mac:` ⌘` + `⌥` + `I`
+   -   Windows, US keyboard: `Ctrl` + `Alt` + `I`
+   -   Windows, any other keyboard: this needs resetting - go to the toolbar, `Tools` → `Modify Keyboard Shortcuts...` → type `insert chunk` in the `Filter` field → click on the shortcut area → press `Ctrl` + `Shift` + `I`.
+- you could potentially type the three backticks followed by `{r}` and close the chunk with three more backticks, but why would you?
 
 *Exercise 4.* Add a new chunk in the space below, and use it to divide 6 by 2.
 
@@ -89,17 +101,20 @@ To add a new chunk, you click on the toolbar: `Code` → `Insert Chunk`.
 
 # R scripts (.R)
 
-An R script, for example `analysis.R`, mainly contains code, and any non-code text needs to be highlighted with a preceding `#`. The output will only appear in the console.
+An R script, for example `analysis.R`, mainly contains code, and any non-code text needs to be highlighted with a preceding `#`. There are no chunks. The output will only appear in the console and in the Plots panel.
 
 We won't be using R scripts in this course, but you might see them elsewhere.
 
-To create a new R script, you go in the toolbar: `File` → `New File` → `R Script`, or with a keyboard short-cut: `Ctrl` + `Shift` + `N` on Windows.
+To create a new R script, you can:
+
+- go to the toolbar: `File` → `New File` → `R Script`
+- use a keyboard short-cut: `Ctrl` + `Shift` + `N` on Windows.
 
 ------------------------------------------------------------------------
 
 # Assignment
 
-You can tell R that something has a name; R will remember it and you can use that later in your code. This is called *assignment* and is done by using the arrow `<-` (keyboard shortcut: `Alt` + `*` on Windows, `Option` + `*` on Mac) Assignment creates a new "object". The following code means: "radius" gets the value of 5.7. "radius" is a new object.
+You can tell R that something has a name; R will remember it and you can use that later in your code. This is called *assignment* and is done by using the arrow `<-` (keyboard shortcut: `Alt` + `-` on Windows, `⌥` + `*` on Mac) Assignment creates a new "object". The following code means: "radius" gets the value of 5.7. "radius" is a new object.
 
 *Exercise 5.* Run this chunk. In which part of the screen is R storing this value?
 
