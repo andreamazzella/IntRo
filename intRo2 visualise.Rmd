@@ -75,6 +75,9 @@ msleep
 # RStudio Viewer
 View(msleep)
 
+# Structure
+str(msleep)
+
 # More information
 help(msleep)
 ```
