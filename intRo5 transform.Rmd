@@ -19,16 +19,27 @@ NB: work in progress
  - categorise continuous variables
  - regroup a categorical variable
  - combine values of two categorical variables
+ 
+-------------------------------------------------------------------------------
 
+# Recap from topic 4
+
+From default dataset `Theoph`, identify at which time point did participant #11 have a plasma theophylline concentration higher than 7.5 mg/L.
+
+```{r}
+
+```
 
 -------------------------------------------------------------------------------
+
+Load packages
 
 ```{r}
 library(lubridate) # dealing with dates
 library(magrittr)  # %$% pipe
-library(dplyr)     # data management (part of the tidyverse)
-library(ggplot2)   # graphs (part of the tidyverse)
-library(forcats)   # dealing with factors (part of the tidyverse)
+library(dplyr)     # data management
+library(ggplot2)   # graphs
+library(forcats)   # dealing with categorical variables
 ```
 
 -------------------------------------------------------------------------------
@@ -40,12 +51,13 @@ So far, we've used some sample dataframes that are already loaded in R.
 
 Now let's import an external dataset. The way you do this within `.Rmd` notebooks is:
 
-1. You move your dataset somewhere within the same folder as the .Rmd file;
-2. You use a format-specific function to load the data, and assign it to a name of your choice.
+1. You move your dataset somewhere within the same folder as the `.Rmd` file;
+2. You use an extension-specific function to load the data;
+3. You assign the output of this function to a name of your choice.
 
 For example:
 
-1. Make sure that this `.Rmd` file is saved in the same folder as a `data` folder containing `diabetes.rds`, a simulated datasets.
+1. Make sure that this `.Rmd` file is saved in the same folder as a `data` folder containing `diabetes.rds`, a simulated dataset.
 2. Then we use `readRDS()` to load the file (`.rds` is an R native format).
 
 ```{r}
@@ -53,7 +65,7 @@ For example:
 dm <- readRDS("data/diabetes.rds")
 ```
 
-(We'll cover other data formats in the next topic).
+(We'll cover other data extensions, like Excel or `.csv`, in the next topic).
 
 You will note that now this dataset has been imported in your *Environment*, in the top right of your window.
 
@@ -68,7 +80,7 @@ head(dm)
 
 # Data transformation
 
-We might want to transform the data that we have to answer some specific questions. For example, we have date of births, but we don't have ages. BMI is continuous, but we might want to analyse it divided in clinical categories. Some strata have very few observations and we might want to group them together. 
+We might want to transform the data that we have to answer some specific questions. For example, we have date of births, but we don't have ages. BMI is continuous, but we might want to analyse it divided in clinical categories. For some categorical variables, certain strata have very few observations and we might want to group them together. 
 
 ## Calculate new variables
 
@@ -87,7 +99,8 @@ dm <- mutate(dm, height_m = height / 100)
 NB: There is no output to this. If you want to check whether it worked, you can have a look at the dataset. By default, new variables are appended at the end.
 
 
-*Exercise*
+*Exercise 1.*
+
 Convert weight into pounds (1kg = 2.20462 lbs).
 
 (Note for Stata users: if you make a mistake and you want to recalculate the variable, you don't need to drop the old one first. When you assign it again, R will overwrite the old variable)
@@ -104,7 +117,7 @@ Now let's suppose we want to recalculate the BMI, in order to have decimal figur
 dm <- dm |> mutate(bmi_dc = (weight / (height_m)^2))
 
 # Check it worked
-ggplot(dm, aes(bmi, bmi_dc)) + geom_point()
+dm |> select(bmi, bmi_dc)
 
 # Learn how to delete the old variable in next topic
 ```
@@ -112,9 +125,9 @@ ggplot(dm, aes(bmi, bmi_dc)) + geom_point()
 
 ## Calculate age
 
-Now we can calculate each observation's age as of 07 May 2020.
+Now we can calculate each observation's age at the study start - let's say this is 05 Sep 2022.
 
-Dealing with dates in all programming language is tricky, because they can be listed in many different formats, with different delimiters between numbers. Package `lubridate` (great name!) has some good functions to help with dates.
+Dealing with dates in all programming language is tricky, because people write dates in many different formats, with different delimiters between numbers. Package `lubridate` has some good functions to help with dates.
 
 ```{r}
 # Create a calculated age variable
@@ -124,8 +137,10 @@ dm <- dm |> mutate(
   )
 ```
 
-*Exercise*
+*Exercise 2.*
+
 Explore the distribution of age with a histogram.
+
 ```{r histogram}
 
 ```
@@ -135,9 +150,13 @@ Explore the distribution of age with a histogram.
 We might also want to transform a continuous variable into a categorical one, for example to reflect clinically meaningful groups. The function we nest in `mutate()` is `cut()`: the `breaks` indicate which values delimit groups, and `labels` indicate how each group be called.
 
 ```{r}
-dm <- dm |> mutate(bmi_group = cut(bmi_dc,
-                               breaks = c(0, 18.5, 25, 30, +Inf),
-                               labels = c("underwt (<18.5)", "normal wt (18.5-25)", "overwt (25-30)", "obese (>30)")))
+dm <- dm |>
+  mutate(bmi_group = cut(bmi_dc,
+                         breaks = c(0, 18.5, 25, 30,+Inf),
+                         labels = c("underwt (<18.5)",
+                                    "normal wt (18.5-25)",
+                                    "overwt (25-30)",
+                                    "obese (>30)")))
 
 # Check that the new variable was created correctly
 dm |>
@@ -146,8 +165,8 @@ dm |>
             "max BMI" = max(bmi_dc) |> round(1))
 ```
 
-(I really recommend this paper on why categorising continuous variables is potentially problematic:
-Turner E, Dobson J & Pocock S. (2010). "Categorisation of continuous risk factors in epidemiological publications: A survey of current practice." Epidemiologic perspectives & innovations ).
+(NB: categorising continuous variables, and especially dichotomising them, is potentially highly problematic - see this paper:
+Turner E, Dobson J & Pocock S. (2010). "Categorisation of continuous risk factors in epidemiological publications: A survey of current practice." Epidemiologic perspectives & innovations).
 
 Now let's use this new categorised BMI for a plot. The ggplot function is `geom_boxplot()`.
 ```{r}
@@ -260,7 +279,7 @@ Whatever you do to the dataset, it doesn't change the original file. If you want
 1. Import the `bristol.rds` dataset.
 2. Explore the data.
 2. Categorise the type of stool in the Bristol scale  into three levels: "constipation" (type 1-2), "normal" (type 3-5), "diarrhoea" (type 6-7).
-3. Save a copy as `poo_v2.dta` so you can send it to your colleague Karen, who only uses STATA.
+3. Save a copy as `bristol_v2.rds`.
 
 ```{r recap}
 # Import
@@ -324,13 +343,14 @@ bristol <- bristol |> mutate(
   stool_type = case_when(
     bristol_type <= 2 ~ "constipation",
     bristol_type %in% 3:5 ~ "normal",
-    bristol_type >= 6 ~ "diarrhoea"
+    bristol_type >= 6 ~ "diarrhoe
+    a"
   ))
 
 bristol |> count(bristol_type, stool_type)
 
 # Export
-# bristol |> saveRDS("bristol_v2.rds")
+# bristol |> saveRDS("data/bristol_v2.rds")
 ```
 
 -------------------------------------------------------------------------------
