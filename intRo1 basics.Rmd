@@ -222,7 +222,7 @@ chickwts
 
 # Vectors
 
-In R, a **vector** is a list of objects of the same type, in a specific order. For example, 5 2 4 is a vector (of numbers); "black" "blue" "green" is a vector (of characters).
+In R, a **vector** is a list of objects of the same type, in a specific order. For example, 5 2 4 is a vector (of numbers); "cirrhosis" "fibrosis" "hepatitis" is a vector (of characters).
 
 Of note, every column in a dataframe is a vector!
 
@@ -230,11 +230,18 @@ You create a vector using function `c()`, which stands for "combine":
 ```{r}
 c(5, 2, 4)
 
-c("black", "blue", "green")
+c("cirrhosis", "fibrosis", "hepatitis")
 ```
 
-Some functions will accept vectors:
+Vectors are used:
+- when the argument of a function needs to contain more than one element,
+- when we want to apply a function to more than one object.
+
 ```{r}
+# A function that will summarise all elements of a vector
+mean(c(6, 7, 8))
+
+# A function that will apply to each element separately
 log(c(100, 10))
 ```
 
