@@ -14,6 +14,7 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 -   Assignment
 -   Functions
 -   Datasets
+-   Vectors
 
 ------------------------------------------------------------------------
 
