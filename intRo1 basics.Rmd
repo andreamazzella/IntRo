@@ -243,6 +243,11 @@ Why do you think the output of the chunk above is different to the below?
 log(100, 10)
 ```
 
+Objects in a vector can have names:
+```{r}
+c("age" = 19, "height" = 185, "systolic_BP" = 132)
+```
+
 ------------------------------------------------------------------------
 
 *Final exercise.*
