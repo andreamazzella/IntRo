@@ -218,6 +218,33 @@ chickwts
 
 ```
 
+------------------------------------------------------------------------
+
+# Vectors
+
+In R, a **vector** is a list of objects of the same type, in a specific order. For example, 5 2 4 is a vector (of numbers); "black" "blue" "green" is a vector (of characters).
+
+Of note, every column in a dataframe is a vector!
+
+You create a vector using function `c()`, which stands for "combine":
+```{r}
+c(5, 2, 4)
+
+c("black", "blue", "green")
+```
+
+Some functions will accept vectors:
+```{r}
+log(c(100, 10))
+```
+
+Why do you think the output of the chunk above is different to the below?
+```{r}
+log(100, 10)
+```
+
+------------------------------------------------------------------------
+
 *Final exercise.*
 
 1.  Explore the `Theoph` dataset
