@@ -384,6 +384,7 @@ I recommend these resources for `ggplot2` and data visualisation:
 -   (Advanced) [Data Visualisation with R](https://rkabacoff.github.io/datavis/), by Rob Kabacoff 
 -   RStudio [Data Visualisation Cheat Sheet](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf)
 -   [From Data to Viz](https://www.data-to-viz.com/) - how to choose which graph to use according to the type of data you have
+-   [Color Brewer](https://colorbrewer2.org/) - picking a colour palette according to data type and accessibility requirements
 
 ------------------------------------------------------------------------
 
