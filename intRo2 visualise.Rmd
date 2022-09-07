@@ -170,8 +170,8 @@ We can further customise the graph by adding more *layers*: you add a `+` at the
 
 For example, let's change the value labels for the categorical variables so that they are more easily understandable.
 
--   in the axes, by using `scale_x_discrete()`;
--   in the `fill` legend, by using `scale_fill_discrete()`.
+-   In the axes, by using `scale_x_discrete()`;
+-   In the `fill` legend, by using `scale_fill_discrete()`.
 
 ```{r}
 ggplot(msleep, aes(x = vore, fill = conservation)) +
@@ -187,6 +187,11 @@ ggplot(msleep, aes(x = vore, fill = conservation)) +
                                  "vu" = "vulnerable"
                                  ))
 ```
+Note that in both functions, the `label = ` argument needs to contain a *vector of named characters*, where the name (on the left) is the value in the dataset, and the character on the right is the new label you want to display in its place.
+
+Remember from topic 1 that a *vector* is an ordered list of objects of the same type, and you create it with function `c()`.
+
+(In practice, you might often need to search online how to do certain things - there are way too many ggplot2 functions to remember!)
 
 *Exercise 4.* Now create the opposite bar chart: get count numbers for conservation, stratified by diet type.
 
@@ -317,35 +322,6 @@ ggplot(msleep, aes(x = sleep_total, y = sleep_rem)) +
   scale_colour_brewer(palette  = "Dark2")
 ```
 
-*Want to learn more?*
-
-`c()` and vectors
-
-In computer science a "vector" is an ordered list containing objects of the same data type.
-
-In R, you create a vector with function `c()` -- which stands for "combine".
-
-```{r}
-# A vector of numbers
-c(6, 7, 8)
-
-# A vector of characters
-c("cirrhosis", "fibrosis", "hepatitis")
-```
-
-Vectors are often used when:
-
-- we want to apply a function to more than one object,
-- when the argument of a function needs to contain more than one element.
-
-```{r}
-# A function that will apply to each element separately
-log(c(6, 7, 8))
-
-# A function that will summarise all elements of a vector
-mean(c(6, 7, 8))
-```
-
 ------------------------------------------------------------------------
 
 ## Saving a plot
@@ -382,8 +358,9 @@ I recommend these resources for `ggplot2` and data visualisation:
 -   (Basics) R for Data Science, [chapter 3: Data visualisation](https://r4ds.had.co.nz/data-visualisation.html)
 -   (Intermediate) The BBC [Visual and Data Journalism cookbook](https://bbc.github.io/rcookbook/) for R graphics 
 -   (Advanced) [Data Visualisation with R](https://rkabacoff.github.io/datavis/), by Rob Kabacoff 
--   RStudio [Data Visualisation Cheat Sheet](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf)
+-   RStudio [Data Visualisation Cheat Sheet](https://raw.githubusercontent.com/rstudio/cheatsheets/main/data-visualization.pdf)
 -   [From Data to Viz](https://www.data-to-viz.com/) - how to choose which graph to use according to the type of data you have
+-   [Color Brewer](https://colorbrewer2.org/) - picking a colour palette according to data type and accessibility requirements
 
 ------------------------------------------------------------------------
 

@@ -14,6 +14,7 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 -   Assignment
 -   Functions
 -   Datasets
+-   Vectors
 
 ------------------------------------------------------------------------
 
@@ -217,6 +218,45 @@ chickwts
 # ...
 
 ```
+
+------------------------------------------------------------------------
+
+# Vectors
+
+In R, a **vector** is a list of objects of the same type, in a specific order. For example, 5 2 4 is a vector (of numbers); "cirrhosis" "fibrosis" "hepatitis" is a vector (of characters).
+
+Of note, every column in a dataframe is a vector!
+
+You create a vector using function `c()`, which stands for "combine":
+```{r}
+c(5, 2, 4)
+
+c("cirrhosis", "fibrosis", "hepatitis")
+```
+
+Vectors are used:
+- when the argument of a function needs to contain more than one element,
+- when we want to apply a function to more than one object.
+
+```{r}
+# A function that will summarise all elements of a vector
+mean(c(6, 7, 8))
+
+# A function that will apply to each element separately
+log(c(100, 10))
+```
+
+Why do you think the output of the chunk above is different to the below?
+```{r}
+log(100, 10)
+```
+
+Objects in a vector can have names:
+```{r}
+c("age" = 19, "height" = 185, "systolic_BP" = 132)
+```
+
+------------------------------------------------------------------------
 
 *Final exercise.*
 
