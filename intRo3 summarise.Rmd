@@ -50,7 +50,7 @@ library(gtsummary)
 library(summarytools)
 ```
 
-NB: there seems to be an issue with `summarytools` on Mac computers. If this happens to you, try [this solution](https://community.rstudio.com/t/problem-in-installing-summary-tools-package-in-mac/38387). If you still can't work it out, install and load package `epiDisplay` instead, it has similar tabulation functions.
+NB:If you use Mac or Linux, you need to install some additional software to use `summarytools`. See [here](https://github.com/dcomtois/summarytools).
 
 *"The following objects are masked from package [...]" - what does it mean?*
 
