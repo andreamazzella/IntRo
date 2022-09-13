@@ -4,29 +4,27 @@ subtitle: "Introduction to R for health data"
 author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 ---
 
--------------------------------------------------------------------------------
+------------------------------------------------------------------------
 
 # Content
 
-* Data import/export
- - `.rds`
+-   Data import/export
+    -   `.rds`
+-   Data transformation
+    -   calculate new variables
+    -   calculate age
+    -   categorise continuous variables
+    -   combine levels of a categorical variable
+        -   create a dummy variable
+    -   combine values of two categorical variables
 
-* Data transformation
- - calculate new variables
- - calculate age
- - categorise continuous variables
- - regroup a categorical variable
- - combine values of two categorical variables
- 
--------------------------------------------------------------------------------
+------------------------------------------------------------------------
 
 # Recap from topic 4
 
-From default dataset `Theoph`, identify at which time point did participant #11 have a plasma theophylline concentration higher than 7.5 mg/L (without scrolling through the dataset manually).
+From default dataset `Theoph`, identify at which time point did participant 11 have a plasma theophylline concentration higher than 7.5 mg/L (without scrolling through the dataset manually).
 
-
-
--------------------------------------------------------------------------------
+------------------------------------------------------------------------
 
 Load packages
 
@@ -37,8 +35,7 @@ library(ggplot2)   # graphs
 library(forcats)   # dealing with categorical variables
 ```
 
--------------------------------------------------------------------------------
-
+------------------------------------------------------------------------
 
 # Data import
 
@@ -46,14 +43,14 @@ So far, we've used some sample dataframes that are already loaded in R.
 
 Now let's import an external dataset. The way you do this within `.Rmd` notebooks is:
 
-1. You move your dataset somewhere within the same folder as the `.Rmd` file;
-2. You use a function to load the data. There is a different function for each file format: `.csv`, `.xlsx`, `.rds`...
-3. You assign the output of this function to a name of your choice.
+1.  You move your dataset somewhere within the same folder as the `.Rmd` file;
+2.  You use a function to load the data. There is a different function for each file format: `.csv`, `.xlsx`, `.rds`...
+3.  You assign the output of this function to a name of your choice.
 
 For example:
 
-1. Make sure that this `.Rmd` file is saved in the same folder as a `data` folder containing `diabetes.rds`, a simulated dataset.
-2. Then we use `readRDS()` to load the file (`.rds` is an R native format).
+1.  Make sure that this `.Rmd` file is saved in the same folder as a `data` folder containing `diabetes.rds`, a simulated dataset.
+2.  Then we use `readRDS()` to load the file (`.rds` is an R native format).
 
 ```{r}
 # Data import
@@ -70,18 +67,17 @@ Let's preview it.
 head(dm)
 ```
 
-
--------------------------------------------------------------------------------
+------------------------------------------------------------------------
 
 # Data transformation
 
 During data analysis, it's very common to need to derive new information from the raw data. For example:
 
-* we have date of births, but we don't have ages
-* BMI is continuous, but we might want to analyse it divided in clinical categories.
-* We have data on disability with three levels: able-bodied, mild disability, severe disability, but we want to change it to a binary variable (disability yes/no).
+-   We have date of births, but we don't have ages
+-   BMI is continuous, but we might want to analyse it divided in clinical categories.
+-   We have data on disability with three levels: able-bodied, mild disability, severe disability, but we want to change it to a binary variable (disability yes/no).
 
--------------------------------------------------------------------------------
+------------------------------------------------------------------------
 
 ## Calculate new variables
 
@@ -118,7 +114,6 @@ Whenever you calculate a new variable, I recommend having a quick sanity check t
 dm |> select(height, height_m)
 ```
 
-
 *Exercise 1.*
 
 Convert weight into pounds (1kg = 2.20462 lbs) and add this to the dataset.
@@ -129,7 +124,7 @@ Convert weight into pounds (1kg = 2.20462 lbs) and add this to the dataset.
 
 ```
 
--------------------------------------------------------------------------------
+------------------------------------------------------------------------
 
 ## Calculate age
 
@@ -137,8 +132,8 @@ Now we can calculate each observation's age at the study start - let's say this 
 
 Dealing with dates in all programming languages is tricky. We'll come back to this in the next topic; for now, please know that:
 
-* Computers think of dates as *number of days* from a specific time point.
-* `lubridate::dmy()` transforms text to an R date.
+-   Computers think of dates as *number of days* from a specific time point.
+-   `lubridate::dmy()` transforms text to an R date.
 
 ```{r}
 # Create a calculated age variable
@@ -152,20 +147,20 @@ dm |> select(date_birth, age)
 
 *Exercise 2.*
 
-1. Explore the distribution of age with a histogram.
-2. What are the median age, Q1 and Q3?
+1.  Explore the distribution of age with a histogram.
+2.  What are the median age, Q1 and Q3?
 
 ```{r histogram}
 
 ```
 
--------------------------------------------------------------------------------
+------------------------------------------------------------------------
 
 ## Categorise continuous variables
 
 We might also want to transform a continuous variable into a categorical one, for example to reflect clinically meaningful groups.
 
-Imagine we want to categorise BMI into underweight (BMI < 18.5), normal weight (18.5 - 25), overweight (25-30) and obese (>30). Let's see what the minimum and maximum BMI are:
+Imagine we want to categorise BMI into underweight (BMI \< 18.5), normal weight (18.5 - 25), overweight (25-30) and obese (\>30). Let's see what the minimum and maximum BMI are:
 
 ```{r}
 summary(dm$bmi)
@@ -188,8 +183,8 @@ dm |>
 
 By default `cut()`:
 
-* creates a left-open and right-closed interval, i.e., (25,30] excludes 25 and include 30.
-* creates labels in mathematical notation.
+-   creates a left-open and right-closed interval, i.e., (25,30] excludes 25 and include 30.
+-   creates labels in mathematical notation.
 
 We can add custom labels to each group by adding the argument `labels =`. NB: labels should have 1 fewer element than `breaks =`.
 
@@ -205,97 +200,117 @@ dm <- dm |>
 dm |> count(bmi_group, bmi_group_new)
 ```
 
-NB: categorising continuous variables, and especially dichotomising them, is potentially highly problematic - see this paper:
-Turner E, Dobson J & Pocock S. (2010). [Categorisation of continuous risk factors in epidemiological publications: A survey of current practice](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2972292/).
+NB: categorising continuous variables, and especially dichotomising them, is potentially highly problematic - see this paper: Turner E, Dobson J & Pocock S. (2010). [Categorisation of continuous risk factors in epidemiological publications: A survey of current practice](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2972292/).
 
-
-*Exercise*
+*Exercise 3.*
 
 Categorise age into groups.
+
 ```{r categorise}
 
 ```
 
--------------------------------------------------------------------------------
+------------------------------------------------------------------------
 
-## Group levels of a categorical variable
+## Combine levels of a categorical variable
+
+Sometimes we might need to combine two or more levels of a categorical variables.
+
+For example, the `continent` variable contains both South and North America; imagine we want to combine them into a single level, Americas.
+
+To do this, we can use `mutate()` to create the new variable and `fct_collapse()` to combine the levels of the old one. This function, from package `forcats`, takes these arguments:
+
+-   the old variable
+-   the first manually defined value, folowed by `=`, followed by a vector of the old values.
+-   (any other new manually defined names)
 
 ```{r}
-# TODO: continue from here
+# Explore levels
+dm |> count(exercise)
+
+# Regroup
+dm <- dm |> mutate(
+  macrocontinent = fct_collapse(continent,
+                                americas = c("n_america", "s_america"),
+                                eurasia = c("europe", "asia")))
+
+# Check it worked
+dm |> count(continent, macrocontinent)
 ```
 
-Sometimes we might need to group together two or more levels of a categorical variables, to avoid data sparsity.
+You might also want to lump together the levels with few observations - for example, there are less than 10 people in this dataset doing swimming, yoga, or gymnastics; let's lump them into an "other" category.
 
-The "disability" variable has only 17 observations in the "severe" level, and only 7 of these have the outcome of interest.
+For this, we can use the `fct_lump_` functions from `forcats`.
 
-We can group together people with mild and severe disability. We do this with the `mutate()` and `if_else()` functions.
+```{r}
+# Check before
+dm |> count(exercise_type) |> arrange(desc(n))
+
+# Lump
+dm <- dm |> mutate(exercise_type_2 = fct_lump_min(exercise_type, 10))
+
+# Sanity check
+dm |> count(exercise_type, exercise_type_2) |> arrange(desc(n))
+```
+
+------------------------------------------------------------------------
+
+### Create a dummy variable
+
+If you want to reduce the levels to two (dummy variable), I recommend creating a logical variable (i.e., that contains only TRUE or FALSE), rather than a "yes"/"no" or 1/0 variable.
+
+For example, the "disability" variable has three levels: "able-bodied", "mild" and "severe"; let's turn this into a `disabled` variable that can be either TRUE (= yes) or FALSE (= no).
 
 ```{r}
 # Data exploration
 dm |> count(disability, diabetes)
 
 # Regroup
-dm <- dm |> mutate(disabled = if_else(disability == "able-bodied", "no", "yes"))
+dm <- dm |> mutate(disabled = disability == "mild" | disability == "severe")
 
 # Check it worked
 dm |> count(disability, disabled)
 ```
 
-In order to categorise into three levels or more, you can either nest one `ifelse()` function into another, or use `case_when()`. `case_when()` takes a condition on the left, then a `~`, then the value to use on the right.
+NB: do *not* use the `%in%` shortcut in these circumstances, otherwise missing values will be incorrectly recoded as FALSE!
 
-(The `~` sign can be inserted by pressing `Alt 126` in Windows, `Alt 5` with Mac)
+*Exercise 4.* (Pick one)
 
-For example, the first line of the `mutate()` function reads: create a new variable called "continent_2", and when the value in variable "continent" is "n_america", or when the continent is "s_america", insert the new value "americas".
-```{r}
-# Explore levels
-dm |> count(continent)
+1.  Create a new variable with three levels: eats meat, eats fish, doesn't eat either, using `diet` as reference.
+2.  Create a new binary variable that indicates whether a patient is inactive, using `exercise` as reference.
 
-# Regroup
-dm <- dm |>
-  mutate(
-    continent_region = case_when(
-      continent %in% c("n_america", "s_america") ~ "americas",
-      continent %in% c("europe", "asia") ~ "eurasia",
-      continent == "africa" ~ "africa",
-      continent == "oceania" ~ "oceania"
-    ))
-
-# Check it worked
-dm |> count(continent, continent_region)
-```
-
-There's another way of doing this, if you don't want to keep the original variable – recoding values (we'll explore this in a future topic).
-
-*Exercise*
-Create a new variable that indicates whether a patient does any exercise, using `exercise` as reference.
 ```{r group_levels}
 
 ```
 
--------------------------------------------------------------------------------
+------------------------------------------------------------------------
 
-## Extra: Combine values of two categorical variables
+## Combine values of two categorical variables
 
 We can also create a new categorical variables that summarises two other categorical variables.
 
-For example, we can create a new variable, `minority`, that indicates if that person is part of any gender minority.
+For example, we can create a new variable, `frailty`, that reflects the combination of disability and lack of exercise. Suppose we want to specify that someone with a mild disability is moderately frail if they don't exercise, and only mildly frail if they do.
 
-To do this, we use `mutate()` and `ifelse()` with two "or" statements, indicated by operator `|`. That bit of code means: "if gender is non-binary or trans, assign a value of "nb/trans"; else, assign a value of "cis m/f".
+To do this, we may use `case_when()`. This allows us to check for many logical statements and give specific values when these are met.
+
 ```{r}
 # Cross-tabulation
-dm |> count(disabled)
-dm |> count(bmi_group)
+dm |> count(disability, exercise)
 
 # Create the new variable
-dm <- dm |> mutate(obese_disabled = if_else(disabled == "yes" | bmi_group == "obese (>30)",
-                                            "yes",
-                                            "no"))
+dm <- dm |> mutate(
+  frailty = case_when(disability == "severe" ~ "severely frail",
+                      disability == "mild" & exercise == "none" ~ "moderately frail",
+                      disability == "mild" & exercise != "none" ~ "mildly frail",
+                      disability == "able-bodied" ~ "not frail",
+                      is.na(disability) | is.na(exercise) ~ NA_character_
+))
 
 # Check it worked
-dm |> count(obese_disabled, disabled, bmi_group, useNA = "ifany")
+dm |> count(disability, exercise, frailty)
 ```
 
--------------------------------------------------------------------------------
+------------------------------------------------------------------------
 
 # Exporting/saving datasets
 
@@ -305,13 +320,9 @@ Whatever you do to the dataset, it doesn't change the original file. If you want
 # dm |> saveRDS("data/diabetes_edited.rds")
 ```
 
--------------------------------------------------------------------------------
+------------------------------------------------------------------------
 
-*Recap exercise*
-1. Import the `bristol.rds` dataset.
-2. Explore the data.
-2. Categorise the type of stool in the Bristol scale  into three levels: "constipation" (type 1-2), "normal" (type 3-5), "diarrhoea" (type 6-7).
-3. Save a copy as `bristol_v2.rds`.
+*Exercise 5.* 1. Import the `bristol.rds` dataset. 2. Explore the data. 2. Categorise the type of stool in the Bristol scale into three levels: "constipation" (type 1-2), "normal" (type 3-5), "diarrhoea" (type 6-7). 3. Save a copy as `bristol_v2.rds`.
 
 ```{r recap}
 # Import
@@ -328,14 +339,13 @@ Whatever you do to the dataset, it doesn't change the original file. If you want
 
 ```
 
--------------------------------------------------------------------------------
+------------------------------------------------------------------------
 
-## Solutions
+# Solutions
 
 ```{r solution_recap}
 Theoph |> filter(Subject == 11 & conc > 7.5)
 ```
-
 
 ```{r solution_new_variable}
 dm <- dm |> mutate(pounds = weight * 2.20462)
@@ -366,11 +376,15 @@ dm |>
 ```
 
 ```{r solution_group_levels}
+dm |> count(diet)
 dm |> count(exercise)
 
-dm <- dm |> mutate(any_exercise = if_else(exercise == "none", "no", "yes"))
+dm <- dm |>
+  mutate(diet_new = fct_collapse(diet, no_meat = c("vegan", "vegetar")),
+         inactive = exercise == "none")
 
-dm |> count(exercise, any_exercise)
+dm |> count(exercise, inactive)
+dm |> count(diet, diet_new)
 ```
 
 ```{r solution_recap}
@@ -386,15 +400,16 @@ count(bristol, bristol_type)
 bristol <- bristol |> mutate(
   stool_type = case_when(
     bristol_type <= 2 ~ "constipation",
-    bristol_type %in% 3:5 ~ "normal",
-    bristol_type >= 6 ~ "diarrhoe
-    a"
+    between(bristol_type, 3, 5) ~ "normal",
+    bristol_type >= 6 ~ "diarrhoea"
   ))
+# NB: this may also be done with cut()
 
+# Check
 bristol |> count(bristol_type, stool_type)
 
 # Export
 # bristol |> saveRDS("data/bristol_v2.rds")
 ```
 
--------------------------------------------------------------------------------
+------------------------------------------------------------------------
