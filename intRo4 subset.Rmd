@@ -23,9 +23,7 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 
 Use the `ToothGrowth` dataset to calculate summary statistics on tooth length (minimum, mean, maximum) according to whether the guinea pig received supplementation with orange juice or vitamin C.
 
-```{r}
 
-```
 
 ------------------------------------------------------------------------
 
@@ -220,7 +218,7 @@ An explanation of the code above.
 
 Rewrite this command using a pipe.
 
-NB - You can set a keyboard shortcut for the `|>` pipe. Go to Tools -\> Global options -\> Code -\> tick "Use native pipe operator, \|\>". After this, pressing *Ctrl + Shift + M* (on Windows) will insert a `|>` pipe.
+NB - You can set a keyboard shortcut for the `|>` pipe. Go to Tools → Global options → Code → tick "Use native pipe operator". After this, pressing *Ctrl + Shift + M* (on Windows) will insert a `|>` pipe.
 
 ```{r}
 # Code without a pipe

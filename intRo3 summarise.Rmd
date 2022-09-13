@@ -84,7 +84,7 @@ summary(trial)
 
 *Want to know more?*
 
-This only works well if the variables are coded in the correct data classes, so it will not work well with datasets that have not been cleaned first. That's what those earlier `factor()` functions were doing. See `intRo6 clean.Rmd` for how to do this.
+This only works well if the variables are coded in the correct data classes, so it will not work well with datasets that have not been cleaned first. See `intRo6 clean.Rmd` for how to do this.
 
 ## Frequency tables
 
