@@ -4,8 +4,6 @@ subtitle: "Introduction to R for health data"
 author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 ---
 
-NB: work in progress
-
 -------------------------------------------------------------------------------
 
 # Content
@@ -24,11 +22,9 @@ NB: work in progress
 
 # Recap from topic 4
 
-From default dataset `Theoph`, identify at which time point did participant #11 have a plasma theophylline concentration higher than 7.5 mg/L.
+From default dataset `Theoph`, identify at which time point did participant #11 have a plasma theophylline concentration higher than 7.5 mg/L (without scrolling through the dataset manually).
 
-```{r}
 
-```
 
 -------------------------------------------------------------------------------
 
@@ -36,7 +32,6 @@ Load packages
 
 ```{r}
 library(lubridate) # dealing with dates
-library(magrittr)  # %$% pipe
 library(dplyr)     # data management
 library(ggplot2)   # graphs
 library(forcats)   # dealing with categorical variables
@@ -52,7 +47,7 @@ So far, we've used some sample dataframes that are already loaded in R.
 Now let's import an external dataset. The way you do this within `.Rmd` notebooks is:
 
 1. You move your dataset somewhere within the same folder as the `.Rmd` file;
-2. You use an extension-specific function to load the data;
+2. You use a function to load the data. There is a different function for each file format: `.csv`, `.xlsx`, `.rds`...
 3. You assign the output of this function to a name of your choice.
 
 For example:
@@ -65,7 +60,7 @@ For example:
 dm <- readRDS("data/diabetes.rds")
 ```
 
-(We'll cover other data extensions, like Excel or `.csv`, in the next topic).
+(We'll cover other data formats, like Excel or `.csv`, in the next topic).
 
 You will note that now this dataset has been imported in your *Environment*, in the top right of your window.
 
@@ -80,118 +75,154 @@ head(dm)
 
 # Data transformation
 
-We might want to transform the data that we have to answer some specific questions. For example, we have date of births, but we don't have ages. BMI is continuous, but we might want to analyse it divided in clinical categories. For some categorical variables, certain strata have very few observations and we might want to group them together. 
+During data analysis, it's very common to need to derive new information from the raw data. For example:
+
+* we have date of births, but we don't have ages
+* BMI is continuous, but we might want to analyse it divided in clinical categories.
+* We have data on disability with three levels: able-bodied, mild disability, severe disability, but we want to change it to a binary variable (disability yes/no).
+
+-------------------------------------------------------------------------------
 
 ## Calculate new variables
 
-Let's start by creating a new variable with a simple calculation: height in metres. There are two ways of doing this; in both you need to assign with `<-` to make the operation permanent.
-* In `dplyr`, you use function `mutate()` that is used to change a variable or create a new one, and you assign this new dataset to its own name.
-* In base R, you expose the variable with `$`, you do the calculation, and you assign it to a new variable name.
+In `dplyr`, function `mutate()` is used to add new variables (or change existing ones). The first argument is the dataset name, then you have the new variable name, an equals sign, and then the formula to use to calculate the values in the new variable. Formulae can incorporate values from other columns.
+
+As an example, let's convert height from its current unit (cm) into meters.
+
+The following code reads: take dataset "dm", change it by adding a new column called "height_m", and populate its values with the corresponding "heigh" value on the same row, divided by 100.
 
 ```{r}
 # dplyr
-dm <- mutate(dm, height_m = height / 100)
+dm |> mutate(height_m = height / 100)
+```
 
-# Base R
-# dm$height_m <- dm$height / 100
+This change is temporary; if you want this column to be permanently added to the dataset, you need to assign it.
+
+```{r}
+dm <- dm |> mutate(height_m = height / 100)
 ```
 
 NB: There is no output to this. If you want to check whether it worked, you can have a look at the dataset. By default, new variables are appended at the end.
 
+This can also be done in base R by exposing the variable with `$`, doing the calculation, and assigning it to a new *variable name* (not to the dataset).
+
+```{r}
+# Base R
+# dm$height_m <- dm$height / 100
+```
+
+Whenever you calculate a new variable, I recommend having a quick sanity check to make sure that it did what you intended.
+
+```{r}
+# Sanity check
+dm |> select(height, height_m)
+```
+
 
 *Exercise 1.*
 
-Convert weight into pounds (1kg = 2.20462 lbs).
+Convert weight into pounds (1kg = 2.20462 lbs) and add this to the dataset.
 
-(Note for Stata users: if you make a mistake and you want to recalculate the variable, you don't need to drop the old one first. When you assign it again, R will overwrite the old variable)
+(Note: if you make a mistake and you want to recalculate the variable, you don't need to drop the old one first. When you assign it again, R will overwrite the old variable)
 
 ```{r new_variable}
 
 ```
 
-
-Now let's suppose we want to recalculate the BMI, in order to have decimal figures (our dataset contains BMI as an integer).
-
-```{r}
-# Calculate BMI with decimals
-dm <- dm |> mutate(bmi_dc = (weight / (height_m)^2))
-
-# Check it worked
-dm |> select(bmi, bmi_dc)
-
-# Learn how to delete the old variable in next topic
-```
-
+-------------------------------------------------------------------------------
 
 ## Calculate age
 
 Now we can calculate each observation's age at the study start - let's say this is 05 Sep 2022.
 
-Dealing with dates in all programming language is tricky, because people write dates in many different formats, with different delimiters between numbers. Package `lubridate` has some good functions to help with dates.
+Dealing with dates in all programming languages is tricky. We'll come back to this in the next topic; for now, please know that:
+
+* Computers think of dates as *number of days* from a specific time point.
+* `lubridate::dmy()` transforms text to an R date.
 
 ```{r}
 # Create a calculated age variable
 dm <- dm |> mutate(
-  age = (interval(date_birth, dmy("7 May 2020")) / years(1)) |>
-        round(1)
+  age = ((dmy("5 Sep 2022") - date_birth) / 365.25) |> as.numeric()
   )
+
+# Sanity check
+dm |> select(date_birth, age)
 ```
 
 *Exercise 2.*
 
-Explore the distribution of age with a histogram.
+1. Explore the distribution of age with a histogram.
+2. What are the median age, Q1 and Q3?
 
 ```{r histogram}
 
 ```
 
+-------------------------------------------------------------------------------
+
 ## Categorise continuous variables
 
-We might also want to transform a continuous variable into a categorical one, for example to reflect clinically meaningful groups. The function we nest in `mutate()` is `cut()`: the `breaks` indicate which values delimit groups, and `labels` indicate how each group be called.
+We might also want to transform a continuous variable into a categorical one, for example to reflect clinically meaningful groups.
+
+Imagine we want to categorise BMI into underweight (BMI < 18.5), normal weight (18.5 - 25), overweight (25-30) and obese (>30). Let's see what the minimum and maximum BMI are:
 
 ```{r}
-dm <- dm |>
-  mutate(bmi_group = cut(bmi_dc,
-                         breaks = c(0, 18.5, 25, 30,+Inf),
-                         labels = c("underwt (<18.5)",
-                                    "normal wt (18.5-25)",
-                                    "overwt (25-30)",
-                                    "obese (>30)")))
+summary(dm$bmi)
+```
+
+We can then use `mutate()`, this time with helper function `cut()` - we need to specify the `breaks`, i.e., which values delimit groups.
+
+```{r}
+dm <- dm |>  mutate(
+  bmi_group = cut(bmi, breaks = c(14, 18.5, 25, 30, 37))
+  )
 
 # Check that the new variable was created correctly
 dm |>
   group_by(bmi_group) |>
-  summarise("min BMI" = min(bmi_dc) |> round(1),
-            "max BMI" = max(bmi_dc) |> round(1))
+  summarise(min(bmi),
+            max(bmi),
+            n())
 ```
 
-(NB: categorising continuous variables, and especially dichotomising them, is potentially highly problematic - see this paper:
-Turner E, Dobson J & Pocock S. (2010). "Categorisation of continuous risk factors in epidemiological publications: A survey of current practice." Epidemiologic perspectives & innovations).
+By default `cut()`:
 
-Now let's use this new categorised BMI for a plot. The ggplot function is `geom_boxplot()`.
-```{r}
-dm |> filter(exercise_weekly > 0) |> ggplot(aes(exercise_weekly, bmi_group)) + geom_boxplot()
-```
+* creates a left-open and right-closed interval, i.e., (25,30] excludes 25 and include 30.
+* creates labels in mathematical notation.
 
-We might also want to categorise according to quintiles, and not arbitrary breakpoints. We do this with function `ntile()`.
-
-Let's transform the variable "exercise_weekly", containing minutes of exercise, into quintiles.
+We can add custom labels to each group by adding the argument `labels =`. NB: labels should have 1 fewer element than `breaks =`.
 
 ```{r}
-# Create quintile variable
-dm <- dm |> mutate(exer_quint = ntile(exercise_weekly, 5))
+dm <- dm |>
+  mutate(bmi_group_new = cut(bmi,
+                             breaks = c(14, 18.5, 25, 30, 37),
+                             labels = c("underweight",
+                                        "regular weight",
+                                        "overweight",
+                                        "obese")))
 
-# Find the breakpoints
-dm |> group_by(exer_quint) |> summarise(max(exercise_weekly))
+dm |> count(bmi_group, bmi_group_new)
 ```
+
+NB: categorising continuous variables, and especially dichotomising them, is potentially highly problematic - see this paper:
+Turner E, Dobson J & Pocock S. (2010). [Categorisation of continuous risk factors in epidemiological publications: A survey of current practice](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2972292/).
+
 
 *Exercise*
-Categorise height with either `cut()` or `ntile()`.
+
+Categorise age into groups.
 ```{r categorise}
 
 ```
 
+-------------------------------------------------------------------------------
+
 ## Group levels of a categorical variable
+
+```{r}
+# TODO: continue from here
+```
 
 Sometimes we might need to group together two or more levels of a categorical variables, to avoid data sparsity.
 
@@ -241,6 +272,7 @@ Create a new variable that indicates whether a patient does any exercise, using 
 
 ```
 
+-------------------------------------------------------------------------------
 
 ## Extra: Combine values of two categorical variables
 
@@ -300,25 +332,37 @@ Whatever you do to the dataset, it doesn't change the original file. If you want
 
 ## Solutions
 
+```{r solution_recap}
+Theoph |> filter(Subject == 11 & conc > 7.5)
+```
+
+
 ```{r solution_new_variable}
-dm <- dm |> mutate(pounds = weight * 2.20462 |> round(1))
+dm <- dm |> mutate(pounds = weight * 2.20462)
 ```
 
 ```{r solution_histogram}
 ggplot(dm, aes(age, fill = gender)) + geom_histogram(bins = 20)
+summary(dm$age)
 ```
 
 ```{r solution_categorise}
-# Summarise continuous height
-summary(dm$height)
+# Summarise age
+summary(dm$age)
 
 # Categorise
-dm <- dm |> mutate(height_cat = cut(height,
-                                    breaks = c(0, 168.2,+Inf),
-                                    labels = c("below avg", "above avg")))
+dm <- dm |> mutate(
+  age_grp = cut(age,
+                breaks = c(16, 18, 30, 60, 81),
+                labels = c("underage", "young adult", "adult", "older adult"),
+                right = FALSE))
 
-# Explore
-dm |> select(height, height_cat)
+# Sanity check
+dm |>
+  group_by(age_grp) |>
+  summarise(min(age),
+            max(age),
+            n())
 ```
 
 ```{r solution_group_levels}
