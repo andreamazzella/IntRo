@@ -160,7 +160,7 @@ dm |> select(date_birth, age)
 
 We might also want to transform a continuous variable into a categorical one, for example to reflect clinically meaningful groups.
 
-Imagine we want to categorise BMI into underweight (BMI \< 18.5), normal weight (18.5 - 25), overweight (25-30) and obese (\>30). Let's see what the minimum and maximum BMI are:
+Imagine we want to categorise BMI into underweight (BMI lower than 18.5), normal weight (18.5 - 25), overweight (25-30) and obese (above 30). Let's see what the minimum and maximum BMI are:
 
 ```{r}
 summary(dm$bmi)
