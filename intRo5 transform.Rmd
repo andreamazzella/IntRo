@@ -9,7 +9,6 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 # Content
 
 -   Data import/export
-    -   `.rds`
 -   Data transformation
     -   calculate new variables
     -   calculate age
@@ -44,20 +43,18 @@ So far, we've used some sample dataframes that are already loaded in R.
 Now let's import an external dataset. The way you do this within `.Rmd` notebooks is:
 
 1.  You move your dataset somewhere within the same folder as the `.Rmd` file;
-2.  You use a function to load the data. There is a different function for each file format: `.csv`, `.xlsx`, `.rds`...
+2.  You use a function to load the data. `rio::import()` can read many formats, including `.csv`, Excel spreadsheets, Stata datasets, and the R format, `.rds`.
 3.  You assign the output of this function to a name of your choice.
 
 For example:
 
 1.  Make sure that this `.Rmd` file is saved in the same folder as a `data` folder containing `diabetes.rds`, a simulated dataset.
-2.  Then we use `readRDS()` to load the file (`.rds` is an R native format).
+2.  Then we use `rio::import()` to load the file.
 
 ```{r}
 # Data import
-dm <- readRDS("data/diabetes.rds")
+dm <- rio::import("data/diabetes.rds") 
 ```
-
-(We'll cover other data formats, like Excel or `.csv`, in the next topic).
 
 You will note that now this dataset has been imported in your *Environment*, in the top right of your window.
 
@@ -314,15 +311,22 @@ dm |> count(disability, exercise, frailty)
 
 # Exporting/saving datasets
 
-Whatever you do to the dataset, it doesn't change the original file. If you want to make some changes permanent, you need to use a writing function. To export in `.rds` format, the function is `saveRDS`.
+Whatever you do to the dataset, it doesn't change the original file. If you want to make some changes permanent, you need to use a writing function.
+
+`rio::export()` lets you save in many formats - you just need to specify the file extension after the file name.
 
 ```{r}
-# dm |> saveRDS("data/diabetes_edited.rds")
+# dm |> rio::export("data/diabetes_edited.rds")
 ```
 
 ------------------------------------------------------------------------
 
-*Exercise 5.* 1. Import the `bristol.rds` dataset. 2. Explore the data. 2. Categorise the type of stool in the Bristol scale into three levels: "constipation" (type 1-2), "normal" (type 3-5), "diarrhoea" (type 6-7). 3. Save a copy as `bristol_v2.rds`.
+*Exercise 5.*
+
+1. Import the `bristol.rds` dataset.
+2. Explore the data.
+3. Categorise the type of stool in the Bristol scale into three levels: "constipation" (type 1-2), "normal" (type 3-5), "diarrhoea" (type 6-7).
+4. Save a copy as `bristol_v2.rds`.
 
 ```{r recap}
 # Import
@@ -389,7 +393,7 @@ dm |> count(diet, diet_new)
 
 ```{r solution_recap}
 # Import
-bristol <- readRDS("data/bristol.rds")
+bristol <- rio::import("data/bristol.rds")
 
 # Explore
 View(bristol)
@@ -409,7 +413,7 @@ bristol <- bristol |> mutate(
 bristol |> count(bristol_type, stool_type)
 
 # Export
-# bristol |> saveRDS("data/bristol_v2.rds")
+# bristol |> rio::export("data/bristol_v2.rds")
 ```
 
 ------------------------------------------------------------------------
