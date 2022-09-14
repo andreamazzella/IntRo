@@ -135,7 +135,7 @@ Dealing with dates in all programming languages is tricky. We'll come back to th
 ```{r}
 # Create a calculated age variable
 dm <- dm |> mutate(
-  age = ((dmy("5 Sep 2022") - date_birth) / 365.25) |> as.numeric()
+  age = ((dmy("5 Sep 2022") - date_birth) / 365.25) |> as.numeric() |> floor()
   )
 
 # Sanity check
