@@ -180,7 +180,7 @@ dm |>
 
 By default `cut()`:
 
--   creates a left-open and right-closed interval, i.e., (25,30] excludes 25 and include 30.
+-   creates a left-open and right-closed interval, i.e., (25,30] excludes 25 and includes 30.
 -   creates labels in mathematical notation.
 
 We can add custom labels to each group by adding the argument `labels =`. NB: labels should have 1 fewer element than `breaks =`.
@@ -223,7 +223,7 @@ To do this, we can use `mutate()` to create the new variable and `fct_collapse()
 
 ```{r}
 # Explore levels
-dm |> count(exercise)
+dm |> count(continent)
 
 # Regroup
 dm <- dm |> mutate(
