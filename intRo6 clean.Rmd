@@ -19,6 +19,20 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 
 ------------------------------------------------------------------------
 
+# Recap from topic 5
+
+Using dataset `trial`, create a new categorical variable that indicates if that patient's `marker` was <0.5, between 0.5 and 1, or ≥1 ng/mL.
+
+```{r ex0}
+trial <- gtsummary::trial
+
+# Your code in the line below
+
+```
+
+
+------------------------------------------------------------------------
+
 ```{r}
 library(janitor)
 library(lubridate)
@@ -419,6 +433,20 @@ The falls dataset is still not clean - many more variables need checking and fix
 ------------------------------------------------------------------------
 
 ## Solutions
+
+```{r ex0_solution}
+library(dplyr)
+
+# Create variable
+trial_new <- trial |>
+  mutate(marker_group = cut(marker,
+                            breaks = c(0, 0.5, 1, 4),
+                            labels = c("<0.5", "0.5-1", "≥1")))
+
+# Sense check
+trial_new |> group_by(marker_group) |> 
+  summarise(min(marker), max(marker))
+```
 
 ```{r ex1_solution}
 # Exercise 1, question 1
