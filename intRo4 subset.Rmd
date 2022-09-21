@@ -13,7 +13,7 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
     -   Selecting columns
 -   Conditions
 -   Pipes
-    -   `|>`
+    -   More about `|>`
     -   `%>%`
     -   `%$%`
 
@@ -170,6 +170,8 @@ msleep |> select(name, starts_with("sleep"))
 
 # Pipes
 
+## More about `|>`
+
 Let's go back to the pipe, `|>`, that we first saw in the previous topic.
 
 Remember that `|>` does this:
@@ -211,7 +213,7 @@ msleep |>
 An explanation of the code above.
 
 1.  Make a plot of a filtered version of `msleep`. This makes code more difficult to read - you don't immediately understand which dataset is being plotted.
-2.  Create a new object called `msleep_herbi` and make it a filtered version of `msleep`. Then make a plot of `msleep_herbi`. This is clearer, but you risk ending up with a very busy Environment if you create a lot of new objects.
+2.  Create a new object called `msleep_herbi`, containing a filtered version of `msleep`. Then make a plot of `msleep_herbi`. This is clearer, but you risk ending up with a very busy Environment if you create a lot of new objects.
 3.  You take `msleep` *and then* you `filter()` it, *and then* you use that in a `ggplot()`.
 
 *Exercise 5.*
@@ -321,6 +323,8 @@ You might see code that subsets data without using `dplyr`.
 
 This uses the `[` operator: after writing the dataset name, you follow it with `[]`, containing instructions on how to subset.
 
+------------------------------------------------------------------------
+
 ## Select columns in base R
 
 Columns can be listed by name.
@@ -342,6 +346,8 @@ msleep[c("name", "sleep_total")]
 # dplyr
 msleep |> select(name, sleep_total)
 ```
+
+------------------------------------------------------------------------
 
 ## Filter rows in base R
 

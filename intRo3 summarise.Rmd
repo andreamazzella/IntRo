@@ -11,9 +11,7 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 -   Data summarisation
     -   Categorical variables
     -   Continuous variables
-    -   Grouped summaries with `dplyr`
--   Data visualisation
-    -   Histograms
+    -   Grouped summaries
 -   Table 1 with `gtsummary`
 
 ------------------------------------------------------------------------
@@ -43,16 +41,16 @@ Create a concentration-time graph with `ggplot2`:
 Load packages
 
 ```{r}
-library(dplyr)
+library(dplyr)        # count, group_by, summarise
 library(ggplot2)
-library(janitor)
-library(gtsummary)
-library(summarytools)
+library(gt)           # gtsave
+library(gtsummary)    # tbl_summary, as_gt
+library(summarytools) # freq, ctable
 ```
 
 NB:If you use Mac or Linux, you need to install some additional software to use `summarytools`. See [here](https://github.com/dcomtois/summarytools).
 
-*"The following objects are masked from package [...]" - what does it mean?*
+*`The following objects are masked from 'package [...]` - what does it mean?*
 
 Two packages can contain a function with the same name - for example, `filter()` is present in both the base R module `stats` and in `dplyr`. If you load `dplyr`, R will warn you that from now on, every time you call `filter()`, it will use its `dplyr` form. In the rare cases in which you want to force R to use the function from a specific package, you can preface the function with `packagename::`. For example, `stats::filter(...)` will tell R to specifically use the `filter()` function from `stats` (and not the one from `dplyr`).
 
@@ -86,13 +84,14 @@ summary(trial)
 
 This only works well if the variables are coded in the correct data classes, so it will not work well with datasets that have not been cleaned first. See `intRo6 clean.Rmd` for how to do this.
 
+------------------------------------------------------------------------
+
 ## Frequency tables
 
 To tabulate categorical data, we have many options, among which:
 
 -   `table()` from base R,
 -   `count()` from `dplyr`,
--   `tabyl()` from `janitor`,
 -   `freq()` from package `summarytools`.
 
 *Exercise 2.*
@@ -111,12 +110,12 @@ table(trial$response)
 count(trial, response)
 
 # With percentages
-tabyl(trial, response)
+freq(trial$response)
 ```
 
 *Exercise 3.*
 
-1.  Write a line of code that will calculate the percentage of patients with each cancer `stage`.
+1.  Write a line of code that will calculate the percentage of patients with each cancer stage.
 2.  Show the same with an appropriate graph.
 
 ```{r}
@@ -127,6 +126,8 @@ tabyl(trial, response)
 
 ```
 
+------------------------------------------------------------------------
+
 ## Cross-tabulation
 
 We're often interested in showing the distribution of *two* categorical variables against each other, i.e., cross-tabulation (two-way tables). This way we can check counts and percentages of each possible combination of factors.
@@ -135,18 +136,12 @@ To make two-way tables you can use:
 
 -   `table()` from base R, but it doesn't calculate percentages.
 -   `count()` from `dplyr`, but it returns an output in long format and without percentages.
--   `tabyl()` from `janitor`
 -   `ctable()` from `summarytools`; it's a very customisable function.
 
 ```{r}
 table(trial$trt, trial$response, useNA = "ifany")
 
-trial |> count(trt, response)
-
-trial |> tabyl(trt, response) |>
-  adorn_percentages() |>
-  adorn_pct_formatting() |> 
-  adorn_ns(position = "front")
+count(trial, trt, response)
 
 # With row percentages
 # NB: summarytools 1.0.1 has an issue with R 4.1 - the following two lines do not work
@@ -164,38 +159,7 @@ Write some code to calculate the percentage of people with `grade` `I` cancer wh
 
 ```
 
-## What is `|>`?
-
-`|>` is called a *pipe*; it's a programming tool that helps improve code readability. It was introduced in R version 4.1.
-
-These two lines are equivalent:
-
-```{r}
-trial |> count(response)
-
-count(trial, response)
-```
-
-You can see that the pipe is taking what's before it and it's shifting it as the first argument of the function that follows.
-
-You can also have more than one pipe. These are equivalent:
-
-```{r}
-# Option 1: two pipes
-trial |> tabyl(grade) |> adorn_totals()
-
-# Option 2: one pipe
-tabyl(trial, grade) |> adorn_totals()
-
-# Option 3: nested functions
-adorn_totals(tabyl(trial, grade))
-
-# Option 4: assignment
-table1 <- tabyl(trial, grade)
-adorn_totals(table1)
-```
-
-We'll cover pipes in more detail in the next topic.
+------------------------------------------------------------------------
 
 ## Summarising continuous variables
 
@@ -205,6 +169,7 @@ As we've seen previously, to summarise continuous variables, you can use functio
 mean(trial$ttdeath)
 median(trial$ttdeath)
 sd(trial$ttdeath)
+descr(trial$ttdeath)
 ```
 
 *Exercise 5.*
@@ -223,31 +188,9 @@ You can also get many summary measures in one go by passing a variable to `summa
 summary(trial$marker)
 ```
 
-## Histograms
-
-Histograms are helpful when we want to check the distribution of a continuous variable - with more detail than a Box plot.
-
-A histogram is similar to a bar chart, but it first needs to cut the continuous variable into "bins". By default, `geom_histogram()` uses 30 bins, but you can customise it by adding a `bins =` value. Or you can say how wide each bin should be, with `binwidth =`.
-
-```{r}
-ggplot(trial, aes(marker)) +
-  geom_histogram(bins = 10)
-```
-
-The `marker` variable is not normally distributed, so it would make sense to summarise it with median and IQR.
-
-Compare it with the below:
-
-```{r}
-ggplot(data.frame(marker2 = rnorm(1000, 2)), aes(marker2)) +
-  geom_histogram(bins = 10)
-```
-
-This looks normally distributed, so mean and standard deviation would be good summary measures.
-
 ------------------------------------------------------------------------
 
-# Grouped summaries with `dplyr`
+## Grouped summaries with `dplyr`
 
 What if we wanted to calculate the mean age in specific groups of patients, such as by treatment group?
 
@@ -261,7 +204,12 @@ trial |>
 
 (NB: `summarise()` is different from the function we used above, `summary()`!)
 
-You can summarise with any of these functions: - `mean()`, `median()`, - `sd()`, `IQR()`, - `min()`, `max()`, - `n()`, `n_distinct()`
+You can summarise with any of these functions:
+
+-   `mean()`, `median()`,
+-   `sd()`, `IQR()`,
+-   `min()`, `max()`,
+-   `n()`, `n_distinct()`
 
 We can use as many of these as you want in a single `summarise()` call, and you can also summarise more than one variable at the same time. `n()` will count the observations in that group.
 
@@ -274,10 +222,13 @@ trial |>
             sd_follow_up = sd(ttdeath))
 ```
 
+(Please ignore the `|>` symbol for now; we'll come back to it soon).
+
 Remember that we can visualise the distribution of a continuous variable across a categorical variable with Box plots:
 
 ```{r}
-trial |> ggplot(aes(age, trt)) +
+trial |>
+  ggplot(aes(age, trt)) +
   geom_boxplot()
 ```
 
@@ -299,11 +250,43 @@ Calculate the median age and the age interquartile range in the two response gro
 
 ------------------------------------------------------------------------
 
+## What is `|>`?
+
+`|>` is called a *pipe*; it's a programming tool that helps improve code readability. It was introduced in R version 4.1.
+
+These two lines are equivalent:
+
+```{r}
+trial |> count(response)
+
+count(trial, response)
+```
+
+You can see that the pipe is taking what's before it and it's shifting it as the first argument of the function that follows.
+
+You can also have more than one pipe, as you've seen above. It still works the same, but it makes code much easier to write and read.
+
+```{r}
+# This code...
+trial |>
+  group_by(trt) |> 
+  summarise(mean(ttdeath))
+
+# ...is equivalent to:
+summarise(group_by(trial, trt), mean(ttdeath))
+
+# Which one would you much rather write?
+```
+
+------------------------------------------------------------------------
+
 # Summary tables
 
 Summary data is often presented in a "Table 1": this contains a summary of the baseline characteristics, with frequencies and percentages for categorical variables, and means or medians with a measure of variability for continuous variables. Usually these are painful to prepare because you need to do a lot of calculations and then painstakingly copy them into a table. Also, if the data changes (new data, or new variables) you need to redo it from scratch.
 
 Package `gtsummary()` allows us to programmatically create publication-ready summary tables that can be automatically exported into .html or .doc formats.
+
+------------------------------------------------------------------------
 
 ## Basic `gtsummary` table
 
@@ -319,6 +302,8 @@ trial |>
 
 Note that the variables have been renamed, e.g., "Tumor Response" rather than `response`. This is because this dataset is in a special "labelled" format. This won't happen automatically with your data, unless you pre-process it with package `labelled` - by default, the variable names will be displayed in the table.
 
+------------------------------------------------------------------------
+
 ## Stratified `gtsummary` table
 
 Using argument `by =` it's possible to stratify the table according to a categorical variable.
@@ -331,7 +316,7 @@ trial |>
   tbl_summary(by = trt)
 ```
 
-We might still want to also have a column with overall values. We do this by piping the table into `add_overall()`:
+We might still want to also have a column with overall values. We do this by piping the table into `add_overall()`. Because this will be our final table, we also assign it to a name of our choice.
 
 ```{r}
 final_table <- trial |>
@@ -350,14 +335,16 @@ Create a table 1 of the `ToothGrowth` dataset, stratifying by supplement type bu
 
 ```
 
-## Save a `gtsummary` table
+## Save a `gtsummary` table to file
 
-We can use `gtsave()` to save a table to a file. Valid extensions include PDF, HTML, PNG.
+We can use `gtsave()` to save a `gt` table to a file, so we first need to convert our `gtsummary` table into a regular `gt` table using `as_gt()`. Valid extensions include `.pdf`, `.html`, `.png`, `.docx`, `rtf`\`.
+
+NB: This system is not perfect - for example, with .docx and .pdf the formatting might be partially lost in translation.
 
 ```{r}
 final_table |>
   as_gt() |> 
-  gt::gtsave("table1.html")
+  gtsave("table1.html")
 ```
 
 ------------------------------------------------------------------------
@@ -367,8 +354,8 @@ final_table |>
 I recommend these resources:
 
 -   R for Data Science
-    -   [chapter 7: Exploratory data analysis](https://r4ds.had.co.nz/exploratory-data-analysis.html)
-    -   [chapter 5.6: Grouped summaries with `summarise`](https://r4ds.had.co.nz/transform.html#grouped-summaries-with-summarise)
+    -   Chapter 7: [Exploratory data analysis](https://r4ds.had.co.nz/exploratory-data-analysis.html)
+    -   Chapter 5.6: [Grouped summaries with `summarise`](https://r4ds.had.co.nz/transform.html#grouped-summaries-with-summarise)
 -   `gtsummary` documentation, [Tutorial: `tbl_summary`](https://www.danieldsjoberg.com/gtsummary/articles/tbl_summary.html)
 
 ------------------------------------------------------------------------

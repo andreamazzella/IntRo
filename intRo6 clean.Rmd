@@ -98,6 +98,12 @@ Let's rename them so they're easier to understand, or to type.
 A helpful function to give a first scrub to all variable names at once is `clean_names()` from package `janitor`.
 
 *Exercise 3.* What differences do you notice?
+```{r}
+falls_renamed <- clean_names(falls_v2)
+
+data.frame(old_vrb_names = names(falls_v2),
+           new_vrb_names = names(falls_renamed))
+```
 
 
 
@@ -116,7 +122,6 @@ falls_renamed_2 <- falls_renamed |>
          date_fall = date_of_fall_if_leading_to_injury,
          fall_type = type,
          analgesia = analgesia_prescribed_for_that_injury,
-         analgesia_duration = duration_of_analgesia
   )
 
 head(falls_renamed_2)
@@ -142,7 +147,7 @@ falls_renamed_2 |> select(starts_with("x"))
 Let's remove these empty variables from the dataset - as we did in topic 4.
 
 ```{r}
-falls_trimmed <- falls_renamed_2 |> select(-starts_with("x"))
+falls_trimmed <- falls_renamed_2 |> select(!starts_with("x"))
 ```
 
 ------------------------------------------------------------------------
@@ -469,11 +474,7 @@ summary(falls_v2$`Was this patient admitted to a mental health hospital previous
 ```
 
 ```{r ex3_solution}
-falls_renamed <- clean_names(falls_v2)
-
-data.frame(old_vrb_names = names(falls_v2), new_vrb_names = names(falls_renamed))
-
-# Note that this converted all upper-case letters to lower-case, it changed spaces into underscores, and it replaced triple dots with an `x`. This is a good start.
+# `clean_names()` converted all upper-case letters to lower-case, it changed spaces into underscores, and it replaced triple dots with an `x`. This is a good start.
 ```
 
 ```{r ex4_solution}

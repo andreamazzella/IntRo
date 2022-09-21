@@ -164,42 +164,13 @@ ggplot(msleep, aes(x = vore, fill = conservation)) +
   geom_bar()
 ```
 
-### Changing value labels
+*Want to know more?* To change the *value* labels in a categorical variable, you either use `+ scale_<aes>_discrete(labels = c("value1" = "label1", "value2" = "label2"))`, or you recode the values before plotting. I recommend you ignore this for now.
 
-We can further customise the graph by adding more *layers*: you add a `+` at the end of a line and then add more functions.
-
-For example, let's change the value labels for the categorical variables so that they are more easily understandable.
-
--   In the axes, by using `scale_x_discrete()`;
--   In the `fill` legend, by using `scale_fill_discrete()`.
-
-```{r}
-ggplot(msleep, aes(x = vore, fill = conservation)) +
-  geom_bar() +
-  scale_x_discrete(labels = c("carni" = "Carnivore",
-                              "herbi" = "Herbivore",
-                              "insecti" = "Insectivore",
-                              "omni" = "Omnivore")) +
-  scale_fill_discrete(labels = c("cd" = "conservation-dependent",
-                                 "en" = "endangered",
-                                 "lc" = "least concern",
-                                 "nt" = "near threatened",
-                                 "vu" = "vulnerable"
-                                 ))
-```
-Note that in both functions, the `label = ` argument needs to contain a *vector of named characters*, where the name (on the left) is the value in the dataset, and the character on the right is the new label you want to display in its place.
-
-Remember from topic 1 that a *vector* is an ordered list of objects of the same type, and you create it with function `c()`.
-
-(In practice, you might often need to search online how to do certain things - there are way too many ggplot2 functions to remember!)
-
-*Exercise 4.* Now create the opposite bar chart: get count numbers for conservation, stratified by diet type.
+*Exercise 4.* Now create a bar chart that shows count of different conservation groups, stratified by diet type.
 
 ```{r}
 
 ```
-
-[Friends don't let friends make pie charts](https://scc.ms.unimelb.edu.au/resources/data-visualisation-and-exploration/no_pie-charts).
 
 ------------------------------------------------------------------------
 
