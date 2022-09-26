@@ -21,7 +21,7 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 
 # Recap from topic 4
 
-From default dataset `Theoph`, identify at which time point did participant 11 have a plasma theophylline concentration higher than 7.5 mg/L (without scrolling through the dataset manually).
+From default dataset `Theoph`, identify at which time point participant 11 had a plasma theophylline concentration higher than 7.5 mg/L (without scrolling through the dataset manually).
 
 ------------------------------------------------------------------------
 
@@ -82,7 +82,7 @@ In `dplyr`, function `mutate()` is used to add new variables (or change existing
 
 As an example, let's convert height from its current unit (cm) into meters.
 
-The following code reads: take dataset "dm", change it by adding a new column called "height_m", and populate its values with the corresponding "heigh" value on the same row, divided by 100.
+The following code reads: take dataset "dm", change it by adding a new column called "height_m", and populate its values with the corresponding "height" value on the same row, divided by 100.
 
 ```{r}
 # dplyr
@@ -218,7 +218,7 @@ For example, the `continent` variable contains both South and North America; ima
 To do this, we can use `mutate()` to create the new variable and `fct_collapse()` to combine the levels of the old one. This function, from package `forcats`, takes these arguments:
 
 -   the old variable
--   the first manually defined value, folowed by `=`, followed by a vector of the old values.
+-   the first manually defined value, followed by `=`, followed by a vector of the old values.
 -   (any other new manually defined names)
 
 ```{r}
@@ -260,7 +260,7 @@ For example, the "disability" variable has three levels: "able-bodied", "mild" a
 
 ```{r}
 # Data exploration
-dm |> count(disability, diabetes)
+dm |> count(disability)
 
 # Regroup
 dm <- dm |> mutate(disabled = disability == "mild" | disability == "severe")

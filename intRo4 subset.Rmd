@@ -84,13 +84,14 @@ You can use filtered data in a plot: you simply replace the dataset name with th
 
 ```{r}
 # Plotting all mammals
-ggplot(msleep,
-       aes(sleep_rem, awake, colour = vore)) +
+msleep |>
+  ggplot(aes(sleep_rem, awake, colour = vore)) +
   geom_point()
 
 # Plotting only herbivores
-ggplot(filter(msleep, vore == "herbi"),
-       aes(sleep_rem, awake, colour = vore)) +
+msleep |> 
+  filter(vore == "herbi") |>
+  ggplot(aes(sleep_rem, awake, colour = vore)) +
   geom_point() +
   # The line below will make the two graphs more comparable
   scale_colour_manual(values = "#7CAE00") + coord_cartesian(xlim = c(0, 6.5), ylim = c(4, 22)) 

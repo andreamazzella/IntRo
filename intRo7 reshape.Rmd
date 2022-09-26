@@ -21,17 +21,23 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 
 1. Run this chunk to create a dirty dataframe containing information on patients with myocardial infarctions seen by different ambulance teams.
 2. Clean the column names.
-3. Clean the third column so that you calculate mean and standard deviation.
+3. Clean the third column so that you can calculate mean and standard deviation.
 4. Replace "NW" with "North West" in column 2.
 
 ```{r}
-ambulances <- data.frame(
+(
+  ambulances <- data.frame(
   County = c("Derby", "Bedford", "Norfolk", "Merseyside", "Cheshire", "Hampshire", "Kent", "Plymouth", "Swindon", "Wiltshire"),
   Region = c("East Midlands", "East of England", "East of England", "NW", "North West", "South East", "South East", "South West", "South West", "South West"),
-  Patients.with.a.pre.hospital.diagnosis.of.suspected.STEMI.confirmed.on.ECG = c("104", "105", "266", "140", "188", "No data", "236", "78", "190", "70"))
-
-ambulances
+  `How many patients with a pre hospital diagnosis of suspected STEMI confirmed on ECG?` = c("104", "105", "266", "140", "188", "No data", "236", "78", "190", "70"))
+  )
 ```
+
+```{r}
+# Your code here 👇
+
+```
+
 
 ------------------------------------------------------------------------
 
@@ -54,12 +60,14 @@ Throughout this topic we'll use data from a study of candidaemia. All data are i
 
 Please open the file in Excel first (you can find it and open it directly via the RStudio user interface: bottom right, Files.)
 
-```{r}
-sheets <- c("site5", "site7", "site8", "cfupcr", "demographics", "meds", "outcomes")
-
-for (sheet in sheets) {
-  assign(sheet, import("data/candidaemias.xlsx", sheet = sheet))
-}
+```{r import_data}
+site5 <- import("data/candidaemias.xlsx", sheet = "site5")
+site7 <- import("data/candidaemias.xlsx", sheet = "site7")
+site8 <- import("data/candidaemias.xlsx", sheet = "site8")
+cfupcr <- import("data/candidaemias.xlsx", sheet = "cfupcr")
+demographics <- import("data/candidaemias.xlsx", sheet = "demographics")
+meds <- import("data/candidaemias.xlsx", sheet = "meds")
+outcomes <- import("data/candidaemias.xlsx", sheet = "outcomes")
 ```
 
 ------------------------------------------------------------------------
@@ -141,27 +149,6 @@ Run the chunk below which joins data from `meds` and `lab`.
 ```{r}
 left_join(lab, meds, by = "id")
 ```
-
-------------------------------------------------------------------------
-
-## Complex joins
-
-Some datasets are more complex. For example, there can be many variables that are repeated in multiple columns, like in this case, timing, CFU count and PCR result in samples A-C.
-
-```{r}
-cfupcr
-```
-
-Reshaping this to a long format is more complex; we need to use other arguments of `pivot_wider()`, for example `names_sep =` or `names_pattern =`
-
-```{r}
-cfupcr |> 
-  pivot_longer(!id,
-               names_to = c(".value", "sample"),
-               names_sep = "_")
-```
-
-To learn more about complex joins, please see the Resources section further below.
 
 ------------------------------------------------------------------------
 
@@ -267,6 +254,27 @@ ggplot(tb_amer, aes( # complete here
 
 ------------------------------------------------------------------------
 
+### Complex `pivot_longer`
+
+Some datasets are more complex. For example, there can be many variables that are repeated in multiple columns, like in this case, timing, CFU count and PCR result in samples A-C.
+
+```{r}
+cfupcr
+```
+
+Reshaping this to a long format is more complex; we need to use other arguments of `pivot_wider()`, for example `names_sep =` or `names_pattern =`
+
+```{r}
+cfupcr |> 
+  pivot_longer(!id,
+               names_to = c(".value", "sample"),
+               names_sep = "_")
+```
+
+To learn more about complex joins, please see the Resources section further below.
+
+------------------------------------------------------------------------
+
 ## Pivot wider
 
 Sometimes it might be helpful to go the other way - turn a long dataset wider, i.e., turning rows into columns. For example, to facilitate calculating new columns, or to increase readibility.
@@ -279,14 +287,18 @@ meds
 
 The function `pivot_wider()` from `dplyr` can do this.
 
-We must specify at least two arguments:
+We need to specify the following arguments:
 
-1.  Which column contains the labels that will be turned into column names;
-2.  Which column contains the values that will be sorted in each new column.
+1.  The column(s) that uniquely identifies each observation, *if there is one*
+2.  Which column contains the labels that will be turned into column names
+3.  Which column contains the values that will be sorted in each new column
 
 ```{r}
 meds |>
-  pivot_wider(names_from = "antifungal", values_from = "days")
+  pivot_wider(id_cols = !key,
+              names_from = "antifungal",
+              values_from = "days")
+
 ```
 
 Now let's look at another subset of the WHO tuberculosis data. This time we're comparing new pulmonary TB cases among 35-44yo men in three European countries from 1995 to 2010.
@@ -303,6 +315,7 @@ tb_eur
 
 1.  Reshape this dataset so that there is one column per year, containing the new number of cases in that country in that year.
 2.  Change the name of the columns so that the numbers they contain are clear.
+
 
 ------------------------------------------------------------------------
 

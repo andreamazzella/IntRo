@@ -164,7 +164,7 @@ sqrt(64)
 
 # Datasets
 
-R is mostly built around dataframes: data in table format.
+R is mostly built around "dataframes": data in table format.
 
 Some dataframes are included in R so we can use them to practise.
 

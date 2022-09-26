@@ -26,7 +26,7 @@ Using dataset `trial`, create a new categorical variable that indicates if that 
 ```{r ex0}
 trial <- gtsummary::trial
 
-# Your code in the line below
+# Your code here 👇
 
 ```
 
@@ -45,13 +45,13 @@ library(forcats)
 
 # Dirty data
 
-Your colleague Ian, an eager medical doctor, found out that you can use R and asked you to do a 'quick analysis' of his data.
+Your colleague Ian, an eager medical doctor, heard that you can use R and asked you to do a 'quick analysis' of his data.
 
-He conducted a retrospective study, *S-Fall*, among older patients admitted a mental health hospital, looking at the impact of sedation on the incidence of falls and injuries, as well as subsequent analgesia prescriptions.
+He conducted a retrospective study, *S-Fall*, among older patients admitted to a mental health hospital, to look at the impact of sedation on the incidence of falls and injuries, as well as subsequent analgesia prescriptions.
 
 Ian thought it was a good idea for the data collection to be done in Excel, and unfortunately, there's no data dictionary to be found.
 
-Now let's import this dataset, `S-Fall for analysis new final FINAL.xlsx`.
+Let's import this dataset, aptly named `S-Fall for analysis new final FINAL.xlsx`.
 
 ```{r}
 falls <- rio::import("data/S-Fall for analysis new final FINAL.xlsx")
@@ -63,7 +63,8 @@ falls
 
 1.  Can you spot at least 5 issues with this dataset?
 2.  Open the spreadsheet in Excel. What do you notice?
-3.  Use `summary()` to summarise this dataset. What happens?
+3.  Try to calculate the mean age using `mean()`.
+4.  Use `summary()` to summarise this dataset. What happens?
 
 
 
@@ -171,6 +172,22 @@ falls_condensed <- falls_trimmed |> filter(!is.na(id))
 
 ------------------------------------------------------------------------
 
+## Sorting rows by a column
+
+Function `arrange()` from `dplyr` lets you sort the dataframe by the order of values in a column.
+
+```{r}
+falls_condensed |> arrange(age)
+```
+
+`arrange(desc())` lets you arrange in descending order.
+
+```{r}
+falls_condensed |> arrange(desc(age))
+```
+
+------------------------------------------------------------------------
+
 ## Data classes
 
 One of the main reasons for so many problems with the new dataset is that its *data classes* are not specified.
@@ -197,7 +214,13 @@ class(falls_condensed$age)
 class(falls_condensed$date_admit)
 ```
 
-So, after we import a raw dataset, we need to "parse" variable types, i.e., tell R which classes the variables actually are -- and we can decide to give labels to factors, to make our lives easier when we're running the analyses.
+You can check the classes of all variables in a dataset with `glimpse()`, from `dplyr`:
+```{r}
+glimpse(falls_condensed)
+```
+
+
+So, after we import a raw dataset, we need to tell R which classes the variables actually are ("parsing" columns).
 
 To do this, we using parsing functions, such as `as.character()`, `as.numeric()`, `as.Date`, `as.factor()`.
 
@@ -465,7 +488,7 @@ trial_new |> group_by(marker_group) |>
 # Exercise 1, question 2
 # Merged cells, colour-coded rows, among other issues.
 
-# Exercise 1, question 3
+# Exercise 1, question 4
 # The output is useless.
 ```
 
