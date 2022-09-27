@@ -1,26 +1,47 @@
 ---
-title: "6: Analysing continuous outcomes"
+title: "8: Analysing continuous outcomes"
 subtitle: "Introduction to R for health data"
 author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 ---
-
-NB: work in progress
 
 -------------------------------------------------------------------------------
 
 # What you will learn
 
-* Data analysis of continuous outcomes
+* Introduction to data analysis of continuous outcomes
  - data visualisation
  - t-test
- - linear regression
+ - simple linear regression
+
+------------------------------------------------------------------------
+
+# Recap from topic 7
+
+Run this chunk to recreate some data from a UKHSA table on completed UK primary immunisations at 12 months by country (Apr - June 2022).
+
+```{r ex_recap}
+(vax <- tibble(country = c("Wales", "Northern Ireland", "Scotland", "England"),
+       DTaP_IPV_Hib_HepB3 = c(94.9, 93.2, 96.1, 91.9),
+       PCV1 = c(96.7, 94.9, 96.4, 94.1),
+       Rota2 = c(93.6, 91.5, 94.5, 90.5),
+       MenB2 = c(94.6, 93.4, 95.6, 92.0)
+       ))
+
+(auth <- tibble(area = c("England", "Scotland", "Wales", "Norther Ireland"),
+               local_authorities = c(152, 14, 7, 4)))
+```
+Join the two tables into one.
+
+
+
+
 
 -------------------------------------------------------------------------------
 
 ```{r}
 library(magrittr)
 library(tidyverse)
-options(scipen = 99, digits = 2)
+library(gtsummary)
 ```
 
 -------------------------------------------------------------------------------
@@ -28,39 +49,43 @@ options(scipen = 99, digits = 2)
 
 ## Introduction
 
-Let's load the Ambition dataset. This contains some simulated result of the AMBITION study, a clinical trial investigating the use of single-dose liposomal amphotericin B (LAmB) to treat cryptococcal meningitis, instead of the standard (longer) course.
+Let's load the Ambition dataset. This contains some simulated result of the AMBITION study, a clinical trial investigating the use of single-dose liposomal amphotericin B to treat cryptococcal meningitis, instead of the standard (longer) course.
 
-LAmB is nephrotoxic, so we're interested in the renal function in these two groups.
-```{r}
-amb <- readRDS("data/ambition.rds")
+Amphotericin B can damage the kidneys, so we're interested in the kidney function (creatinine) in these two groups.
+
+```{r import_data}
+amb <- rio::import("data/ambition.rds")
 ```
 
 Just to familiarise yourself with the dataset:
 
-* Exposure variable: "arm" (single-dose LAmB vs standard LAmB course)
+* Exposure variable: `dose_ampho` (standard dosing versus single [low] dose)
 
-* Outcome variable: "crea_2w" (serum creatinine level at 2 weeks)
+* Outcome variable: `crea_2w` (serum creatinine level at 2 weeks)
 
 * Baseline characteristics:
- - "age" (integer)
- - "sex" (binary)
- - "country" (categorical)
- - "crea_0" (baseline creatinine, in mmol/L)
- - "egfr_0" (baseline eGFR calculated with MDRD equation)
+ - `age` (integer)
+ - `sex` (binary)
+ - `country` (categorical)
+ - `crea_0` (baseline creatinine, in mmol/L - a measure of kidney function)
+ - `egfr_0` (baseline eGFR - another measure of kidney function)
 
 -------------------------------------------------------------------------------
 
 ## Average outcome value by a binary exposure
 
-Let's imagine our research question is: "After starting LAmB, is serum creatinine level at 2 weeks different depending on the dose?"
+Let's imagine our research question is: "Do different doses of amphotericin lead to different serum creatinine level at 2 weeks?"
 
 To have a first idea we can summarise the creatinine outcome in the two treatment arms, by calculating an average.
 
 ```{r}
-amb %>% group_by(arm) %>% summarise("number of patients"= n(),
-                                    "mean creatinine at 2w" = mean(crea_2w))
+amb |>
+  group_by(dose_ampho) |>
+  summarise(mean(crea_2w),
+            sd(crea_2w))
 ```
-The average creatinine at 2 weeks is 110 mmol/L in the control group, and 98 mmol/L  in the single-dose group. In this sample, there's a difference of 12 mmol/L. How do we know if this reflects a true difference in the whole population, and is not due to chance?
+
+The average creatinine at 2 weeks is 110 mmol/L in the group receiving standard dose, and 98 mmol/L among those who had low dose. In this sample, there's a difference of 12 mmol/L. How do we know if this reflects a true difference in the whole population (everyone who receives these drugs in these circumstances), and is not only visible in our sample due to chance?
 
 -------------------------------------------------------------------------------
 
@@ -69,15 +94,19 @@ The average creatinine at 2 weeks is 110 mmol/L in the control group, and 98 mmo
 Let's get more insight by visualising the data.
 
 We have a categorical exposure variable (treatment arm) and a continuous outcome variable (creatinine at 2 weeks). Which of these graphs are more appropriate?
+
 - bar chart
 - Box plot
 - histogram
+- line chart
 - scatter plot
 - violin plot
 
 *Exercise 1*
+
 Use an appropriate graph to visualise the distribution of creatinine at 2 weeks according to treatment arm.
-```{r}
+
+```{r ex1}
 
 ```
 
@@ -87,57 +116,45 @@ This is helpful to understand the data better, but still doesn't tell us if this
 
 -------------------------------------------------------------------------------
 
-## Confidence intervals around a mean
+## *t*-test
 
-We can calculate the confidence intervals around each mean.
-
-The formula for the confidence interval of a mean depends on the mean itself and the standard error (which itself depends on the standard deviation and the sample size). For a 95% CI, we multiply the SE by 1.96.
-
-```{r}
-amb %>% group_by(arm) %>% summarise(
-                      "number of patients"= n(),
-                      "mean creatinine at 2w" = mean(crea_2w),
-                      "lower CI" = mean(crea_2w) - 1.96 * sd(crea_2w) / sqrt(n()),
-                      "upper CI" = mean(crea_2w) + 1.96 * sd(crea_2w) / sqrt(n())
-)
-```
-
-An intuitive interpretation of the second confidence interval is:
-"We can be 95% confident that the mean true population mean of creatinine at 2 weeks among patients treated with a single LAmB dose lies between 96 and 101".
-
-As you can see, with a continuous outcome even relatively small sample sizes give us very precise statistical estimates.
-
--------------------------------------------------------------------------------
-
-## t test
-
-In order to do hypothesis testing on the difference between two means, we can use a t test (unpaired because this data is not paired). 
+In order to do hypothesis testing on the difference between two means, we can use a *t*-test (subject to some assumptions).
 
 The function for the t test is `t.test()`.
 
 In R statistical tests, variables listed before the tilde `~` are the outcome/response/dependent variables, and variables after the tilde are the exposure/independent variables.
 
-Our hypothesis is that creatinine at 2 weeks is different according to how much LAmB did the patients receive.
-Our alternative hypothesis is that there is no difference (difference in means = 0).
+Our hypothesis is that creatinine at 2 weeks is different according the dose in LAmB.
+
+Our *null* hypothesis is that there is no difference (difference in means = 0).
 
 ```{r}
-amb %$% t.test(crea_2w ~ arm)
+# With magrittr pipe
+amb %$% t.test(crea_2w ~ dose_ampho)
+
+# Base R equivalent
+# t.test(amb$crea_2w ~ amb$dose_ampho)
 ```
 
-The key output here is the p-value, <0.001. This means that there is very strong evidence against the null hypothesis, and so very strong evidence that creatinine at 2 weeks is indeed different according to treatment group.
+The key outputs here are:  
+1. the p-value, <0.001. This means that there is very strong evidence against the null hypothesis, and so very strong evidence that creatinine at 2 weeks is indeed different according to treatment group.
+2. the means in the two groups - from which we get the direction and the magnitude of the effect. In this case, this means that on average, patients who received single-dose LAmB have a creatinine that's 8.3-15.0 units lower than those in the control group.
 
-The other important output is the 95% CI of this difference: (8.3, 15.0). We can be 95% confident that the true difference in creatinine average is between 8.3 and 15.0 mmol/L.
+NB: By default, R uses a Welch t-test, and not a Student t-test. Welch is generally better because it doesn't assume that the variances in the two groups are equal.
 
-*Exercise 2*
-Now try assessing with a t-test whether *baseline* creatinine is linked to treatment group.
+*Exercise 2.*
 
-```{r}
+Now try assessing with a t-test whether *baseline* creatinine is linked to female or male sex.
+
+```{r ex2}
 
 ```
+
 How do you interpret these results?
 
 
-*Challenge exercise 3*
+*Exercise 3.* 
+
 Assess whether baseline eGFR is different in people from Uganda compared to people from Malawi.
 
 Hint: the "country" variable contains more than 2 countries. How do restrict the dataset only to people from Uganda and Malawi?
@@ -151,17 +168,11 @@ Hint: the "country" variable contains more than 2 countries. How do restrict the
 
 ## A continuous outcome by a continuous exposure
 
-Now let's go through another research question: "Is creatinine at baseline related to age?"
+Now let's go through another research question: "Is creatinine at baseline related to age, among patients with cryptococcal meningitis?"
 
 Both variables are continuous now, so we can't calculate mean creatinine according to age unless we categorised the age group. What we can do is plotting this.
 
-*Exercise 4*
-What's the best way to plot two continuous variables against each other?
-- bar chart
-- Box plot
-- histogram
-- scatter plot
-- violin plot
+*Exercise 4.* 
 
 Plot creatinine at baseline against age. Do you think there's a relationship?
 
@@ -175,12 +186,12 @@ Plot creatinine at baseline against age. Do you think there's a relationship?
 
 Linear regression is used to conduct hypothesis testing with a continuous outcome and one or more exposure variables. If there's just one binary exposure variable, it will be equivalent to a t-test.
 
-What's great about linear regression is that we can visually represent it. In {ggplot2}, we can do this with `geom_smooth()`:
+What's great about linear regression is that we can visually represent it. In `ggplot2`, we can do this with `geom_smooth()`:
 
 ```{r}
-amb %>% ggplot(aes(x = age, y = crea_0)) +
+amb |> ggplot(aes(x = age, y = crea_0)) +
   geom_point() +
-  geom_smooth(method = "lm") # lm stands for linear model
+  geom_smooth(method = "lm") # lm stands for linear (regression) model
 ```
 
 What do you think of this regression line? Is there a relationship between creatinine and age?
@@ -189,11 +200,14 @@ The null hypothesis in linear regression is that in the population, this regress
 
 The alternative hypothesis is that the slope is somewhat different to 0.
 
-The function is `lm()` (linear model) and annoyingly it follows a different syntax to `t.test()`. The dataset is specified as the "data" argument. We can then pipe into the `summary()` function to get the output we need.
+The function is `lm()` (linear model) and its syntax is, annoyingly, different than `t.test()`. The dataset is specified as the "data" argument. We can then pipe into the `summary()` function to get the output we need.
 ```{r}
-lm(crea_0 ~ age,
-   data = amb) %>%
-  summary()
+linear_crea0_age <- lm(crea_0 ~ age,
+                       data = amb)
+
+summary(linear_crea0_age)
+
+confint(linear_crea0_age)
 ```
 
 We're interested in these key outputs:
@@ -211,8 +225,9 @@ How confident are we about this statement? Very confident: the p value is <0.001
 
 (The intercept, 55, mathematically refers to the mean creatinine at age 0 years. But in this dataset the youngest person is 18, so that value is purely extrapolated by continuing the regression line to the left. It does not have any clinical meaning.)
 
-*Exercise 5*
-Now assess the relation between eGFR at baseline and age:
+*Exercise 5.* 
+
+Now assess the relation between *eGFR at baseline* and *age*:  
 1. Draw a scatterplot with a linear regression line. What do you think of the distribution?
 2. Conduct hypothesis testing with a linear regression model.
 3. Write the regression equation. What does this mean?
@@ -232,9 +247,19 @@ Now assess the relation between eGFR at baseline and age:
 
 ```
 
+### Nice regression table
+
+Remember package `gtsummary`? We used it in topic 3 to create automatic descriptive tables, with `tbl_summary()`. It also has `tbl_regression()` which helps make regression output nicer to read.
+
+```{r}
+tbl_regression(linear_crea0_age)
+```
+
+
 -------------------------------------------------------------------------------
 
-*Challenge exercise 6*
+*Challenge exercise 6.*
+
 Creatinine at 2 weeks is not very meaningful - in real life you'd compare that value with the baseline creatinine, and this is what the trial is looking at.
 1. Create a new variable that represents the percent change in creatinine.
 2. Visualise the distribution of this change in the two treatment arms.
@@ -258,47 +283,57 @@ Creatinine at 2 weeks is not very meaningful - in real life you'd compare that v
 
 Solutions
 
-```{r Exercise 1}
+```{r ex_recap_solution}
+# Option A
+vax |>
+  rename(area = country) |> 
+  left_join(auth, by = "area")
+
+# Option B (short-cut)
+left_join(vax, auth, by = c("country" = "area"))
+```
+
+```{r ex1_solution}
 # Option A: Box plot
-ggplot(amb, aes(y = crea_2w, x = arm)) +
+ggplot(amb, aes(y = crea_2w, x = dose_ampho)) +
   geom_boxplot() +
   coord_fixed(ratio = 0.02)
 
 # Option B: violin plot
-ggplot(amb, aes(y = crea_2w, x = arm)) +
-  geom_violin(draw_quantiles = 0.5) +
+ggplot(amb, aes(y = crea_2w, x = dose_ampho)) +
+  geom_violin(draw_quantiles = c(0.25, 0.5, 0.75)) +
   coord_fixed(ratio = 0.02)
 
 # Option C: stratified histogram
-ggplot(amb, aes(x = crea_2w, fill = arm)) +
+ggplot(amb, aes(x = crea_2w, fill = dose_ampho)) +
   geom_histogram(binwidth = 12.5) +
-  facet_grid(rows = vars(arm))
+  facet_grid(rows = vars(dose_ampho))
 ```
 
 
-```{r Exercise 2}
-amb %$% t.test(crea_0 ~ arm)
+```{r ex2_solution}
+amb %$% t.test(crea_0 ~ sex)
 ```
 
-```{r Challenge exercise 3}
-amb %>%
+```{r ex3_solution}
+amb |>
   filter(country == "uganda" | country == "malawi") %$%
   t.test(egfr_0 ~ country)
 ```
 
-```{r Exercise 4}
-amb %>% ggplot(aes(x = age, y = crea_0)) + geom_point()
+```{r ex4_solution}
+amb |> ggplot(aes(x = age, y = crea_0)) + geom_point()
 ```
 
-```{r Exercise 5}
+```{r ex5_solution}
 # 1: scatterplot
-amb %>% ggplot(aes(x = age, y = egfr_0)) +
+amb |> ggplot(aes(x = age, y = egfr_0)) +
   geom_point(colour = "darkgreen") +
   geom_smooth(method = "lm", colour = "purple")
 
 # 2: linear model
 lm(egfr_0 ~ age,
-   data = amb) %>% 
+   data = amb) |> 
   summary()
 
 # 3: regression equation
@@ -308,20 +343,21 @@ lm(egfr_0 ~ age,
 # p-value < 0.001. There's very strong evidence that eGFR decreases with age.
 ```
 
-```{r Challenge exercise 6}
+```{r ex6_solution}
 # 1
-amb %<>% mutate(change_creat = 100*(crea_2w - crea_0)/crea_0)
-amb %>% select(ID, crea_0, crea_2w, change_creat)
+amb <- amb |>  mutate(change_creat = 100*(crea_2w - crea_0)/crea_0)
+amb |> select(ID, crea_0, crea_2w, change_creat)
 
 # 2
-amb %>% ggplot(aes(arm, change_creat)) + geom_boxplot()
+amb |> ggplot(aes(dose_ampho, change_creat)) + geom_boxplot()
 
 # 3, option A
-amb %$% t.test(change_creat ~ arm)
+amb %$% t.test(change_creat ~ dose_ampho)
 
 # 3, option B
-lm(change_creat ~ arm,
-   data = amb) %>% 
-  summary()
+lin_creat_dose <- lm(change_creat ~ dose_ampho,
+   data = amb)
+
+gtsummary::tbl_regression(lin_creat_dose)
 ```
 
