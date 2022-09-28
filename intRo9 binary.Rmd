@@ -1,0 +1,148 @@
+---
+title: "9: Analysing binary outcomes"
+subtitle: "Introduction to R for health data"
+author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
+---
+
+NB: work in progress
+
+------------------------------------------------------------------------
+
+# What you will learn
+
+-   Introduction to data analysis of binary outcomes
+    -   chi-square test
+    -   logistic regression
+
+
+------------------------------------------------------------------------
+
+# Recap from topic 8
+
+...
+
+------------------------------------------------------------------------
+
+```{r}
+library(magrittr)
+library(summarytools)
+library(tidyverse)
+library(gtsummary)
+library(broom)
+```
+
+------------------------------------------------------------------------
+
+# Analysing binary outcomes
+
+```{r}
+viral <- rio::import("data/viral.rds")
+viral
+```
+
+
+Visualise and summarise before you infer
+
+```{r}
+viral |>
+  ggplot(aes(y = ms, fill = ebv_baseline)) +
+  geom_bar(position = "dodge") +
+  coord_fixed(ratio = 120)
+```
+
+```{r}
+viral %$% ctable(ebv_baseline, ms)
+```
+
+
+
+## Chi-square test
+
+```{r}
+# Base R
+chisq_ms_ebv <- viral %$%
+  table(ms, ebv_baseline) |>
+  chisq.test()
+chisq_ms_ebv
+chisq_ms_ebv$expected |> round(1)
+
+
+# Using summarytools
+viral %$% ctable(ms, ebv_baseline, prop = "c", chisq = TRUE, OR = TRUE)
+```
+
+*Exercise 1.*
+
+1. Visualise the relationship between sex and MS.
+2. Summarise this with a contingency table.
+3. Perform a chi-square test and calculate the OR.
+
+
+
+
+
+------------------------------------------------------------------------
+
+## Logistic regression
+
+### With a binary exposure
+
+```{r}
+logistic_ebv <- glm(ms ~ ebv_baseline,
+                    family = binomial,
+                    data = viral)
+
+summary(logistic_ebv)
+
+tbl_regression(logistic_ebv, exponentiate = TRUE)
+```
+
+
+### With a continuous exposure
+
+```{r}
+logistic_age <- glm(ms ~ age_baseline,
+                    family = binomial,
+                    data = viral)
+
+summary(logistic_age)
+
+tbl_regression(logistic_age, exponentiate = TRUE)
+```
+
+
+### Multivariable
+
+
+```{r}
+logistic_multi <- glm(ms ~ ebv_baseline + age_baseline,
+                       family = binomial,
+                       data = viral)
+
+summary(logistic_multi)
+
+tbl_regression(logistic_multi, exponentiate = TRUE)
+
+# Compare with previous
+tbl_regression(logistic_ebv, exponentiate = TRUE)
+```
+
+------------------------------------------------------------------------
+
+
+More resources
+
+-  [Trap of trends to statistical significance, BMJ 2014](https://www.bmj.com/content/348/bmj.g2215)
+Solutions
+- Infer package - for tidy tests including `t_test()` and `chisq_test()` wrappers
+- broom package - to improve output of regression models
+
+```{r ex1_solution}
+# Q1
+viral |>
+  ggplot(aes(y = ms, fill = sex)) +
+  geom_bar(position = "dodge")
+
+# Q2 and Q3
+viral %$% ctable(sex, ms, chisq = TRUE, OR = TRUE)
+```
