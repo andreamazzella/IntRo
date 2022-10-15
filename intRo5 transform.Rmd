@@ -348,7 +348,8 @@ Whatever you do to the dataset, it doesn't change the original file. If you want
 # Solutions
 
 ```{r solution_recap}
-Theoph |> filter(Subject == 11 & conc > 7.5)
+theoph <- datasets::Theoph
+theoph |> filter(Subject == 11 & conc > 7.5)
 ```
 
 ```{r solution_new_variable}

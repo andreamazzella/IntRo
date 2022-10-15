@@ -230,7 +230,7 @@ s_america <- tibble(
   popul = c(216182201, 52571220, 12039798, 46148799, 27360459,
             3501838, 7335451, 18331909, 34234477, 598919, 794910, 19682578))
 
-tb_amer <- who |>
+tb_amer <- tidyr::who |>
   filter(year == 2010, country %in% s_america$country) |> 
   select(country, pulmonary = new_sp_f2534, extrapulm = new_ep_f2534)
 
@@ -304,7 +304,7 @@ meds |>
 Now let's look at another subset of the WHO tuberculosis data. This time we're comparing new pulmonary TB cases among 35-44yo men in three European countries from 1995 to 2010.
 
 ```{r}
-tb_eur <-  who |> 
+tb_eur <-  tidyr::who |> 
   filter(!is.na(new_sp_m3544), iso3 %in% c("DEU", "FRA", "GBR", "ITA", "ESP"), year %in% seq(1995, 2010, 5)) |> 
   select(country = iso3, year, new_cases = new_sp_m3544)
  

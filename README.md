@@ -11,6 +11,6 @@ Markdown notebooks illustrating the basics of R, RStudio and the tidyverse for m
 6. **Data cleaning** (Deleting and renaming variables; data classes; factors; labelling and recoding values)
 7. **Data reshaping** (Joining datasets; wide and long formats; reshaping wide to long and vice versa)
 8. **Data analysis of continuous outcomes** (data visualisation; t-test; linear regression)
-9. **Data analysis of categorical outcomes** (work in progress)
+9. **Data analysis of binary outcomes** (work in progress)
 
 Author: [Andrea Mazzella](https://github.com/andreamazzella)

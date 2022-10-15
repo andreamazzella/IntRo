@@ -20,9 +20,14 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 
 # Recap from topic 1
 
-Calculate the median tooth length in the dataframe `ToothGrowth`.
+Calculate the median tooth length in the dataframe `teeth`.
 
 ```{r}
+teeth <- datasets::ToothGrowth
+
+# Your code here
+
+
 
 ```
 
@@ -69,6 +74,9 @@ For this topic, we will use a sample dataset called `msleep`.
 It contains data on sleep for 83 different mammal species.
 
 ```{r}
+# Import data
+msleep <- ggplot2::msleep
+
 # Preview of dataset
 msleep
 
@@ -164,13 +172,13 @@ ggplot(msleep, aes(x = vore, fill = conservation)) +
   geom_bar()
 ```
 
-*Want to know more?* To change the *value* labels in a categorical variable, you either use `+ scale_<aes>_discrete(labels = c("value1" = "label1", "value2" = "label2"))`, or you recode the values before plotting. I recommend you ignore this for now.
-
-*Exercise 4.* Now create a bar chart that shows count of different conservation groups, stratified by diet type.
+*Exercise 4.* Now create a bar chart that shows counts of different conservation groups. Then, stratify by diet type.
 
 ```{r}
 
 ```
+
+*Want to know more?* To change the *value* labels in a categorical variable, you either use `+ scale_<aes>_discrete(labels = c("value1" = "label1", "value2" = "label2"))`, or you recode the values before plotting. I recommend you ignore this for now.
 
 ------------------------------------------------------------------------
 

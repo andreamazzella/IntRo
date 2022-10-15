@@ -59,6 +59,7 @@ Two packages can contain a function with the same name - for example, `filter()`
 For this topic, we'll use `trial`, a sample dataset from package `gtsummary`. This contains the baseline characteristics of 200 patients who received two different cancer drugs (`trt`) and treatment outcomes: `response` and `death`. Check its documentation to learn more.
 
 ```{r}
+trial <- gtsummary::trial
 trial
 help(trial)
 ```
@@ -364,11 +365,12 @@ I recommend these resources:
 
 ```{r include=FALSE}
 # Recap - part 1
-Theoph
-help(Theoph)
+theoph <- datasets::Theoph
+theoph
+help(theoph)
 
 # Recap - part 2
-Theoph |>
+theoph |>
   ggplot(aes(x = Time, y = conc, colour = Subject)) +
   geom_point() +
   geom_line()
@@ -398,7 +400,9 @@ trial |>
             IQR_age = IQR(age, na.rm = TRUE))
 
 # Exercise 7
-ToothGrowth |> 
+teeth <- datasets::ToothGrowth
+
+teeth |> 
   tbl_summary(by = supp) |> 
   add_overall()
 ```

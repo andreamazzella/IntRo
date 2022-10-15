@@ -166,24 +166,26 @@ sqrt(64)
 
 R is mostly built around "dataframes": data in table format.
 
-Some dataframes are included in R so we can use them to practise.
+Some dataframes are included in R, so we can use them to practise.
 
-For example, let's explore `ToothGrowth`, a small dataset from an experiment on the impact of vitamin C supplementation on tooth length among 60 guinea pigs.
+For example, let's explore a small dataset from an experiment on the impact of vitamin C supplementation on tooth length among 60 guinea pigs.
 
 To have a look at this dataset, you can "call" its name or you can use the function `View()`. (Caution: R is case-sensitive)
 
 ```{r}
+teeth <- datasets::ToothGrowth
+
 # Option 1: dataframe name
-ToothGrowth
+teeth
 ```
 
 ```{r}
 # Option 2: using View().
 # NB - this will open a new tab
-View(ToothGrowth)
+View(teeth)
 ```
 
-A dataframe has columns called *variables*. These are the variables in `ToothGrowth`:
+A dataframe has columns called *variables*. These are the variables in `teeth`:
 
 -   `len`: tooth cell length
 -   `supp`: supplement type (VC = vitamin C; OJ = orange juice)
@@ -196,20 +198,23 @@ Now let's use the `mean()` and `sd()` functions to calculate the average tooth c
 R can work with more than one dataset at the time. For this reason, every time you refer to a variable, you also need to tell R which dataset is that variable from. You do this by typing a `$` sign between the dataset and the variable name. (The `$` sign is technically called the "exposition operator").
 
 ```{r}
-mean(ToothGrowth$len)
-# The above reads: calculate the mean of a variable taken from `ToothGrowth` and called `len`.
+mean(teeth$len)
+# The above reads: calculate the mean of a variable taken from `teeth` and called `len`.
 
-sd(ToothGrowth$len)
+sd(teeth$len)
 ```
 
-*Exercise 8.* Let's use another dataset, `chickwts`. This contains info on chicken weights (in grams) and their feed type.
+*Exercise 8.* Let's use another dataset, `chickens`. This contains info on chicken weights (in grams) and their feed type.
 
 1.  Calculate the `median` chicken weight.
 2.  Calculate the standard deviation of chicken weight.
 
 ```{r}
+# Load the data
+chickens <- datasets::chickwts
+
 # Preview the dataframe
-chickwts
+chickens
 
 # Median chicken weight
 # ...
@@ -264,6 +269,20 @@ c("age" = 19, "height" = 185, "systolic_BP" = 132)
 2.  Calculate the mean weight of its study participants
 3.  Convert this mean weight from kilograms to pounds. (1 kg = approx. 2.2 pounds)
 
+```{r}
+# Import
+theoph <- datasets::Theoph
+
+# Your code below
+
+
+
+
+
+
+```
+
+
 ------------------------------------------------------------------------
 
 # Solutions
@@ -276,21 +295,21 @@ c("age" = 19, "height" = 185, "systolic_BP" = 132)
 log(100)
 
 # Exercise 8
-median(chickwts$weight)
-sd(chickwts$weight)
+median(chickens$weight)
+sd(chickens$weight)
 
 # Final exercise
 # 1. Explore dataset
-View(Theoph)
+View(theoph)
 
 # 2. Calculate mean weight
-mean(Theoph$Wt)
+mean(theoph$Wt)
 
 # 3. Convert mean weight to pounds
-mean(Theoph$Wt) * 22
+mean(theoph$Wt) * 22
 
 # An alternative way
-mean_kg <- mean(Theoph$Wt)
+mean_kg <- mean(theoph$Wt)
 mean_kg * 2.2
 ```
 

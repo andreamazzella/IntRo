@@ -43,6 +43,7 @@ library(ggplot2)
 In this topic, we'll focus on two main tasks for which this package is helpful: reducing rows (`filter()`) and reducing columns (`select()`). We'll use the dataset `msleep` containing information on sleep of 83 mammal species.
 
 ```{r}
+msleep <- ggplot2::msleep
 msleep
 ```
 
@@ -372,7 +373,9 @@ msleep |> filter(bodywt > 50)
 
 ```{r}
 # Recap
-ToothGrowth |>
+teeth <- datasets::ToothGrowth
+
+teeth |> 
   group_by(supp) |>
   summarise(min(len),
             mean(len),
