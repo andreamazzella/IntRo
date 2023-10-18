@@ -38,9 +38,7 @@ The RStudio interface is divided into four parts:
 
 The console is used to run simple commands that you don't need to save.
 
-*Exercise 1.* In the console, add 3 and 5. You do this by using it as a calculator:
-
-3 + 5 Enter
+*Exercise 1.* In the console, add 3 and 5. You do this by using it as a calculator: Type 3 + 5, then press Enter.
 
 Now forget about the console -- it's better to keep your code in a notebook (or in a script). This is for many reasons:
 
@@ -124,7 +122,7 @@ You can tell R that something has a name; R will remember it and you can use tha
 # Assigning a value to "radius"
 radius <- 5.7
 
-# Visuaising the value of "radius"
+# Visualising the value of "radius"
 radius
 ```
 
@@ -315,3 +313,10 @@ mean_kg * 2.2
 ```
 
 ------------------------------------------------------------------------
+
+This is normal text, which can be **formatted** *as if it's a text editor.* It's for humans to read.
+
+```{r}
+# This is a chunk, that contains code.
+mean(ToothGrowth$len)
+```
