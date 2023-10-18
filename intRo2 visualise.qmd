@@ -94,7 +94,7 @@ help(msleep)
 
 # Data visualisation with `ggplot2`
 
-Package `ggplot2` can make stunning graphs.
+Package `ggplot2` can make high-quality graphs.
 
 It works in "layers" separated by `+` signs: you can have a very simple graph with just two layers, or a very complex one with many more. Let's start with something simple and work on it.
 
@@ -102,7 +102,7 @@ It works in "layers" separated by `+` signs: you can have a very simple graph wi
 
 ## Bar charts
 
-Bar charts are useful to visualise frequencies of a categorical variable, such as diet type in our dataset (`vore`).
+Bar charts are useful to visualise frequencies of a categorical variable, such as diet type (`vore`) in our dataset.
 
 They are made by using `geom_bar()`. This is how to make a basic bar chart in `ggplot2`:
 
@@ -121,7 +121,7 @@ Let's break this code down.
 -   `geom_bar` is a geometry function: it specifies that we want the variable above to be represented in a bar chart.
 -   The `+` sign links the base function with the geometry function.
 
-Note that code can span over more than one line - it makes it more readible.
+Note that code can span over more than one line - it makes it more readable.
 
 ### Bugs
 
