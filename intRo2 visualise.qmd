@@ -20,7 +20,7 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 
 # Recap from topic 1
 
-Calculate the median tooth length in the dataframe `teeth`.
+Calculate the median tooth length in the dataframe `teeth`. (This is a default dataset, you can load it by running the first line in this chunk).
 
 ```{r}
 teeth <- datasets::ToothGrowth
@@ -116,8 +116,8 @@ ggplot(msleep, aes(x = vore)) +
 Let's break this code down.
 
 -   `ggplot()` is the base function; it needs as arguments:
--   the dataset name (`msleep`)
--   `aes()` stands for "aesthetics", and basically means what we want to appear on the graph. `x = vore` means that we want variable `vore` to be plotted on the x-axis.
+  -   the dataset name (`msleep`)
+  -   `aes()` stands for "aesthetics", and basically means what we want to appear on the graph. `x = vore` means that we want variable `vore` to be plotted on the x-axis.
 -   `geom_bar` is a geometry function: it specifies that we want the variable above to be represented in a bar chart.
 -   The `+` sign links the base function with the geometry function.
 
