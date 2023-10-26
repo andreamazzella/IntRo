@@ -204,6 +204,7 @@ trial |>
 ```
 
 (NB: `summarise()` is different from the function we used above, `summary()`!)
+(Please ignore the `|>` symbol for now; we'll come back to it soon).
 
 You can summarise with any of these functions:
 
@@ -222,8 +223,6 @@ trial |>
             avg_follow_up = mean(ttdeath),
             sd_follow_up = sd(ttdeath))
 ```
-
-(Please ignore the `|>` symbol for now; we'll come back to it soon).
 
 Remember that we can visualise the distribution of a continuous variable across a categorical variable with Box plots:
 
