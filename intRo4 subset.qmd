@@ -107,10 +107,10 @@ Common conditions in R:
 -   `!is.na(x)` - is this a non-missing value?
 -   `x %in% c(3, 7)` - is this value present in this list?
 
-For example, we can use `!is.na()` to only keep observation with non-missing sleep cycle data:
+For example, we can use `is.na()` to only keep observation with missing sleep cycle data:
 
 ```{r}
-filter(msleep, !is.na(sleep_cycle))
+filter(msleep, is.na(sleep_cycle))
 ```
 
 You can also filter on more than one condition; for example, you might want to only filter herbivores that sleep more than 15 hours a day.
