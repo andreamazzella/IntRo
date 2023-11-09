@@ -27,7 +27,9 @@ Use the `ToothGrowth` dataset to calculate summary statistics on tooth length (m
 
 ------------------------------------------------------------------------
 
-Load packages
+## Load packages
+
+Remember to run this chunk!
 
 ```{r}
 library(dplyr)
