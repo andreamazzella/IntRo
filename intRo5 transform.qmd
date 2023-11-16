@@ -28,10 +28,7 @@ From default dataset `Theoph`, identify at which time point participant 11 had a
 Load packages
 
 ```{r}
-library(lubridate) # dealing with dates
-library(dplyr)     # data management
-library(ggplot2)   # graphs
-library(forcats)   # dealing with categorical variables
+library(tidyverse)
 ```
 
 ------------------------------------------------------------------------
@@ -40,20 +37,20 @@ library(forcats)   # dealing with categorical variables
 
 So far, we've used some sample dataframes that are already loaded in R.
 
-Now let's import an external dataset. The way you do this within `.Rmd` notebooks is:
+Now let's import an external dataset. The way you do this within `.qmd` notebooks is:
 
-1.  You move your dataset somewhere within the same folder as the `.Rmd` file;
-2.  You use a function to load the data. `rio::import()` can read many formats, including `.csv`, Excel spreadsheets, Stata datasets, and the R format, `.rds`.
+1.  You move your dataset somewhere within the same folder as the `.qmd` file;
+2.  You use a function to load the data. The function you need to use depends on the data format.
 3.  You assign the output of this function to a name of your choice.
 
 For example:
 
-1.  Make sure that this `.Rmd` file is saved in the same folder as a `data` folder containing `diabetes.rds`, a simulated dataset.
-2.  Then we use `rio::import()` to load the file.
+1.  Make sure that this `.qmd` file is saved in the same folder as a `data` folder containing `diabetes.rds`, a simulated dataset.
+2.  Then we use `readr::read_rds` to load the file.
 
 ```{r}
 # Data import
-dm <- rio::import("data/diabetes.rds") 
+dm <- read_rds("data/diabetes.rds")
 ```
 
 You will note that now this dataset has been imported in your *Environment*, in the top right of your window.
@@ -117,7 +114,8 @@ Convert weight into pounds (1kg = 2.20462 lbs) and add this to the dataset.
 
 (Note: if you make a mistake and you want to recalculate the variable, you don't need to drop the old one first. When you assign it again, R will overwrite the old variable)
 
-```{r new_variable}
+```{r}
+#| label: new_variable
 
 ```
 
@@ -134,12 +132,18 @@ Dealing with dates in all programming languages is tricky. We'll come back to th
 
 ```{r}
 # Create a calculated age variable
-dm <- dm |> mutate(
-  age = ((dmy("5 Sep 2022") - date_birth) / 365.25) |> as.numeric() |> floor()
-  )
+dm <- dm |>
+    mutate(
+        # Calculate age as a period
+        age_period = interval(start = date_birth, end = dmy("05-Sep-2022")) |> as.period(),
+        # Convert age period into decimal years
+        age_decimal = as.duration(age_period) |> as.numeric("years"),
+        # Drop the decimal digits
+        age_years = floor(age_decimal)
+    )
 
 # Sanity check
-dm |> select(date_birth, age)
+dm |> select(date_birth, age_years)
 ```
 
 *Exercise 2.*
@@ -147,7 +151,8 @@ dm |> select(date_birth, age)
 1.  Explore the distribution of age with a histogram.
 2.  What are the median age, Q1 and Q3?
 
-```{r histogram}
+```{r}
+#| label: histogram
 
 ```
 
@@ -166,9 +171,8 @@ summary(dm$bmi)
 We can then use `mutate()`, this time with helper function `cut()` - we need to specify the `breaks`, i.e., which values delimit groups.
 
 ```{r}
-dm <- dm |>  mutate(
-  bmi_group = cut(bmi, breaks = c(14, 18.5, 25, 30, 37))
-  )
+dm <- dm |>
+    mutate(bmi_group = cut(bmi, breaks = c(0, 18.5, 25, 30, Inf), right = FALSE))
 
 # Check that the new variable was created correctly
 dm |>
@@ -187,12 +191,13 @@ We can add custom labels to each group by adding the argument `labels =`. NB: la
 
 ```{r}
 dm <- dm |>
-  mutate(bmi_group_new = cut(bmi,
-                             breaks = c(14, 18.5, 25, 30, 37),
+  mutate(bmi_group_new = cut(bmi, right = FALSE,
+                             breaks = c(0, 18.5, 25, 30, Inf),
                              labels = c("underweight",
                                         "regular weight",
                                         "overweight",
-                                        "obese")))
+                                        "obese")
+         ))
 
 dm |> count(bmi_group, bmi_group_new)
 ```
@@ -203,7 +208,8 @@ NB: categorising continuous variables, and especially dichotomising them, is pot
 
 Categorise age into groups.
 
-```{r categorise}
+```{r}
+#| label: categories
 
 ```
 
@@ -226,10 +232,10 @@ To do this, we can use `mutate()` to create the new variable and `fct_collapse()
 dm |> count(continent)
 
 # Regroup
-dm <- dm |> mutate(
-  macrocontinent = fct_collapse(continent,
-                                americas = c("n_america", "s_america"),
-                                eurasia = c("europe", "asia")))
+dm <- dm |>
+    mutate(macrocontinent = fct_collapse(continent,
+                                         americas = c("n_america", "s_america"),
+                                         eurasia = c("europe", "asia")))
 
 # Check it worked
 dm |> count(continent, macrocontinent)
@@ -276,7 +282,8 @@ NB: do *not* use the `%in%` shortcut in these circumstances, otherwise missing v
 1.  Create a new variable with three levels: eats meat, eats fish, doesn't eat either, using `diet` as reference.
 2.  Create a new binary variable that indicates whether a patient is inactive, using `exercise` as reference.
 
-```{r group_levels}
+```{r}
+#| label: group_levels
 
 ```
 
@@ -295,13 +302,14 @@ To do this, we may use `case_when()`. This allows us to check for many logical s
 dm |> count(disability, exercise)
 
 # Create the new variable
-dm <- dm |> mutate(
-  frailty = case_when(disability == "severe" ~ "severely frail",
-                      disability == "mild" & exercise == "none" ~ "moderately frail",
-                      disability == "mild" & exercise != "none" ~ "mildly frail",
-                      disability == "able-bodied" ~ "not frail",
-                      is.na(disability) | is.na(exercise) ~ NA_character_
-))
+dm <- dm |>
+    mutate(frailty = case_when(disability == "severe" ~ "severely frail",
+                               disability == "mild" & exercise == "none" ~ "moderately frail",
+                               disability == "mild" & exercise != "none" ~ "mildly frail",
+                               disability == "able-bodied" ~ "not frail",
+                               is.na(disability) | is.na(exercise) ~ NA_character_
+    ))
+
 
 # Check it worked
 dm |> count(disability, exercise, frailty)
@@ -313,10 +321,10 @@ dm |> count(disability, exercise, frailty)
 
 Whatever you do to the dataset, it doesn't change the original file. If you want to make some changes permanent, you need to use a writing function.
 
-`rio::export()` lets you save in many formats - you just need to specify the file extension after the file name.
+`readr::write_rds` lets you save in the native R format, which will keep the data types.
 
 ```{r}
-# dm |> rio::export("data/diabetes_edited.rds")
+# dm |> write_rds("data/diabetes_edited.rds")
 ```
 
 ------------------------------------------------------------------------
@@ -328,7 +336,9 @@ Whatever you do to the dataset, it doesn't change the original file. If you want
 3. Categorise the type of stool in the Bristol scale into three levels: "constipation" (type 1-2), "normal" (type 3-5), "diarrhoea" (type 6-7).
 4. Save a copy as `bristol_v2.rds`.
 
-```{r recap}
+```{r}
+#| label: recap
+ 
 # Import
 
 
@@ -347,30 +357,34 @@ Whatever you do to the dataset, it doesn't change the original file. If you want
 
 # Solutions
 
-```{r solution_recap}
+```{r}
+#| label: solution_recap
 theoph <- datasets::Theoph
 theoph |> filter(Subject == 11 & conc > 7.5)
 ```
 
-```{r solution_new_variable}
+```{r}
+#| label: solution_new_variable
 dm <- dm |> mutate(pounds = weight * 2.20462)
 ```
 
-```{r solution_histogram}
+```{r}
+#| label: solution_histogram 
 ggplot(dm, aes(age, fill = gender)) + geom_histogram(bins = 20)
 summary(dm$age)
 ```
 
-```{r solution_categorise}
+```{r}
+#| label: solution_categorise
 # Summarise age
 summary(dm$age)
 
 # Categorise
-dm <- dm |> mutate(
-  age_grp = cut(age,
-                breaks = c(16, 18, 30, 60, 81),
-                labels = c("underage", "young adult", "adult", "older adult"),
-                right = FALSE))
+dm <- dm |>
+    mutate(age_grp = cut(age,
+                         breaks = c(16, 18, 30, 60, 81),
+                         labels = c("underage", "young adult", "adult", "older adult"),
+                         right = FALSE))
 
 # Sanity check
 dm |>
@@ -380,7 +394,8 @@ dm |>
             n())
 ```
 
-```{r solution_group_levels}
+```{r}
+#| label: solution_group_levels
 dm |> count(diet)
 dm |> count(exercise)
 
@@ -392,9 +407,10 @@ dm |> count(exercise, inactive)
 dm |> count(diet, diet_new)
 ```
 
-```{r solution_recap}
+```{r}
+#| label: solution_recap
 # Import
-bristol <- rio::import("data/bristol.rds")
+bristol <- readr_rds("data/bristol.rds")
 
 # Explore
 View(bristol)
@@ -402,19 +418,18 @@ glimpse(bristol)
 count(bristol, bristol_type)
 
 # Categorise
-bristol <- bristol |> mutate(
-  stool_type = case_when(
-    bristol_type <= 2 ~ "constipation",
-    between(bristol_type, 3, 5) ~ "normal",
-    bristol_type >= 6 ~ "diarrhoea"
-  ))
+bristol <- bristol |>
+    mutate(stool_type = case_when(bristol_type <= 2 ~ "constipation",
+                                  between(bristol_type, 3, 5) ~ "normal",
+                                  bristol_type >= 6 ~ "diarrhoea"
+    ))
 # NB: this may also be done with cut()
 
 # Check
 bristol |> count(bristol_type, stool_type)
 
 # Export
-# bristol |> rio::export("data/bristol_v2.rds")
+# bristol |> write_rds("data/bristol_v2.rds")
 ```
 
 ------------------------------------------------------------------------
