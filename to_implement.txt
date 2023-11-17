@@ -1,0 +1,4 @@
+- intro3 summarise: remove summarytools as it's broken
+- subset and summarise: invert?
+
+-intro5: the age calculation is too complicated and too soon. Also, the session is too long - need to split into two?

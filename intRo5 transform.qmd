@@ -110,7 +110,7 @@ dm |> select(height, height_m)
 
 *Exercise 1.*
 
-Convert weight into pounds (1kg = 2.20462 lbs) and add this to the dataset.
+Convert weight into pounds (1 kg = 2.20462 lbs) and add this to the dataset.
 
 (Note: if you make a mistake and you want to recalculate the variable, you don't need to drop the old one first. When you assign it again, R will overwrite the old variable)
 
@@ -135,15 +135,17 @@ Dealing with dates in all programming languages is tricky. We'll come back to th
 dm <- dm |>
     mutate(
         # Calculate age as a period
-        age_period = interval(start = date_birth, end = dmy("05-Sep-2022")) |> as.period(),
+        age_interval = interval(start = date_birth, end = dmy("05-Sep-2022")),
+        age_period = as.period(age_interval),
         # Convert age period into decimal years
-        age_decimal = as.duration(age_period) |> as.numeric("years"),
+        age_duration = as.duration(age_period),
+        age_decimal = as.numeric(age_duration, "years"),
         # Drop the decimal digits
         age_years = floor(age_decimal)
     )
 
 # Sanity check
-dm |> select(date_birth, age_years)
+dm |> select(date_birth, starts_with("age"))
 ```
 
 *Exercise 2.*
@@ -410,7 +412,7 @@ dm |> count(diet, diet_new)
 ```{r}
 #| label: solution_recap
 # Import
-bristol <- readr_rds("data/bristol.rds")
+bristol <- read_rds("data/bristol.rds")
 
 # Explore
 View(bristol)
