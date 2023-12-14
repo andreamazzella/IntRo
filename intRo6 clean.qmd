@@ -35,10 +35,7 @@ trial <- gtsummary::trial
 
 ```{r}
 library(janitor)
-library(lubridate)
-library(dplyr)
-library(ggplot2)
-library(forcats)
+library(tidyverse)
 ```
 
 ------------------------------------------------------------------------
@@ -54,7 +51,7 @@ Ian thought it was a good idea for the data collection to be done in Excel, and 
 Let's import this dataset, aptly named `S-Fall for analysis new final FINAL.xlsx`.
 
 ```{r}
-falls <- rio::import("data/S-Fall for analysis new final FINAL.xlsx")
+falls <- readxl::read_excel("data/S-Fall for analysis new final FINAL.xlsx")
 
 falls
 ```
@@ -78,7 +75,7 @@ In its current state, the dataset is unusable. We'll now work on "cleaning" this
 Some changes can already be done during data import - for example, we can tell R to skip the first rows that don't actually contain the column names.
 
 ```{r}
-falls_v2 <- rio::import("data/S-Fall for analysis new final FINAL.xlsx", skip = 3)
+falls_v2 <- readxl::read_excel("data/S-Fall for analysis new final FINAL.xlsx", skip = 3)
 
 head(falls_v2)
 ```
@@ -164,7 +161,7 @@ It looks like:
 tail(falls_trimmed, n = 12)
 ```
 
-We need to remove all these rows. Before reading the chunk below, can you remember at least one function to conditionally keep rows? (topic 4)
+We need to remove all these rows. Before reading the chunk below, can you remember what function we can use to conditionally keep rows?
 
 ```{r}
 falls_condensed <- falls_trimmed |> filter(!is.na(id))
@@ -204,6 +201,7 @@ R data classes that are relevant to health data analysis are:
 -   **character** (free text)
 -   **factor** (categorical variable)
 -   **logical** (possible values: `TRUE`, `FALSE`, `NA`)
+-   For time series data, it can be useful to use package zoo's "yearmon" and "yearqtr" classes.
 
 To check which class an object (or a variable) is, you use `class()`:
 
@@ -317,7 +315,7 @@ data.frame(date_birth = c("2/2/87", "3 Jan 1951", "12-08-47")) |>
   mutate(date_birth_cleaned = dmy(date_birth))
 ```
 
-Sometimes there can be an error where dates are read in the format Excel uses under the hood (days since 01/01/1900). To fix this, we can use this handy function from `lubridate`, `excel_numeric_to_date()`:
+Sometimes there can be an error where dates are read in the format Excel uses under the hood (days since 01/01/1900). To fix this, we can use this handy function from `janitor`, `excel_numeric_to_date()`:
 
 ```{r}
 data.frame(excel_dates = c(42455, 42875, 41578)) |> 
@@ -354,19 +352,25 @@ falls_c3 |> count(gender)
 
 Not ideal.
 
-We can change everything to lower-case using `tolower()`, and then use `recode()` to fix the remaining inconsistencies.
+We can change everything to lower-case using `str_to_lower()`, and then use `case_match()` to fix the remaining inconsistencies. We finally use `as_factor()` to convert this character variable into a categorical variable.
 
-Of note, in `recode` the *old* values go to the *left*, without quotes, and the *new* values go to the *right*, in quotes.
+Of note, in `case_match`:
+
+- the *old* values go to the *left* of the `~`
+- the *new* values go to the *right*.
+- If the old values are not all the values present in the original variable, you need to specify what values those get, in the `.default` argument (and this uses a `=` rather than a `~`.)
 
 ```{r}
 falls_r1 <- falls_c3 |>
-  mutate(gender = tolower(gender) |>
-                  recode(f = "female",
-                         femle = "female",
-                         m = "male") |> 
-                  as.factor())
+  mutate(gender_new = str_to_lower(gender),
+         gender_new = case_match(gender_new,
+                                 "m" ~ "male",
+                                 c("f", "femle") ~ "female",
+                                 .default = gender_new) |> 
+                  as_factor())
 
-falls_r1 |> count(gender)
+# Sanity check
+falls_r1 |> count(gender_new, gender)
 ```
 
 *Exercise 7.*
@@ -397,7 +401,7 @@ falls_r1 |> filter(age > 100) |> select(id, gender, age)
 
 Imagine Ian has checked and confirmed that ID 209 was indeed 103 years old, but ID 540 was 'only' 105.
 
-*Exercise 8* Let's correct this value. Note that you need backticks to identify the old number to recode.
+*Exercise 8* Let's correct this value.
 
 
 
@@ -462,9 +466,8 @@ The falls dataset is still not clean - many more variables need checking and fix
 
 ## Solutions
 
-```{r ex0_solution}
-library(dplyr)
-
+```{r}
+#| label: ex0_solution
 # Create variable
 trial_new <- trial |>
   mutate(marker_group = cut(marker,
@@ -476,7 +479,8 @@ trial_new |> group_by(marker_group) |>
   summarise(min(marker), max(marker))
 ```
 
-```{r ex1_solution}
+```{r }
+#| label: ex1_solution
 # Exercise 1, question 1
 # 1. the column names are not in the first row
 # 2. the Gender variable has values entered in many different ways
@@ -492,46 +496,55 @@ trial_new |> group_by(marker_group) |>
 # The output is useless.
 ```
 
-```{r ex2_solution}
+```{r }
+#| label: ex2_solution
 summary(falls_v2$`Was this patient admitted to a mental health hospital previously?`)
 ```
 
-```{r ex3_solution}
+```{r }
+#| label: ex3_solution
 # `clean_names()` converted all upper-case letters to lower-case, it changed spaces into underscores, and it replaced triple dots with an `x`. This is a good start.
 ```
 
-```{r ex4_solution}
+```{r }
+#| label: ex4_solution
 falls_renamed_2 |> rename(analgesia_duration = duration_of_analgesia)
 ```
 
-```{r ex5_solution}
+```{r }
+#| label: ex5_solution
 falls_c2 |> mutate(dementia = factor(dementia, levels = c(0, 1), labels = c("no", "yes")))
 ```
 
-```{r ex6_solution}
+```{r }
+#| label: ex6_solution
 class(falls_c3$date_start_sedation)
 falls_c3 |> mutate(date_admit = as.Date(date_start_sedation))
 ```
 
-```{r ex7_solution}
+```{r }
+#| label: ex7_solution
 falls_r1 |> count(hosp_cbt)
 
-falls_r1 |> mutate(hosp_cbt = tolower(hosp_cbt) |>
-                              recode(declined = "no",
-                                     ys = "yes",
-                                     `only 1 session` = "yes") |> 
-                              factor())
+falls_r1 |> mutate(hosp_cbt = str_lower(hosp_cbt),
+                   hosp_cbt = case_match(hosp_cbt,
+                                         "declined" ~ "no",
+                                         c("ys", "only 1 session") ~ "yes",
+                                         .default = hosp_cbt) |> 
+                              as_factor())
 
 # I would check with Ian if 1 session is enough to count as a yes
 ```
 
-```{r ex8_solution}
+```{r}
+#| label: ex8_solution
 falls_r1 |> mutate(age = recode(age, `125` = 105))
 ```
 
-```{r challenge_exercise_solution}
+```{r}
+#| label: challenge_exercise_solution
 # Import and explore
-bristol <- rio::import("data/bristol.csv")
+bristol <- read_csv("data/bristol.csv")
 
 bristol_cleaned <- bristol |>
   mutate(
@@ -552,5 +565,5 @@ bristol_cleaned <- bristol |>
 bristol_cleaned |> ggplot(aes(age, sex)) + geom_boxplot()
 
 # Export
-# bristol_cleaned |> rio::export("data/bristol_cleaned.dta")
+# bristol_cleaned |> haven::write_dta("data/bristol_cleaned.dta")
 ```
