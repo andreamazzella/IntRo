@@ -431,7 +431,7 @@ falls_r2 |> ggplot(aes(outcome)) + geom_bar()
 2.  Change the data classes to the correct ones.
 3.  Create a new variable with the age at admission.
 4.  Explore the distribution of temperature according to gender with a Box plot.
-5.  Save to file as `bristol_cleaned.dta` so you can send it to your colleague Karen, who only uses Stata.
+5.  Save to file as `bristol_cleaned.dta` so you can send it to a colleague who prefers using Stata.
 
 ```{r}
 # Import and explore
