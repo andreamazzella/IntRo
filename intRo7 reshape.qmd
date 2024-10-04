@@ -275,7 +275,7 @@ To learn more about complex joins, please see the Resources section further belo
 
 ## Pivot wider
 
-Sometimes it might be helpful to go the other way - turn a long dataset wider, i.e., turning rows into columns. For example, to facilitate calculating new columns, or to increase readibility.
+Sometimes it might be helpful to go the other way - turn a long dataset wider, i.e., turning rows into columns. For example, to facilitate calculating new columns, or to increase readability.
 
 Let's look at the `meds` dataframe, which contains information on days of each antifungal in long format.
 
