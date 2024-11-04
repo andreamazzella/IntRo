@@ -1,0 +1,121 @@
+---
+title: "Recommended workflows"
+format: html
+editor: visual
+---
+
+Common working practices and conventions should make it easier for work to be passed from scientist to scientist, ensuring business continuity.
+
+Having process that could easily be picked up by different scientists became particularly important during COVID-19 when people worked three-day shifts and passed work on to the next scientist.
+
+Embedding these approaches in BAU will make it easier to deploy in a COVID-type response, and improve our BAU too.
+
+What follows are not demands, but strong recommendations. They won't all be appropriate for different projects, but likely to be useful for most.
+
+## Principles
+
+-   Raw data and data sets with PII should be stored on a network folder where it is appropriate to store such data
+
+-   Outputs should be placed in a location where team members can access them (i.e. not in a personal folder or a laptop C: drive)
+
+-   Look-up tables should be stored with your code and be tracked with git so that changes and the reasons for those changes can be tracked
+
+## Using git with network folders
+
+Git does not like network folders and runs exceedingly slowly. So, I recommend storing your code on your C: drive and save raw data, processed data with PII and your outputs to a network folder.
+
+## Using RStudio projects
+
+## Folder structures
+
+Once you've got the project set up on RStudio and version control running with git, organising your files into folders makes a lot of sense.
+
+```         
+#| eval: FALSE
+|
+| - scripts
+| - luts (store look-up tables here)
+| - functions
+| - misc (store references, supporting docs, etc. Add this folder and contents to the .gitignore file)
+| - readme.md (add a readme, tell others what this project is about, how to run the analysis)
+```
+
+### Filenaming conventions
+
+**Scripts**: number in order in which they should be run to complete a task or analysis and provide a description of their purpose, e.g.
+
+-   01_setup.R
+
+-   02_load_data_and_clean.R
+
+-   03\_...
+
+**Functions**: Functions should be stored outside analytic scripts. Good practice is to run tests on synthetic data to ensure that you get the expected output. Better practice is building those synthetic data into the function file and having good documentation. Best practice is automated unit testing with [testthat](https://testthat.r-lib.org/) and [roxygen](https://roxygen2.r-lib.org/) documentation.
+
+Filenames could be the same as the function name, this makes it easier to find the code for a function when there is a problem.
+
+Load functions at the start of an analysis by doing
+
+`source("./functions/my_fun.R")`
+
+or, source a list of files in your first script by:
+
+``` r
+#| eval: false
+# get a list of files in the 'functions' folder
+function_files <- list.files(path = glue("./functions"), pattern = "\.R$")
+function_files <- glue("{code_path}/functions/{function_files}")
+function_files # show the files in this object
+lapply(function_files, source) # applies the function 'source' over the list of 'function_files'
+rm(function_files) # keep your workspace tidy
+```
+
+## Saving outputs
+
+Commonly, outputs need to be accessed by other team members. Resilience can be added in by ensuring that outputs are saved to shared folders where they can be accessed in the case of absence.
+
+Best practice is to also export a CSV containing the aggredated data behind a graph. This allows team members to make rapid corrections to figures if needed (e.g. responding to reviewer comments, corrections to labels, etc). It also allows others to check and quite individual values behind elements of the figure.
+
+## Reproducible environments for shared projects
+
+R packages are updated over time, some of them can change quite frequently. If a process or analysis is dependent on certain package versions, some mechanism for managing package versions may be necessary. The R package [renv](https://rstudio.github.io/renv/articles/renv.html) is a good tool for this.
+
+Renv works by installing packages to a folder within your current project, rather than in a system folder. It also maintains a list of packages that are in use and their versions. This allows the easy installation of the correct versions when another user comes to re-use the code, or when transferring the code to a different machine.
+
+### Workflow
+
+1.  The first person to establish a project calls `renv::init()` from the R prompt
+2.  They then install packages as normal and calls `renv::snapshot()` before committing code to git
+3.  A second person who wishes to use the same code clones the git repo and opens the project
+4.  They call `renv::restore()` at the prompt and R then installs all the required packages and the correct versions into a local library
+5.  Once installed, the second person can work with the code as normal
+
+## Constructing filepaths and filenames
+
+File paths for saving outputs or for reading in PII data should be set at the start of the analytic process (and normally needs to be).
+
+It may be necessary to set dates into folders and file paths. This is conveniently achieved by using the R packages [glue](https://glue.tidyverse.org/) and [lubridate](https://lubridate.tidyverse.org/).
+
+Best practice is to use the full network file path and not drive letters when accessing network locations.
+
+One can use `dir.exists()` to check for the existence of folders and `dir.create()` to create new folders if necessary.
+
+Glue makes the creation of strings much simpler than base R's `paste()` or `paste0()`. One creates a string with double quotes as usual. Then R objects or outputs from functions can be inserted inside `{}`s.
+
+``` r
+|# eval: FALSE
+# set the top-level folder for the outputs
+output_root <- "\\\\COLHPAFIL004.HPA.org.uk/HCAI-Linkage-Study/<project_name>"
+
+# check for the existence of a folder with today's date 
+if(!dir.exists(glue("{output_root}/outputs/{dmy(today)}"))){
+ # create the folder if it doesn't exist
+ dir.create(glue("{output_root}/outputs/{dmy(today)}"))
+}
+
+# more code, including the creation of a figure named fig1, and the aggregated data behind it fig1_dat
+
+ggsave(fig1, filename = "{output_root}/outputs/{dmy(today)/fig1.png}")
+write.csv(fig1_dat, "{output_root}/outputs/{dmy(today)/fig1_data.csv}", 
+          row.names = FALSE)
+```
