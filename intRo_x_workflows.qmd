@@ -22,21 +22,27 @@ What follows are not demands, but strong recommendations. They won't all be appr
 
 ## Using git with network folders
 
-Git does not like network folders and runs exceedingly slowly. So, I recommend storing your code on your C: drive and save raw data, processed data with PII and your outputs to a network folder.
+Git does not like network folders and runs exceedingly slowly. So, I recommend storing your code on your C:/ drive and save raw data, processed data with PII and your outputs to a network folder.
 
 ## Using RStudio projects
 
-## Folder structures
+RStudio has the capacity to work in 'projects'. A similar capacity has now been added to Stata. These collect scripts, working directories and work history into one place. This makes it easier to switch between different work contexts, for example, one might wish to spend a couple of hours working on a *C. difficile* analysis, before switching to the analysis of BSI caused by *C. auris.*
+
+To get started go to file -\> new project, then choose or create a folder to store your code.
+
+Recently accessed projects can be accessed from the drop down menu in the top right corner of the RStudio window.
+
+### Folder structures
 
 Once you've got the project set up on RStudio and version control running with git, organising your files into folders makes a lot of sense.
 
 ```         
-#| eval: FALSE
 |
 | - scripts
-| - luts (store look-up tables here)
+| - luts   (store look-up tables here)
 | - functions
-| - misc (store references, supporting docs, etc. Add this folder and contents to the .gitignore file)
+| - sql    (store sql scripts for data extraction here)
+| - misc   (store references, supporting docs, etc. Add this folder and contents to             the .gitignore file)
 | - readme.md (add a readme, tell others what this project is about, how to run the analysis)
 ```
 
@@ -49,6 +55,10 @@ Once you've got the project set up on RStudio and version control running with g
 -   02_load_data_and_clean.R
 
 -   03\_...
+
+Analyses should be split into different scripts to do discrete pieces of work. For a routine output it might make sense to have scripts split something like: 01_set_up.R, 02_load_data_and_clean.R, 03_produce_denominators.R, 04_produce_numerators.R, etc
+
+The loading of libraries, common data (e.g look-up tables), setting of paths, should all take place in the 01_setup.R file.
 
 **Functions**: Functions should be stored outside analytic scripts. Good practice is to run tests on synthetic data to ensure that you get the expected output. Better practice is building those synthetic data into the function file and having good documentation. Best practice is automated unit testing with [testthat](https://testthat.r-lib.org/) and [roxygen](https://roxygen2.r-lib.org/) documentation.
 
@@ -66,29 +76,37 @@ or, source a list of files in your first script by:
 function_files <- list.files(path = glue("./functions"), pattern = "\.R$")
 function_files <- glue("{code_path}/functions/{function_files}")
 function_files # show the files in this object
-lapply(function_files, source) # applies the function 'source' over the list of 'function_files'
+lapply(function_files, source) # applies the function 'source' over the list of            'function_files'
 rm(function_files) # keep your workspace tidy
 ```
 
-## Saving outputs
+## Managing data
+
+### Raw data
+
+Raw data should not be over-written. Whether this is an extract from a database, or a messy Excel document, it is common to need to understand differences between outputs. If raw data has been altered, then this is hard to do.
+
+So, store raw data as an appropriate format in a `raw_data` folder in an appropriate location.
+
+When extracting data from a database, extract with a SQL query stored within a file, either in an R script or a stand-alone sql file.
+
+### Intermediate data
+
+R can save data in multiple different formats. RData files can be used to save an entire workspace, .rds files can be used to save single objects to a file. rds files are often faster to read and write and are recommended over other file types.
+
+``` r
+#| eval: false
+# save an r object as an .rds file
+saveRDS(r_obj_to_save, file = "./filepath/filename.rds")
+```
+
+For very large data sets, such as those containing HES or ECDS data, you may wish to use [.fst](https://www.fstpackage.org/ "fst package") files as these are optimised for rapid writing and reading. A disadvantage of fst is that it is not commonly readable by other languages.
+
+### Outputs
 
 Commonly, outputs need to be accessed by other team members. Resilience can be added in by ensuring that outputs are saved to shared folders where they can be accessed in the case of absence.
 
-Best practice is to also export a CSV containing the aggredated data behind a graph. This allows team members to make rapid corrections to figures if needed (e.g. responding to reviewer comments, corrections to labels, etc). It also allows others to check and quite individual values behind elements of the figure.
-
-## Reproducible environments for shared projects
-
-R packages are updated over time, some of them can change quite frequently. If a process or analysis is dependent on certain package versions, some mechanism for managing package versions may be necessary. The R package [renv](https://rstudio.github.io/renv/articles/renv.html) is a good tool for this.
-
-Renv works by installing packages to a folder within your current project, rather than in a system folder. It also maintains a list of packages that are in use and their versions. This allows the easy installation of the correct versions when another user comes to re-use the code, or when transferring the code to a different machine.
-
-### Workflow
-
-1.  The first person to establish a project calls `renv::init()` from the R prompt
-2.  They then install packages as normal and calls `renv::snapshot()` before committing code to git
-3.  A second person who wishes to use the same code clones the git repo and opens the project
-4.  They call `renv::restore()` at the prompt and R then installs all the required packages and the correct versions into a local library
-5.  Once installed, the second person can work with the code as normal
+Best practice is to also export a CSV containing the aggregated data behind a graph. This allows team members to make rapid corrections to figures if needed (e.g. responding to reviewer comments, corrections to labels, etc). It also allows others to check and quote individual values behind elements of the figure.
 
 ## Constructing filepaths and filenames
 
@@ -96,26 +114,63 @@ File paths for saving outputs or for reading in PII data should be set at the st
 
 It may be necessary to set dates into folders and file paths. This is conveniently achieved by using the R packages [glue](https://glue.tidyverse.org/) and [lubridate](https://lubridate.tidyverse.org/).
 
-Best practice is to use the full network file path and not drive letters when accessing network locations.
+Best practice is to use the full network file path and not drive letters when accessing network locations. To determine what file paths you have mapped on your computer, open windows command prompt (cmd.exe) and run
+
+```         
+net use | clip
+```
+
+This will copy your drive letters and their paths to the clipboard. These can then be pasted into a text editor.
 
 One can use `dir.exists()` to check for the existence of folders and `dir.create()` to create new folders if necessary.
 
 Glue makes the creation of strings much simpler than base R's `paste()` or `paste0()`. One creates a string with double quotes as usual. Then R objects or outputs from functions can be inserted inside `{}`s.
 
 ``` r
-|# eval: FALSE
-# set the top-level folder for the outputs
-output_root <- "\\\\COLHPAFIL004.HPA.org.uk/HCAI-Linkage-Study/<project_name>"
-
-# check for the existence of a folder with today's date 
+#| eval: FALSE  
+# set the top-level folder for the outputs 
+output_root <- "\\\\COLHPAFIL004.HPA.org.uk/HCAI-Linkage-Study/<project_name>"  
+# check for the existence of a folder with today's date  
 if(!dir.exists(glue("{output_root}/outputs/{dmy(today)}"))){
- # create the folder if it doesn't exist
- dir.create(glue("{output_root}/outputs/{dmy(today)}"))
-}
-
-# more code, including the creation of a figure named fig1, and the aggregated data behind it fig1_dat
-
-ggsave(fig1, filename = "{output_root}/outputs/{dmy(today)/fig1.png}")
-write.csv(fig1_dat, "{output_root}/outputs/{dmy(today)/fig1_data.csv}", 
+    # create the folder if it doesn't exist  
+    dir.create(glue("{output_root}/outputs/{dmy(today)}")) }
+# more code, including the creation of a figure named fig1, and the aggregated data behind it fig1_dat  
+ggsave(fig1, filename = "{output_root}/outputs/{dmy(today)/fig1.png}") 
+write.csv(fig1_dat, "{output_root}/outputs/{dmy(today)/fig1_data.csv}",
           row.names = FALSE)
 ```
+
+## Repeating standard outputs
+
+Some historic workflows/SOPs recommend copying and pasting scripts into new files to avoid over-writing authoritative versions. With git-based workflows this is not necessary and recommended against. Instead, the master branch on a git repo should be treated as the authoritative version and cloned to a local (i.e. not on a network drive) repo. This would then be used to run the code.
+
+Any changes to the code should be tracked in git and pushed back to the remote repo.
+
+## Reproducible environments for shared projects
+
+R packages are updated over time and some of them can change quite frequently. If a process or analysis is dependent on certain package versions, some mechanism for managing package versions may be necessary. The R package [renv](https://rstudio.github.io/renv/articles/renv.html) is a good tool for this.
+
+Renv works by installing packages to a folder within your current project, rather than in a system folder. It also maintains a list of packages that are in use and their versions. This allows the easy installation of the correct versions when another user comes to re-use the code, or when transferring the code to a different machine.
+
+### renv workflow
+
+1.  The first person to establish a project calls `renv::init()` from the R prompt
+2.  They then install packages as normal and calls `renv::snapshot()` before committing code to git
+3.  A second person who wishes to use the same code clones the git repo and opens the project
+4.  They call `renv::restore()` at the prompt and R then installs all the required packages and the correct versions into a local library
+5.  Once installed, the second person can work with the code as normal
+
+## Exercises
+
+**Exercise 1**
+
+1.  Create a folder with the following path `C:/users/<forename>.<surname>/r_folders`
+2.  Initialise a new RStudio project in a new folder in this folder. Call it intRo
+
+**Exercise 2**
+
+1.  Use `dir.create()`, `glue()` and lubridate functions to create an output folder with a subfolder with today's date
+
+**Exercise 3**
+
+Write the mtcars data set to an output folder into an `outputs` subfolder of your project. Use today's date in the file name
