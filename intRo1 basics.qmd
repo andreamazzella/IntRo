@@ -10,12 +10,13 @@ editor: visual
 # What you will learn
 
 -   User interface
--   Console
--   R Markdown documents
--   Assignment
--   Functions
--   Datasets
--   Vectors
+-   Using the console
+-   Creating R scripts
+-   Creating Quarto Markdown documents
+-   Assigning values
+-   Using functions
+-   Using tables of data
+-   Using vectors
 
 ------------------------------------------------------------------------
 
@@ -23,9 +24,9 @@ editor: visual
 
 The RStudio interface is divided into four parts:
 
-| Code, viewer | Environment           |
-|--------------|-----------------------|
-| Console      | Files, packages, help |
+| Code, Viewer      | Environment, Connections, Git |
+|-------------------|-------------------------------|
+| Console, Terminal | Files, Packages, Help         |
 
 -   *top left*: the code script or notebook you're working on (like this one: `intRo1 basics.qmd`).
 -   *bottom left*: the console (where you can input your commands)
@@ -40,28 +41,41 @@ The console is used to run simple commands that you don't need to save.
 
 *Exercise 1.* In the console, add 3 and 5. You do this by using it as a calculator: Type 3 + 5, then press Enter.
 
-Now forget about the console -- it's better to keep your code in a notebook (or in a script). This is for many reasons:
+Now forget about the console: it's better to keep your code saved in a script. This is for many reasons:
 
-1.  Easily editing your code when it doesn't work the first time you run it.
-2.  Keeping track of your work so you don't have to restart from scratch every time.
-3.  Sharing your work with others
+1.  If your code throws an error, you can easily edit it and re-run it.
+2.  It allows you to keep track of your work so you don't have to restart from scratch every time.
+3.  You can sharing your work with others
 
 ------------------------------------------------------------------------
 
-# R Markdown documents (.qmd, .Rmd)
+# R scripts (.R)
 
-A Markdown document, like this one (`intRo1 basics.qmd`) is composed of two things:
+An R script, for example `analysis.R`, mainly contains code, and any non-code text needs to be highlighted with a preceding `#`.
 
--   Text, which is the main component
--   "Chunks", which contain code (and comments, which are preceded by a hash symbol, #)
+The output will only appear in the console and in the Plots panel.
 
-A chunk looks like this:
+We won't be using R scripts in this course, but you will see them elsewhere. An advantage is that they can be run from other
+
+To create a new R script, you can:
+
+-   Go to the toolbar: `File` → `New File` → `R Script`
+-   Use a keyboard short-cut: `Ctrl` + `Shift` + `N` on Windows.
+-   Go to the Files tab in the bottom right of the screen and click on the `New Blank File` icon → `R Script` (this will automatically save the file in the folder you see)
+
+------------------------------------------------------------------------
+
+# Quarto Markdown documents (.qmd)
+
+A Quarto Markdown document like this one (`intRo1 basics.qmd`) is mainly composed of two things:
+
+-   **Text**, which is the main component. This can be formatted *as if it's a text editor* using Markdown syntax; for example, if a line starts with a hash symbol, `#`, it will become a heading.
+-   **Chunks**, which contain code (and comments, which are preceded by a hash symbol, `#`). A chunk looks like this:
 
 ```{r}
-
+# This section is a chunk, that contains code.
+print(R.version.string)
 ```
-
-A Markdown document can be opened in Visual mode (like this one) or in Source mode. Visual mode will have nicer formatting of the text outside of the code chunks.
 
 To **run all the code in a chunk**, you click on the green triangle button at the top right of the chunk (or you place your cursor inside it and press on Windows `Ctrl` + `Shift` + `Enter`; on Mac: `⌘` + `⌥` + `Enter`.
 
@@ -87,28 +101,24 @@ pi * 1.4 ^2
 
 To add a new chunk, you can:
 
--   go to the toolbar, click `Code` → `Insert Chunk`.
--   go to the top right of the window, click on an icon with a green `+c` → `R`
--   use a keyboard shortcut
+-   Go to the toolbar, click `Code` → `Insert Chunk`.
+-   Go to the top right of the window, click on an icon with a green `+c` → `R`
+-   Use a keyboard shortcut
     -   Mac:`⌘` + `⌥` + `I`
     -   Windows, US keyboard: `Ctrl` + `Alt` + `I`
     -   Windows, any other keyboard: this needs resetting - go to the toolbar, `Tools` → `Modify Keyboard Shortcuts...` → type `insert chunk` in the `Filter` field → click on the shortcut area → press `Ctrl` + `Shift` + `I`.
--   you could potentially type the three backticks followed by `{r}` and close the chunk with three more backticks, but why would you?
+-   You could potentially type the three backticks ```` ``` ```` followed by `{r}` and close the chunk with three more backticks, but why would you?
+
+A Markdown document can be opened in Visual mode (like this one) or in Source mode. Visual mode will have nicer formatting of the text outside of the code chunks.
+
+You can see the outline of the qmd file by clicking on the `Outline` button in the top right part of this panel.
+
+You can create a new Markdown document, you can:
+
+-   Go to the toolbar: `File` → `New File` → `Quarto document...` → set options → click `Create`
+-   Go to the Files tab in the bottom right of the screen and click on the `New Blank File` icon → `Quarto doc...` (this will automatically save the file in the folder you see)
 
 *Exercise 4.* Add a new chunk in the space below, and use it to divide 6 by 2.
-
-------------------------------------------------------------------------
-
-# R scripts (.R)
-
-An R script, for example `analysis.R`, mainly contains code, and any non-code text needs to be highlighted with a preceding `#`. There are no chunks. The output will only appear in the console and in the Plots panel.
-
-We won't be using R scripts in this course, but you might see them elsewhere.
-
-To create a new R script, you can:
-
--   go to the toolbar: `File` → `New File` → `R Script`
--   use a keyboard short-cut: `Ctrl` + `Shift` + `N` on Windows.
 
 ------------------------------------------------------------------------
 
@@ -128,13 +138,13 @@ radius
 
 From now, you can use the object "radius" in the rest of your code, and R will know what you mean.
 
-*Exercise 6.* Calculate the circumference of a circle of radius 5.7, without typing 5.7 (Formula: C = 2πr).
+*Exercise 6.* Calculate the double of the value assigned to radius, without typing 5.7.
 
 ```{r}
 
 ```
 
-Note that assigning a new value to an existing object will permanently replace the old version.
+Note that assigning a new value to an existing object will permanently overwrite the old version.
 
 ```{r}
 radius <- 18
@@ -143,83 +153,95 @@ radius
 
 ------------------------------------------------------------------------
 
-# Functions
+# Using functions
 
 In programming, a function is like a verb. It takes something (its "arguments"), it does something to it, and gives you back an output. In R, the arguments of a function are written in brackets.
 
-The square root function, `sqrt()`, is very simple: it takes a single argument (a number) and it returns its square root.
+The square root function, `sqrt()`, is very simple: it can take a single argument (a number) and it will return its square root.
 
 ```{r}
 # Square root function
 sqrt(64)
 ```
 
+Many functions take more arguments. For example, `seq()`, used to generate regular sequences, needs values for these arguments: `from`, `to`, `by`.
+
+```{r}
+# Create a regular sequence of numbers from 1996 to 2040, by 4
+seq(from = 1996, to = 2040, by = 4)
+```
+
+You can find information on a function by using `help()`; the documentation will be shown in the bottom right part of the screen.
+
+```{r}
+help(seq)
+```
+
 *Exercise 7.*
 
-1.  Create a new chunk below
+1.  Create a new chunk below.
 2.  Use it to calculate the natural logarithm of 100.
 
 ------------------------------------------------------------------------
 
-# Datasets
+# Using tables of data
 
-R is mostly built around "dataframes": data in table format.
+A large part of R is built around `data.frame`s: data in table format.
 
-Some dataframes are included in R, so we can use them to practise.
+Some `data.frame`s are included in R, so we can use them to practise.
 
-For example, let's explore a small dataset from an experiment on the impact of vitamin C supplementation on tooth length among 60 guinea pigs.
+For example, let's explore a small table of patient-level data on bacteraemias. For the moment, run this code without focussing on the `read.csv` function - we'll cover it in a later session.
 
-To have a look at this dataset, you can "call" its name or you can use the function `View()`. (Caution: R is case-sensitive)
+To have a look at this dataset, you can:
+
+-   Option 1: "call" its name. As you're in a qmd document, the table will be displayed immediately under the chunk. You can use the arrows and the numbers to show more columns and more rows.
+-   Option 2: use function `View()` (caution: R is case-sensitive) or click on its name in the Environment tab. This will open a new tab.
 
 ```{r}
-teeth <- datasets::ToothGrowth
+# Import the table of bacteraemias
+bacteraemias <- read.csv("./data/bacteraemias.csv")
 
 # Option 1: dataframe name
-teeth
+bacteraemias
 ```
 
 ```{r}
 # Option 2: using View().
 # NB - this will open a new tab
-View(teeth)
+View(bacteraemias)
 ```
 
-A dataframe has columns called *variables*. These are the variables in `teeth`:
-
--   `len`: tooth cell length
--   `supp`: supplement type (VC = vitamin C; OJ = orange juice)
--   `dose`: dose of vitamin C in mg/day
+A `data.frame` should have one observation per row and one variable per column.
 
 ## Using functions on a dataset column
 
-Now let's use the `mean()` and `sd()` functions to calculate the average tooth cell length and its standard deviation.
+Now let's use the `mean()` and `sd()` functions to calculate the average age and its standard deviation.
 
-R can work with more than one dataset at the time. For this reason, every time you refer to a variable, you also need to tell R which dataset is that variable from. You do this by typing a `$` sign between the dataset and the variable name. (The `$` sign is technically called the "exposition operator").
+Unlike Stata, R can keep more than one dataset in memory at the same time. For this reason, every time you refer to a column, you also need to tell R which `data.frame` is that variable from. You do this by typing a `$` sign between the `data.frame` and the variable name. (The `$` sign is technically called the "exposition operator").
 
 ```{r}
-mean(teeth$len)
-# The above reads: calculate the mean of a variable taken from `teeth` and called `len`.
+# Calculate the mean of variable `len`, taken from data.frame `teeth`
+mean(bacteraemias$age)
 
-sd(teeth$len)
+# Calculate its standard deviation
+sd(bacteraemias$age)
 ```
 
-*Exercise 8.* Let's use another dataset, `chickens`. This contains info on chicken weights (in grams) and their feed type.
+*Exercise 8.* Let's use another dataset, `metabolic.csv`. This contains info on some patient factors and outcomes for metabolic disease.
 
-1.  Calculate the `median` chicken weight.
-2.  Calculate the standard deviation of chicken weight.
+1.  Preview the data.
+2.  Calculate the `median` systolic blood pressure.
+3.  Calculate the maximum hours of physical activity per week.
 
 ```{r}
 # Load the data
-chickens <- datasets::chickwts
+metabolic <- read.csv("./data/metabolic.csv")
 
-# Preview the dataframe
-chickens
+# Preview the data
 
-# Median chicken weight
-# ...
+# Calculate median sBP
 
-# Standard deviation
-# ...
+# Calculate max activity
 
 ```
 
@@ -229,7 +251,7 @@ chickens
 
 In R, a **vector** is a list of objects of the same type, in a specific order. For example, 5 2 4 is a vector (of numbers); "cirrhosis" "fibrosis" "hepatitis" is a vector (of characters).
 
-Of note, every column in a dataframe is a vector!
+Of note, every column in a `data.frame` is a vector!
 
 You create a vector using function `c()`, which stands for "combine":
 
@@ -239,7 +261,10 @@ c(5, 2, 4)
 c("cirrhosis", "fibrosis", "hepatitis")
 ```
 
-Vectors are used: - when the argument of a function needs to contain more than one element, - when we want to apply a function to more than one object.
+Vectors can be used:
+
+-   When the argument of a function needs to contain more than one element
+-   When we want to apply a function to more than one object.
 
 ```{r}
 # A function that will summarise all elements of a vector
@@ -263,22 +288,21 @@ c("age" = 19, "height" = 185, "systolic_BP" = 132)
 
 ------------------------------------------------------------------------
 
-*Final exercise.*
+*Push exercise.*
 
-1.  Explore the `Theoph` dataset
-2.  Calculate the mean weight of its study participants
-3.  Convert this mean weight from kilograms to pounds. (1 kg = approx. 2.2 pounds)
+1.  Preview the `aggregated_results.csv` dataset
+2.  Calculate the mean count across all years
+3.  Assign this to an object called `mean_count`.
 
 ```{r}
 # Import
-theoph <- datasets::Theoph
+aggregated_results <- read.csv("./data/aggregated_results.csv")
 
-# Your code below
+# Preview
 
+# Calculate mean count
 
-
-
-
+# Assign the result to an object called `mean_count`
 
 ```
 
@@ -288,35 +312,31 @@ theoph <- datasets::Theoph
 
 ```{r}
 # Exercise 6
-2 * radius * pi
+2 * radius
+```
 
+```{r}
 # Exercise 7
 log(100)
+```
 
+```{r}
 # Exercise 8
-median(chickens$weight)
-sd(chickens$weight)
+metabolic
+median(metabolic$blood_pressure_systolic)
+max(metabolic$physical_activity_hours_per_week)
+```
 
-# Final exercise
-# 1. Explore dataset
-View(theoph)
+```{r}
+# Push exercise
+# Preview
+aggregated_results
 
-# 2. Calculate mean weight
-mean(theoph$Wt)
+# Calculate mean count
+mean(aggregated_results$count)
 
-# 3. Convert mean weight to pounds
-mean(theoph$Wt) * 22
-
-# An alternative way
-mean_kg <- mean(theoph$Wt)
-mean_kg * 2.2
+# Assign the result to an object called `mean_count`
+mean_count <- mean(aggregated_results$count)
 ```
 
 ------------------------------------------------------------------------
-
-This is normal text, which can be **formatted** *as if it's a text editor.* It's for humans to read.
-
-```{r}
-# This is a chunk, that contains code.
-mean(ToothGrowth$len)
-```
