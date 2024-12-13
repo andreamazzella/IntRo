@@ -3,3 +3,5 @@
 .RData
 .Ruserdata
 *.lnk
+create_data.Rmd
+data/Fake_Health_Dataset.csv

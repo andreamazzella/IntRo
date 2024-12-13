@@ -8,7 +8,6 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 
 # What you will learn
 
--   Using packages
 -   Data exploration
 -   Data visualisation with `ggplot2`
     -   Bar charts
@@ -19,6 +18,12 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 ------------------------------------------------------------------------
 
 # Recap from topic 1
+
+Before you run this chunk, ensure you have installed the `readr` and `ggplot2` packages.
+```{r}
+library(readr)
+library(ggplot2)
+```
 
 Calculate the median tooth length in the dataframe `teeth`. (This is a default dataset, you can load it by running the first line in this chunk).
 
@@ -37,33 +42,6 @@ Create a new object called "median_length" that contains this value.
 
 ```
 
-------------------------------------------------------------------------
-
-# Using packages
-
-R has some core functions, like the ones we've used so far: `sqrt()`, `mean()`, `table()` and several more advanced ones (for example, the function for logistic regression). There are also extra functions made by programmers and grouped into "packages", which need to be downloaded (and loaded) separately.
-
-## Step 1: Download and install a package
-
-To download and install a package, one uses the `install.packages()` function, adding the package name in quotes. This might take a bit of time if the packages are large.
-
-```{r}
-install.packages("ggplot2")
-```
-
-You may also do this via the RStudio graphical interface: in the bottom right quarter of the screen, you click on `Packages` and then `Install`. You type the name of the package in the empty field and then click on the `Install` button.
-
-*Exercise 1.* Install package `dplyr` with either method.
-
-## Step 2: Load a package
-
-You can then load (open) the package with `library()` so that you can use its functions.
-
-```{r}
-library(ggplot2)
-```
-
-You only need to install packages once, but you then need to open it every time you want to use some of its functions. So, when you create a new R script or notebook, you always start with one `library()` call for each package that you will use.
 
 ------------------------------------------------------------------------
 
@@ -181,6 +159,32 @@ ggplot(msleep, aes(x = vore, fill = conservation)) +
 *Want to know more?* To change the *value* labels in a categorical variable, you either use `+ scale_<aes>_discrete(labels = c("value1" = "label1", "value2" = "label2"))`, or you recode the values before plotting. I recommend you ignore this for now.
 
 ------------------------------------------------------------------------
+
+## Line charts
+
+```{r}
+library(tidyverse)
+dat <- tribble(
+    ~sex, ~year, ~rate_bacteraemia,
+    "female", 2025, 13,
+    "female", 2026, 15,
+    "female", 2027, 14,
+    "female", 2028, 13,
+    "female", 2029, 13,
+    "female", 2030, 14,
+    "male", 2025, 21,
+    "male", 2026, 24,
+    "male", 2027, 26,
+    "male", 2028, 25,
+    "male", 2029, 26,
+    "male", 2030, 24)
+
+dat |>
+    ggplot(aes(x = year, y = rate_bacteraemia, colour = sex)) +
+    geom_line() +
+    coord_cartesian(ylim = c(0, NA))
+```
+
 
 ## Box plots
 

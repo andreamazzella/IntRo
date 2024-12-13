@@ -9,18 +9,19 @@ editor: visual
 
 # What you will learn
 
--   User interface
+-   The RStudio interface
 -   Using the console
 -   Creating R scripts
 -   Creating Quarto Markdown documents
 -   Assigning values
 -   Using functions
+-   Using packages
 -   Using tables of data
 -   Using vectors
 
 ------------------------------------------------------------------------
 
-# User interface
+# The RStudio interface
 
 The RStudio interface is divided into four parts:
 
@@ -184,6 +185,36 @@ help(seq)
 
 ------------------------------------------------------------------------
 
+# Using packages
+
+R has some core functions, like the ones we've used so far: `sqrt()`, `mean()` and `seq()` and several more advanced ones (for example, the function for logistic regression). There are also extra functions made by programmers and grouped into "packages", which need to be downloaded (and loaded) separately.
+
+## Step 1: Download and install a package
+
+To download and install a package, one uses the `install.packages()` function, adding the package name in quotes. This might take a bit of time if the packages are large.
+
+```{r}
+install.packages("readr")
+```
+
+You may also do this via the RStudio graphical interface: in the bottom right quarter of the screen, you click on `Packages` and then `Install`. You type the name of the package in the empty field and then click on the `Install` button.
+
+You can check if a package is already installed by going to the `Packages` tab and searching for its name.
+
+*Exercise 8.* Install package `ggplot2` with either method.
+
+## Step 2: Load the package
+
+You can then load (open) the package with `library()` so that you can use its functions.
+
+```{r}
+library(readr)
+```
+
+You only need to install packages once, but you then need to open it every time you want to use some of its functions.
+
+------------------------------------------------------------------------
+
 # Using tables of data
 
 A large part of R is built around `data.frame`s: data in table format.
@@ -199,7 +230,7 @@ To have a look at this dataset, you can:
 
 ```{r}
 # Import the table of bacteraemias
-bacteraemias <- read.csv("./data/bacteraemias.csv")
+bacteraemias <- read_csv("./data/bacteraemias.csv")
 
 # Option 1: dataframe name
 bacteraemias
@@ -227,7 +258,7 @@ mean(bacteraemias$age)
 sd(bacteraemias$age)
 ```
 
-*Exercise 8.* Let's use another dataset, `metabolic.csv`. This contains info on some patient factors and outcomes for metabolic disease.
+*Exercise 9.* Let's use another dataset, `metabolic.csv`. This contains info on some patient factors and outcomes for metabolic disease.
 
 1.  Preview the data.
 2.  Calculate the `median` systolic blood pressure.
@@ -235,7 +266,7 @@ sd(bacteraemias$age)
 
 ```{r}
 # Load the data
-metabolic <- read.csv("./data/metabolic.csv")
+metabolic <- read_csv("./data/metabolic.csv")
 
 # Preview the data
 
@@ -296,7 +327,7 @@ c("age" = 19, "height" = 185, "systolic_BP" = 132)
 
 ```{r}
 # Import
-aggregated_results <- read.csv("./data/aggregated_results.csv")
+aggregated_results <- read_csv("./data/aggregated_results.csv")
 
 # Preview
 
@@ -321,7 +352,7 @@ log(100)
 ```
 
 ```{r}
-# Exercise 8
+# Exercise 9
 metabolic
 median(metabolic$blood_pressure_systolic)
 max(metabolic$physical_activity_hours_per_week)
