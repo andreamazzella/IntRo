@@ -2,14 +2,15 @@
 title: "2: Data visualisation"
 subtitle: "Introduction to R for health data"
 author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
+editor: visual
 ---
 
 ------------------------------------------------------------------------
 
 # What you will learn
 
--   Data exploration
--   Data visualisation with `ggplot2`
+-   Exploring a `data.frame`
+-   Visualising data with `ggplot2`
     -   Bar charts
     -   Box plots
     -   Scatterplots
@@ -20,32 +21,26 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 # Recap from topic 1
 
 Before you run this chunk, ensure you have installed the `readr` and `ggplot2` packages.
+
 ```{r}
 library(readr)
 library(ggplot2)
 ```
 
-Calculate the median tooth length in the dataframe `teeth`. (This is a default dataset, you can load it by running the first line in this chunk).
+Calculate the minimum white blood cell count in the dataframe `bacteraemias`.
 
 ```{r}
-teeth <- datasets::ToothGrowth
+bacteraemias <- read_csv("./data/bacteraemias.csv")
 
-# Your code here
-
-
+# Your code below
 
 ```
 
-Create a new object called "median_length" that contains this value.
-
-```{r}
-
-```
-
+Create a chunk below and use it to create a new object called "min_white" that contains this value.
 
 ------------------------------------------------------------------------
 
-# Data exploration
+# Exploring a `data.frame`
 
 For this topic, we will use a sample dataset called `msleep`.
 
@@ -63,9 +58,6 @@ View(msleep)
 
 # Structure
 str(msleep)
-
-# More information
-help(msleep)
 ```
 
 ------------------------------------------------------------------------
@@ -94,8 +86,8 @@ ggplot(msleep, aes(x = vore)) +
 Let's break this code down.
 
 -   `ggplot()` is the base function; it needs as arguments:
-  -   the dataset name (`msleep`)
-  -   `aes()` stands for "aesthetics", and basically means what we want to appear on the graph. `x = vore` means that we want variable `vore` to be plotted on the x-axis.
+-   the dataset name (`msleep`)
+-   `aes()` stands for "aesthetics", and basically means what we want to appear on the graph. `x = vore` means that we want variable `vore` to be plotted on the x-axis.
 -   `geom_bar` is a geometry function: it specifies that we want the variable above to be represented in a bar chart.
 -   The `+` sign links the base function with the geometry function.
 
@@ -116,7 +108,7 @@ Computers take your instructions very literally, so tiny mistakes can easily bre
 #   geom_bar()
 ```
 
-(Hint: RStudio will *sometimes* help with some of these bugs. Look at the left of the chunk. Sometimes the advice can actually be misleading, so take with a pinch of salt).
+(Hint: if you're accessing this qmd file in Source mode, RStudio will *sometimes* help with some of these bugs. Look tothe left of the chunk. Sometimes the advice can actually be misleading, so take with a pinch of salt).
 
 *Exercise 3.*
 
@@ -184,7 +176,6 @@ dat |>
     geom_line() +
     coord_cartesian(ylim = c(0, NA))
 ```
-
 
 ## Box plots
 
@@ -334,13 +325,16 @@ Save a plot of your choice in pdf format.
 
 ------------------------------------------------------------------------
 
-## More resources
+## Learning more
 
 I recommend these resources for `ggplot2` and data visualisation:
 
--   (Basics) R for Data Science, [chapter 3: Data visualisation](https://r4ds.had.co.nz/data-visualisation.html)
--   (Intermediate) The BBC [Visual and Data Journalism cookbook](https://bbc.github.io/rcookbook/) for R graphics 
--   (Advanced) [Data Visualisation with R](https://rkabacoff.github.io/datavis/), by Rob Kabacoff 
+-   R for Data Science (2e)
+    -   (Basics) [Data visualisation](https://r4ds.hadley.nz/data-visualize.html)
+    -   (Intermediate) [Layers](https://r4ds.hadley.nz/layers)
+    -   (Intermediate) [Communication](https://r4ds.hadley.nz/communication)
+-   (Intermediate) The BBC [Visual and Data Journalism cookbook](https://bbc.github.io/rcookbook/) for R graphics
+-   (Advanced) [Data Visualisation with R](https://rkabacoff.github.io/datavis/), by Rob Kabacoff
 -   RStudio [Data Visualisation Cheat Sheet](https://raw.githubusercontent.com/rstudio/cheatsheets/main/data-visualization.pdf)
 -   [From Data to Viz](https://www.data-to-viz.com/) - how to choose which graph to use according to the type of data you have
 -   [Color Brewer](https://colorbrewer2.org/) - picking a colour palette according to data type and accessibility requirements
@@ -350,6 +344,12 @@ I recommend these resources for `ggplot2` and data visualisation:
 ## Solutions
 
 ```{r}
+# Recap exercise
+# You can check if you have a package installed by going to the Packages panel (bottom right of the screen)
+# You can install a package by clicking on the Install button (in that panel)
+min(bacteraemias$wbc)
+min_white <- min(bacteraemias$wbc)
+
 # Exercise 2
 ggplot(msleep, aes(x = vore)) +
    geom_bar()
