@@ -130,7 +130,7 @@ You can tell R that something has a name; R will remember it and you can use tha
 *Exercise 5.* Run this chunk. In which part of the screen is R storing this value?
 
 ```{r}
-# Assigning a value to "radius"
+# "radius" gets the value of 5.7
 radius <- 5.7
 
 # Visualising the value of "radius"
@@ -263,16 +263,11 @@ sd(bacteraemias$age)
 1.  Preview the data.
 2.  Calculate the `median` systolic blood pressure.
 3.  Calculate the maximum hours of physical activity per week.
+4.  Add comments to the chunk that explain what each line is doing.
 
 ```{r}
 # Load the data
 metabolic <- read_csv("./data/metabolic.csv")
-
-# Preview the data
-
-# Calculate median sBP
-
-# Calculate max activity
 
 ```
 
@@ -339,6 +334,14 @@ aggregated_results <- read_csv("./data/aggregated_results.csv")
 
 ------------------------------------------------------------------------
 
+# Learning more
+
+-   R for Data Science (2e)
+    -   [Workflow: basics](https://r4ds.hadley.nz/workflow-basics)
+    -   [Workflow: scripts and projects](https://r4ds.hadley.nz/workflow-scripts)
+
+------------------------------------------------------------------------
+
 # Solutions
 
 ```{r}
@@ -353,8 +356,14 @@ log(100)
 
 ```{r}
 # Exercise 9
+
+# Preview the data
 metabolic
+
+# Calculate median sBP
 median(metabolic$blood_pressure_systolic)
+
+# Calculate max activity
 max(metabolic$physical_activity_hours_per_week)
 ```
 
