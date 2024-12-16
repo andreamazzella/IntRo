@@ -19,14 +19,6 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 
 ------------------------------------------------------------------------
 
-# Recap from topic 3
-
-Use the `ToothGrowth` dataset to calculate summary statistics on tooth length (minimum, mean, maximum) according to whether the guinea pig received supplementation with orange juice or vitamin C.
-
-
-
-------------------------------------------------------------------------
-
 ## Load packages
 
 Remember to run this chunk!

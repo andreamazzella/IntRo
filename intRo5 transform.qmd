@@ -8,7 +8,6 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 
 # Content
 
--   Data import/export
 -   Data transformation
     -   calculate new variables
     -   calculate age
@@ -33,35 +32,7 @@ library(tidyverse)
 
 ------------------------------------------------------------------------
 
-# Data import
 
-So far, we've used some sample dataframes that are already loaded in R.
-
-Now let's import an external dataset. The way you do this within `.qmd` notebooks is:
-
-1.  You move your dataset somewhere within the same folder as the `.qmd` file;
-2.  You use a function to load the data. The function you need to use depends on the data format.
-3.  You assign the output of this function to a name of your choice.
-
-For example:
-
-1.  Make sure that this `.qmd` file is saved in the same folder as a `data` folder containing `diabetes.rds`, a simulated dataset.
-2.  Then we use `readr::read_rds` to load the file.
-
-```{r}
-# Data import
-dm <- read_rds("data/diabetes.rds")
-```
-
-You will note that now this dataset has been imported in your *Environment*, in the top right of your window.
-
-Let's preview it.
-
-```{r}
-head(dm)
-```
-
-------------------------------------------------------------------------
 
 # Data transformation
 
@@ -319,17 +290,7 @@ dm |> count(disability, exercise, frailty)
 
 ------------------------------------------------------------------------
 
-# Exporting/saving datasets
 
-Whatever you do to the dataset, it doesn't change the original file. If you want to make some changes permanent, you need to use a writing function.
-
-`readr::write_rds` lets you save in the native R format, which will keep the data types.
-
-```{r}
-# dm |> write_rds("data/diabetes_edited.rds")
-```
-
-------------------------------------------------------------------------
 
 *Exercise 5.*
 

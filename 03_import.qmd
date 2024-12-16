@@ -9,24 +9,63 @@ editor: visual
 
 # Content
 
--   Importing data
-    -   From a file (rds, csv, dta, fst)
-    -   From a database via SQL query
--   Exporting data
-    -   To a file (rds, csv, dta, fst)
-    -   To a database
+-   Importing and exporting data files
+    -   csv
+    -   other delimited files
+    -   rds
+    -   xlsx
+    -   ods
+    -   dta
+-   Reading and writing on a SQL database
 
 ------------------------------------------------------------------------
 
-In this session, you'll use reading functions from the `readr` package, which is part of the tidyverse.
+In this session, you'll use functions from a few packages:
+
+-   [`readr`](https://readr.tidyverse.org/reference/index.html) to read and write files in most formats - part of the core tidyverse, so it's automatically loaded when calling `library(tidyverse)`
+-   [`readxl`](https://readxl.tidyverse.org/) to read Excel spreadsheets
+-   [`haven`](https://haven.tidyverse.org/) to read and write dta files
+-   [`readODS`](https://docs.ropensci.org/readODS/) to read and write ODS spreadsheets
+-   `DBI`, `odbc` and to read data from (and write it to) an SQL database.
+-   `dbplyr` to simplify querying a SQL database table.
 
 Before running this chunk, please ensure that you have these packages installed.
 
 ```{r}
 library(tidyverse)
+library(haven)
+library(readxl)
+library(readODS)
+library(DBI)
+library(odbc)
+library(dbplyr)
 ```
 
-# Importing data
+------------------------------------------------------------------------
+
+# Recap from 02_visualise
+
+Explore `Theoph`, a dataset with information on the serum concentration of a drug at different time points in 12 participants.
+
+```{r}
+
+```
+
+Create a concentration-time graph with `ggplot2`:
+
+-   time from dose will be on the x-axis
+-   concentration will be on the y-axis
+-   each point will represent a concentration at a specific time for a given participant
+-   participants will be represented with different colours
+-   *bonus*: connect all points from the same participant with a line.
+
+```{r}
+
+```
+
+------------------------------------------------------------------------
+
+# Importing and exporting data files
 
 Data to be processed can be located in:
 
@@ -42,85 +81,288 @@ The general process is this:
 2.  You list the path to your data as an argument of that function; for example, `read_csv("data/lab.csv")`.
 3.  You assign the output of this function to an object with a name of your choice; for example, `lab_raw <- read_csv("data/lab.csv")`.
 
-### Identifying the file path
-
-You will need to tell R where the data is kept: its path.
-
-If you can keep data to your personal drive, you would keep it in a `/data` folder within your R project folder. This makes it easy to reference the location of the data from your script. For the purposes of this course, the data is indeed kept in the `/data` folder. More information on R projects will be covered in session `13_workflows`.
-
-If the data is kept on a shared drive, you need to specify the location of the data. We recommend you use the full path, and not just e.g. `H:/...`, because some people might not have mapped the same letter to the same path. You can then use `paste0()` or `glue::glue()` to identify your file.
-
-Please note that R uses forward slashes (`/`) and not backward slashes (`\`) as Windows and Stata do.
-
-```{r}
-# Best
-path_data <- "//FILECOL17.phe.gov.uk/ProjectData/HCAI/intRo/data/"
-
-# Worse
-# path_data <- "H:/intRo/data/"
-
-# Example
-# read_csv(paste0(path_data, "filename.csv"))
-```
-
-PS - we recommend **against** using `setwd()` to do this.
-
 ### Importing csv files
 
 CSV files (comma-separated values) are the most common file type for tabular data.
 
-We recommend using function `read_csv()` (note the underscore) from package `readr`, rather than the base R function `read.csv`. This is because it's faster, among other things.
+I recommend using function `read_csv()` (note the underscore) from package `readr`, rather than the base R function `read.csv`. This is because it's faster, among other things.
 
-The path to the file is the first argument.
-
-```{r}
-
-```
-
-### Importing rds files
-
-For example:
-
-1.  Make sure that this `.qmd` file is saved in the same folder as a `data` folder containing `diabetes.rds`, a simulated dataset.
-2.  Then we use `readr::read_rds` to load the file.
+You need to list the path to the file as the first argument of this function.
 
 ```{r}
-# Data import
-dm <- read_rds("data/diabetes.rds")
+metabolic <- read_csv("data/metabolic.csv")
 ```
+
+The code above will work if the CSV `metabolic.csv` is stored in a folder called `data` which is kept where this .qmd script is.
+
+However, if you need to keep your data on a shared drive, you need to specify the longer path. I recommend using the full path to identify the data folder (e.g., `//FILECOL17.phe.gov.uk/ProjectData/HCAI/intRo/data/`) and not just e.g. `H:/intRo/data/`, because some people might not have mapped the same drive to the same letter. You can then use `paste0()` or `glue::glue()` to identify your file. Please note, I recommend **against** using `setwd()` to do this. More information on data location will be covered in session `13_workflows`.
 
 You will note that now this dataset has been imported in your *Environment*, in the top right of your window.
 
 Let's preview it.
 
 ```{r}
-head(dm)
+head(metabolic)
 ```
 
-------------------------------------------------------------------------
+*Exercise 1*.
 
-# Exporting data
+1.  Choose any other CSV file in the /data folder
+2.  Import it.
+3.  Preview it with `head()` or another method used in session `02_visualise`.
+
+```{r}
+# TODO: move to solutions
+ambi_raw <- read_csv("data/ambition.csv")
+glimpse(ambi_raw)
+```
+
+Please note that if the column headers contain spaces, `read_csv` will keep them. In session `08_cleaning` we'll go through how to make these column names easier to deal with.
+
+If the file contains many columns that you don't need, you can specify which ones to import with the `col_select` argument. This has the advantage of speeding up the import.
+
+```{r}
+smoking <- read_csv("data/metabolic.csv", col_select = c(patient_id, smoker))
+```
+
+`read_csv()` will also guess which data type each column contains: dates, characters, integers, double (i.e., real numbers), etc. This guess is based on the first 1000 rows. You can change this default by setting argument `guess_max` to a different number, or you can specify the type of each column:
+
+```{r}
+ages <- read_csv(
+    "data/metabolic.csv",
+    col_select = c(patient_id, age),
+    col_types = c(col_character(), col_integer())
+    )
+```
+
+`read_csv` also has many other arguments; for example, you can use `skip` to avoid reading some initial rows that don't contain data, or `n_max` to establish the maximum number of rows to read (useful if you just want to preview a data file, for example). Run `help(read_csv)` for more information.
+
+### Importing other delimited files
+
+You can use `readr::read_delim()`, which is very similar to `read_csv`. You'll need to specify which delimiter the files uses: for example `read_delim(..., delim = "|")`.
+
+### Even faster importing
+
+If you need to import a very large delimited file, you could try:
+
+-   only selecting the columns that you will need (see `col_select` above)
+-   using `data.table::fread()` instead of the `readr` functions.
+
+Please note that if you're downloading a delimited file from a shared drive, your internet download speed will be a limiting factor.
+
+Very large files should ideally be saved in a different format that makes it easier to import, for example fst.
+
+### Importing rds files
+
+R's native data file format, rds, keeps data types, so it's helpful to use for example for mid-processing files.
+
+You can read them with `readr::read_rds()` or base R `readRDS()` :
+
+*Exercise 2*. Read `diabetes.rds`, a file saved in the `/data` folder.
+
+```{r}
+# TODO: move to solutions
+dm <- read_rds("data/diabetes.rds")
+```
+
+### Importing Excel files
+
+You can import Excel spreadsheets with `readxl::read_excel()`, which will work with both the old .xls and the new .xlsx formats.
+
+```{r}
+candi_site5 <- read_excel("data/candidaemias.xlsx")
+```
+
+Please note that by default `read_excel()` imports the first sheet, but you can specify otherwise.
+
+*Exercise 3*.
+
+1.  Open the documentation of `read_excel()` .
+2.  Find out how to import a different sheet.
+3.  Read the sheet containing antifungal treatment from the `candidaemias.xlsx` file.
+
+```{r}
+# TODO: move to solutions
+help(read_excel)
+candi_antifung <- read_excel("data/candidaemias.xlsx", sheet = "meds")
+```
+
+### Importing ODS files
+
+You can use `readODS::read_ods()`, which is very similar to the function above.
+
+### Importing dta files
+
+If for any unpleasant circumstance the data was saved in Stata's proprietary dta format, `haven::read_dta()` comes to the rescue.
+
+*Exercise 4*.
+
+1.  Import the `point_prevalence.dta` file.
+2.  Preview the data. What do you notice about the `site`, `site_type` and `fy` columns?
+
+```{r}
+# TODO: move
+pps_raw <- read_dta("data/point_prevalence.dta")
+pps_raw
+```
+
+Any columns containing Stata-labelled values will be imported as a special class called `labelled`. You should convert these to factor shortly after importing, by using `haven::as_factor()` as shown in the code below. For the moment, please don't focus on the `|>`, `mutate`, `across` and `where` bits: we'll cover these in future sessions.
+
+```{r}
+pps <-
+    read_dta("data/point_prevalence.dta") |> 
+    # Make labelled values readible
+    mutate(across(where(is.labelled), as_factor))
+
+pps
+```
 
 ## Exporting data to a file
 
-Whatever you do to the dataset, it doesn't change the original file. If you want to make some changes permanent, you need to use a writing function.
+Whatever you do to the dataset, it doesn't change the original file. If you want to make some changes permanent, you need to use a writing function. Important: never overwrite the initial, raw data file.
 
-`readr::write_rds` lets you save in the native R format, which will keep the data types.
+### Exporting as csv
+
+You can use `readr::write_csv`.
+
+```{r}
+# dm |> write_csv("data/diabetes_edited.csv")
+```
+
+### Exporting as rds
+
+`readr::write_rds` or base R `saveRDS()` let you save in the native R format, which will keep the data types. I recommend doing this for intermediate data tables you are processing.
 
 ```{r}
 # dm |> write_rds("data/diabetes_edited.rds")
 ```
 
-------------------------------------------------------------------------
+I recommend *against* saving to .RData because it doesn't make it clear which objects are imported in this way.
 
-## Exporting data to a database
+### Exporting as xlsx
+
+I don't recommend saving in xlsx or xls format, but if you need to, you can use [`writexl`](https://docs.ropensci.org/writexl/)`::write_xlsx()` .
+
+### Exporting as ODS
+
+If you need to export data in spreadsheet format, I recommend using ODS (OpenDocument spreadsheet), as it has an open licence. You can do this with `readODS::write_ods()`.
+
+### Exporting as dta
+
+If for any unfortunate circumstance you must save the data in Stata's proprietary dta format, you can use `haven::write_dta()`.
+
+# Reading and writing on a SQL database
+
+## Initial SQL setup
+
+The very first time that you use a SQL database, you'll need to:
+
+1.  Get access to that database
+2.  Add the data source to your ODBC Data Sources
+
+The code in the sections below assumes that you have a Data Lake source in your ODBC Data Sources.
+
+## Connect to a SQL database
+
+Now we need to connect to the database. You can do this directly from R, using functions from package `DBI` and `odbc`.
+
+`dbConnect` has many options and choosing which to use depends on your database - you should ask other data scientists in your team how to set up a connection.
 
 ```{r}
-F://...
+con_LookupsShared <-
+    dbConnect(
+        odbc(),
+        Driver = "SQL Server",
+        Server = "SQLClusColLK19\\Lake19",
+        Database = "LookupsShared"
+        )
+```
 
-fs::dir_ls("//FILECOL17.phe.gov.uk/ProjectData/HCAI")
+If the code in the chunk above worked, you will now see that the Connections tab in the panel at the top right of this window will have become active and show all databases within this server.
 
-fs::dir
+*Exercise X*. Create a separate connection to another database within a server you have access to.
+
+## Pull data from a SQL table
+
+You can get data from a SQL database table in a variety of ways:
+
+-   Use package `dbplyr` to query a database using `dplyr` code - detailed below
+-   Write the SQL query in a SQL chunk within a qmd - detailed below
+-   Write the SQL query as a character string in `DBI::dbGetQuery()`
+-   Call a SQL query (e.g. `query.sql`) from within R code by using `readr::read_lines()` and then passing it to `DBI::dbGetQuery()`
+
+### Using `dbplyr`
+
+1.  Use `tbl()` to create an object that represents the table you want. NB - running this code will not import the whole table into memory.
+
+```{r}
+sicbl_db <- tbl(con_LookupsShared, "vLKP_SICBL24")
+```
+
+2.  Use `dplyr` functions to query the database. This will be covered in session `06_subset`, but for now just be aware that `select` keeps only the columns listed, and drops all other columns. Be aware that this still is not a dataframe, it's just a SQL commands. In the background, `dbplyr` is converting the `dplyr` code into a SQL query. You can see the SQL query by using `show_query` on the new object.
+
+```{r}
+sicbl_name_lookup_db <- sicbl_db |>
+    select(SICBL24CD, SICBL24NM)
+
+show_query(sicbl_name_lookup_db)
+```
+
+3.  Use `collect` to run the query and return the data into a tibble.
+
+```{r}
+sicbl_name_lookup <- collect(sicbl_name_lookup_db)
+sicbl_name_lookup
+```
+
+### Using SQL chunks within a qmd - IMO we don't need this, the above is enough
+
+If you're working from a qmd script (like this one), you can use a SQL chunk, that lets you write the SQL query and run it directly from this script.
+
+A SQL chunk needs to know the name of the connection object. You do this by typing it in the `connection` chunk option, i.e., what comes after `#| connection:`.
+
+```{sql}
+#| connection: con_LookupsShared
+
+SELECT *
+FROM LookupsShared.dbo.vLKP_SICBL24
+```
+
+(NB: In session `10_sql` we'll cover more complex SQL queries)
+
+You can assign the results of your query to an R object by using chunk option `output.var`.
+
+```{sql}
+#| connection: con_LookupsShared
+#| output.var: lookup_sicbl
+
+SELECT *
+FROM LookupsShared.dbo.vLKP_SICBL24
+```
+
+You can then use this object in the rest of your R code. Remember to close the connection once you don't need it anymore.
+
+```{r}
+head(lookup_sicbl)
+dbDisconnect(con_LookupsShared)
+```
+
+## Writing data to a SQL database
+
+If you need to write data to SQL, you can use `DBI::dbWriteTable()`.
+
+Imagine you want to upload a data.frame called `test` to the LookupsShared database. You need to list the connection object, the name you want the table to have on the database, and the data.frame object name.
+
+Please note that this chunk will throw an error - you don't have writing permission for this database.
+
+```{r}
+test <- tibble(col1 = c("a", "b", "c"))
+
+dbWriteTable(
+    con_LookupsShared,
+    name = "vLKP_test",
+    value = test
+    )
 ```
 
 ------------------------------------------------------------------------
@@ -129,12 +371,25 @@ fs::dir
 
 I recommend these resources:
 
+-   Data import with the tidyverse [cheat sheet](https://github.com/rstudio/cheatsheets/blob/main/data-import.pdf)
 -   R for Data Science (2e)
     -   (csv) [Data import](https://r4ds.hadley.nz/data-import.html)
     -   [Spreadsheets](https://r4ds.hadley.nz/spreadsheets)
     -   [Databases](https://r4ds.hadley.nz/databases)
--   [`readr` documentation](https://readr.tidyverse.org/reference/index.html)
 
 ------------------------------------------------------------------------
 
 # Solutions
+
+```{r}
+# Recap - part 1
+theoph <- datasets::Theoph
+theoph
+help(theoph)
+
+# Recap - part 2
+theoph |>
+  ggplot(aes(x = Time, y = conc, colour = Subject)) +
+  geom_point() +
+  geom_line()
+```

@@ -16,25 +16,9 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 
 ------------------------------------------------------------------------
 
-# Recap from topic 2
+# Recap from topic 03
 
-Explore `Theoph`, a dataset with information on the serum concentration of a drug at different time points in 12 participants.
-
-```{r}
-
-```
-
-Create a concentration-time graph with `ggplot2`:
-
--   time from dose will be on the x-axis
--   concentration will be on the y-axis
--   each point will represent a concentration at a specific time for a given participant
--   participants will be represented with different colours
--   *bonus*: connect all points from the same participant with a line.
-
-```{r}
-
-```
+...
 
 ------------------------------------------------------------------------
 
@@ -363,17 +347,6 @@ I recommend these resources:
 ## Solutions
 
 ```{r include=FALSE}
-# Recap - part 1
-theoph <- datasets::Theoph
-theoph
-help(theoph)
-
-# Recap - part 2
-theoph |>
-  ggplot(aes(x = Time, y = conc, colour = Subject)) +
-  geom_point() +
-  geom_line()
-
 # Exercise 3
 tabyl(trial, stage)
 ggplot(trial, aes(x = stage)) + geom_bar()
