@@ -228,7 +228,7 @@ To have a look at this dataset, you can:
 
 ```{r}
 # Import the table of bacteraemias
-bacteraemias <- read_csv("./data/bacteraemias.csv")
+bacteraemias <- read_csv("data/bacteraemias.csv")
 
 # Option 1: dataframe name
 bacteraemias
@@ -265,8 +265,7 @@ sd(bacteraemias$age)
 
 ```{r}
 # Load the data
-metabolic <- read_csv("./data/metabolic.csv")
-
+metabolic <- read_csv("data/metabolic.csv")
 ```
 
 ------------------------------------------------------------------------
@@ -320,7 +319,7 @@ c("age" = 19, "height" = 185, "systolic_BP" = 132)
 
 ```{r}
 # Import
-aggregated_results <- read_csv("./data/aggregated_results.csv")
+aggregated_results <- read_csv("data/aggregated_results.csv")
 
 # Preview
 

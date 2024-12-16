@@ -18,28 +18,29 @@ editor: visual
 
 ------------------------------------------------------------------------
 
-# Recap from topic 1
-
 Before you run the chunk below, ensure you have installed the `tidyverse` package. This includes `readr`, `ggplot2` and other packages that we will frequently use.
 
 ```{r}
 library(tidyverse)
 ```
 
-Calculate the minimum white blood cell count in the dataframe `bacteraemias`.
+# Recap from 01_basics
+
+1.  Calculate the minimum white blood cell count in the dataframe `bacteraemias`.
 
 ```{r}
 bacteraemias <- read_csv("./data/bacteraemias.csv")
 
-# Your code below
+# Your code goes here ↓
 
 ```
 
-Create a chunk below and use it to create a new object called "min_white" that contains this value.
+2.  Create a chunk in the space below.
+3.  In the newly created chunk, create a new object called `min_white` that contains this value.
 
 ------------------------------------------------------------------------
 
-# Exploring a `data.frame`
+# Exploring a data frame
 
 For this topic, we will use a sample dataset called `msleep`.
 
@@ -51,6 +52,8 @@ msleep <- ggplot2::msleep
 
 # Preview of dataset
 msleep
+
+head(msleep)
 
 # RStudio Viewer
 View(msleep)
