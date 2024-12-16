@@ -2,6 +2,7 @@
 title: "3: Importing data"
 subtitle: "Introduction to R for health data"
 author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
+editor: visual
 ---
 
 ------------------------------------------------------------------------
