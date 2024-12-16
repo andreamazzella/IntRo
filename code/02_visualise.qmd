@@ -20,11 +20,10 @@ editor: visual
 
 # Recap from topic 1
 
-Before you run this chunk, ensure you have installed the `readr` and `ggplot2` packages.
+Before you run the chunk below, ensure you have installed the `tidyverse` package. This includes `readr`, `ggplot2` and other packages that we will frequently use.
 
 ```{r}
-library(readr)
-library(ggplot2)
+library(tidyverse)
 ```
 
 Calculate the minimum white blood cell count in the dataframe `bacteraemias`.
@@ -57,7 +56,7 @@ msleep
 View(msleep)
 
 # Structure
-str(msleep)
+glimpse(msleep)
 ```
 
 ------------------------------------------------------------------------
