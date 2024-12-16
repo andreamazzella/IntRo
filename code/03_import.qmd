@@ -1,0 +1,139 @@
+---
+title: "3: Importing data"
+subtitle: "Introduction to R for health data"
+author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
+---
+
+------------------------------------------------------------------------
+
+# Content
+
+-   Importing data
+    -   From a file (rds, csv, dta, fst)
+    -   From a database via SQL query
+-   Exporting data
+    -   To a file (rds, csv, dta, fst)
+    -   To a database
+
+------------------------------------------------------------------------
+
+In this session, you'll use reading functions from the `readr` package, which is part of the tidyverse.
+
+Before running this chunk, please ensure that you have these packages installed.
+
+```{r}
+library(tidyverse)
+```
+
+# Importing data
+
+Data to be processed can be located in:
+
+-   A file in your personal drive
+-   A file in a shared drive
+-   A database
+
+## Importing data from a file
+
+The general process is this:
+
+1.  You choose a reading function that matches the file type; for example, `readr::read_csv()` for CSV files.
+2.  You list the path to your data as an argument of that function; for example, `read_csv("data/lab.csv")`.
+3.  You assign the output of this function to an object with a name of your choice; for example, `lab_raw <- read_csv("data/lab.csv")`.
+
+### Identifying the file path
+
+You will need to tell R where the data is kept: its path.
+
+If you can keep data to your personal drive, you would keep it in a `/data` folder within your R project folder. This makes it easy to reference the location of the data from your script. For the purposes of this course, the data is indeed kept in the `/data` folder. More information on R projects will be covered in session `13_workflows`.
+
+If the data is kept on a shared drive, you need to specify the location of the data. We recommend you use the full path, and not just e.g. `H:/...`, because some people might not have mapped the same letter to the same path. You can then use `paste0()` or `glue::glue()` to identify your file.
+
+Please note that R uses forward slashes (`/`) and not backward slashes (`\`) as Windows and Stata do.
+
+```{r}
+# Best
+path_data <- "//FILECOL17.phe.gov.uk/ProjectData/HCAI/intRo/data/"
+
+# Worse
+# path_data <- "H:/intRo/data/"
+
+# Example
+# read_csv(paste0(path_data, "filename.csv"))
+```
+
+PS - we recommend **against** using `setwd()` to do this.
+
+### Importing csv files
+
+CSV files (comma-separated values) are the most common file type for tabular data.
+
+We recommend using function `read_csv()` (note the underscore) from package `readr`, rather than the base R function `read.csv`. This is because it's faster, among other things.
+
+The path to the file is the first argument.
+
+```{r}
+
+```
+
+### Importing rds files
+
+For example:
+
+1.  Make sure that this `.qmd` file is saved in the same folder as a `data` folder containing `diabetes.rds`, a simulated dataset.
+2.  Then we use `readr::read_rds` to load the file.
+
+```{r}
+# Data import
+dm <- read_rds("data/diabetes.rds")
+```
+
+You will note that now this dataset has been imported in your *Environment*, in the top right of your window.
+
+Let's preview it.
+
+```{r}
+head(dm)
+```
+
+------------------------------------------------------------------------
+
+# Exporting data
+
+## Exporting data to a file
+
+Whatever you do to the dataset, it doesn't change the original file. If you want to make some changes permanent, you need to use a writing function.
+
+`readr::write_rds` lets you save in the native R format, which will keep the data types.
+
+```{r}
+# dm |> write_rds("data/diabetes_edited.rds")
+```
+
+------------------------------------------------------------------------
+
+## Exporting data to a database
+
+```{r}
+F://...
+
+fs::dir_ls("//FILECOL17.phe.gov.uk/ProjectData/HCAI")
+
+fs::dir
+```
+
+------------------------------------------------------------------------
+
+# Learning more
+
+I recommend these resources:
+
+-   R for Data Science (2e)
+    -   (csv) [Data import](https://r4ds.hadley.nz/data-import.html)
+    -   [Spreadsheets](https://r4ds.hadley.nz/spreadsheets)
+    -   [Databases](https://r4ds.hadley.nz/databases)
+-   [`readr` documentation](https://readr.tidyverse.org/reference/index.html)
+
+------------------------------------------------------------------------
+
+# Solutions

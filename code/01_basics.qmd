@@ -219,9 +219,7 @@ You only need to install packages once, but you then need to open it every time 
 
 A large part of R is built around `data.frame`s: data in table format.
 
-Some `data.frame`s are included in R, so we can use them to practise.
-
-For example, let's explore a small table of patient-level data on bacteraemias. For the moment, run this code without focussing on the `read.csv` function - we'll cover it in a later session.
+For example, let's explore a small table of patient-level data on bacteraemias. For the moment, run this code without focussing on the `read_csv` function - we'll cover it in session `03_import`.
 
 To have a look at this dataset, you can:
 
