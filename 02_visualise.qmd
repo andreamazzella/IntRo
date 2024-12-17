@@ -29,7 +29,7 @@ library(tidyverse)
 1.  Calculate the minimum white blood cell count in the dataframe `bacteraemias`.
 
 ```{r}
-bacteraemias <- read_csv("./data/bacteraemias.csv")
+bacteraemias <- read_csv("data/raw/bacteraemias.csv")
 
 # Your code goes here ↓
 

@@ -27,7 +27,8 @@ In this session, you'll use functions from a few packages:
 -   [`haven`](https://haven.tidyverse.org/) to read and write dta files
 -   [`readODS`](https://docs.ropensci.org/readODS/) to read and write ODS spreadsheets
 -   `DBI`, `odbc` and to read data from (and write it to) an SQL database.
--   `dbplyr` to simplify querying a SQL database table.
+-   [`dbplyr`](https://dbplyr.tidyverse.org/) to simplify querying a SQL database table.
+-   [`fs`](https://fs.r-lib.org/) to handle file and folders
 
 Before running this chunk, please ensure that you have these packages installed.
 
@@ -39,25 +40,29 @@ library(readODS)
 library(DBI)
 library(odbc)
 library(dbplyr)
+library(fs)
 ```
 
 ------------------------------------------------------------------------
 
 # Recap from 02_visualise
 
-Explore `Theoph`, a dataset with information on the serum concentration of a drug at different time points in 12 participants.
+1.  Explore the in-built dataset below.
+    -   This contains data from an experiment on theophylline, a drug used to treat asthma and COPD.
+    -   Each subject was given a dose of the drug and then had repeat blood samples taken to measure its serum concentration.
 
 ```{r}
+theoph <- as_tibble(datasets::Theoph)
+
+# Your code goes here ↓
 
 ```
 
-Create a concentration-time graph with `ggplot2`:
-
--   time from dose will be on the x-axis
--   concentration will be on the y-axis
--   each point will represent a concentration at a specific time for a given participant
--   participants will be represented with different colours
--   *bonus*: connect all points from the same participant with a line.
+2.  Create a concentration-time graph with `ggplot2`:
+    -   time from dose will be on the x-axis
+    -   concentration will be on the y-axis
+    -   there will be a coloured line indicating each participant, showing how their concentration changed through time
+    -   *bonus*: also add a point for each (time, concentration) value.
 
 ```{r}
 
@@ -66,12 +71,6 @@ Create a concentration-time graph with `ggplot2`:
 ------------------------------------------------------------------------
 
 # Importing and exporting data files
-
-Data to be processed can be located in:
-
--   A file in your personal drive
--   A file in a shared drive
--   A database
 
 ## Importing data from a file
 
@@ -90,7 +89,7 @@ I recommend using function `read_csv()` (note the underscore) from package `read
 You need to list the path to the file as the first argument of this function.
 
 ```{r}
-metabolic <- read_csv("data/metabolic.csv")
+metabolic <- read_csv("data/raw/metabolic.csv")
 ```
 
 The code above will work if the CSV `metabolic.csv` is stored in a folder called `data` which is kept where this .qmd script is.
@@ -112,9 +111,7 @@ head(metabolic)
 3.  Preview it with `head()` or another method used in session `02_visualise`.
 
 ```{r}
-# TODO: move to solutions
-ambi_raw <- read_csv("data/ambition.csv")
-glimpse(ambi_raw)
+
 ```
 
 Please note that if the column headers contain spaces, `read_csv` will keep them. In session `08_cleaning` we'll go through how to make these column names easier to deal with.
@@ -122,14 +119,14 @@ Please note that if the column headers contain spaces, `read_csv` will keep them
 If the file contains many columns that you don't need, you can specify which ones to import with the `col_select` argument. This has the advantage of speeding up the import.
 
 ```{r}
-smoking <- read_csv("data/metabolic.csv", col_select = c(patient_id, smoker))
+smoking <- read_csv("data/raw/metabolic.csv", col_select = c(patient_id, smoker))
 ```
 
 `read_csv()` will also guess which data type each column contains: dates, characters, integers, double (i.e., real numbers), etc. This guess is based on the first 1000 rows. You can change this default by setting argument `guess_max` to a different number, or you can specify the type of each column:
 
 ```{r}
 ages <- read_csv(
-    "data/metabolic.csv",
+    "data/raw/metabolic.csv",
     col_select = c(patient_id, age),
     col_types = c(col_character(), col_integer())
     )
@@ -161,8 +158,7 @@ You can read them with `readr::read_rds()` or base R `readRDS()` :
 *Exercise 2*. Read `diabetes.rds`, a file saved in the `/data` folder.
 
 ```{r}
-# TODO: move to solutions
-dm <- read_rds("data/diabetes.rds")
+
 ```
 
 ### Importing Excel files
@@ -170,7 +166,7 @@ dm <- read_rds("data/diabetes.rds")
 You can import Excel spreadsheets with `readxl::read_excel()`, which will work with both the old .xls and the new .xlsx formats.
 
 ```{r}
-candi_site5 <- read_excel("data/candidaemias.xlsx")
+candi_site5 <- read_excel("data/raw/candidaemias.xlsx")
 ```
 
 Please note that by default `read_excel()` imports the first sheet, but you can specify otherwise.
@@ -182,9 +178,7 @@ Please note that by default `read_excel()` imports the first sheet, but you can 
 3.  Read the sheet containing antifungal treatment from the `candidaemias.xlsx` file.
 
 ```{r}
-# TODO: move to solutions
-help(read_excel)
-candi_antifung <- read_excel("data/candidaemias.xlsx", sheet = "meds")
+
 ```
 
 ### Importing ODS files
@@ -201,16 +195,14 @@ If for any unpleasant circumstance the data was saved in Stata's proprietary dta
 2.  Preview the data. What do you notice about the `site`, `site_type` and `fy` columns?
 
 ```{r}
-# TODO: move
-pps_raw <- read_dta("data/point_prevalence.dta")
-pps_raw
+
 ```
 
 Any columns containing Stata-labelled values will be imported as a special class called `labelled`. You should convert these to factor shortly after importing, by using `haven::as_factor()` as shown in the code below. For the moment, please don't focus on the `|>`, `mutate`, `across` and `where` bits: we'll cover these in future sessions.
 
 ```{r}
 pps <-
-    read_dta("data/point_prevalence.dta") |> 
+    read_dta("data/processing/point_prevalence.dta") |> 
     # Make labelled values readible
     mutate(across(where(is.labelled), as_factor))
 
@@ -219,14 +211,20 @@ pps
 
 ## Exporting data to a file
 
-Whatever you do to the dataset, it doesn't change the original file. If you want to make some changes permanent, you need to use a writing function. Important: never overwrite the initial, raw data file.
+Whatever you do to the dataset, it doesn't change the original file. If you want to make some changes permanent, you need to use a writing function.
+
+Important: never overwrite the initial, raw data file. Ideally, separate the data in different folders according to their type: raw files, processing tables, processed tables.
+
+```{r}
+dir_create("data/processed")
+```
 
 ### Exporting as csv
 
 You can use `readr::write_csv`.
 
 ```{r}
-# dm |> write_csv("data/diabetes_edited.csv")
+dm |> write_csv("data/processed/diabetes_edited.csv")
 ```
 
 ### Exporting as rds
@@ -234,7 +232,7 @@ You can use `readr::write_csv`.
 `readr::write_rds` or base R `saveRDS()` let you save in the native R format, which will keep the data types. I recommend doing this for intermediate data tables you are processing.
 
 ```{r}
-# dm |> write_rds("data/diabetes_edited.rds")
+# dm |> write_rds("data/processed/diabetes_edited.rds")
 ```
 
 I recommend *against* saving to .RData because it doesn't make it clear which objects are imported in this way.
@@ -382,14 +380,40 @@ I recommend these resources:
 # Solutions
 
 ```{r}
-# Recap - part 1
-theoph <- datasets::Theoph
+#| label: recap Q1
 theoph
-help(theoph)
+```
 
-# Recap - part 2
+```{r}
+#| label: recap Q2
 theoph |>
   ggplot(aes(x = Time, y = conc, colour = Subject)) +
-  geom_point() +
-  geom_line()
+  geom_line() +
+  geom_point()
+```
+
+```{r}
+#| label: exerc1 solution
+
+ambi_raw <- read_csv("data/raw/ambition.csv")
+glimpse(ambi_raw, width = 90)
+```
+
+```{r}
+#| label: exerc2 solution
+
+dm <- read_rds("data/processing/diabetes.rds")
+```
+
+```{r}
+#| label: exerc3 solution
+
+help(read_excel)
+candi_antifung <- read_excel("data/raw/candidaemias.xlsx", sheet = "meds")
+```
+
+```{r}
+#| label: exerc4 solution
+pps_raw <- read_dta("data/processing/point_prevalence.dta")
+pps_raw
 ```
