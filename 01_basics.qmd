@@ -16,8 +16,7 @@ editor: visual
 -   Assigning values
 -   Using functions
 -   Using packages
--   Using tables of data
--   Using vectors
+-   Using data frames
 
 ------------------------------------------------------------------------
 
@@ -191,17 +190,14 @@ R has some core functions, like the ones we've used so far: `sqrt()`, `mean()` a
 
 ## Step 1: Download and install a package
 
-To download and install a package, one uses the `install.packages()` function, adding the package name in quotes. This might take a bit of time if the packages are large.
+To download and install a package, I recommend you use one these options:
 
-```{r}
-install.packages("readr")
-```
-
-You may also do this via the RStudio graphical interface: in the bottom right quarter of the screen, you click on `Packages` and then `Install`. You type the name of the package in the empty field and then click on the `Install` button.
+-   via the RStudio graphical interface: in the bottom right quarter of the screen, click on `Packages` and then `Install`. You type the name of the package in the empty field and then click on the `Install` button.
+-   by calling the `install.packages()` function *from the console*, adding the package name in quotes. This might take a bit of time if the packages are large. (I recommend *against* keeping this function in a script, as this action is only needed once, among other reasons).
 
 You can check if a package is already installed by going to the `Packages` tab and searching for its name.
 
-*Exercise 8.* Install package `ggplot2` with either method.
+*Exercise 8.* Install packages `readr` and `ggplot2` with either method.
 
 ## Step 2: Load the package
 
@@ -215,7 +211,7 @@ You only need to install packages once, but you then need to open it every time 
 
 ------------------------------------------------------------------------
 
-# Using tables of data
+# Using data frames
 
 A large part of R is built around `data.frame`s: data in table format.
 
@@ -268,46 +264,6 @@ sd(bacteraemias$age)
 metabolic <- read_csv("data/raw/metabolic.csv")
 ```
 
-------------------------------------------------------------------------
-
-# Vectors
-
-In R, a **vector** is a list of objects of the same type, in a specific order. For example, 5 2 4 is a vector (of numbers); "cirrhosis" "fibrosis" "hepatitis" is a vector (of characters).
-
-Of note, every column in a `data.frame` is a vector!
-
-You create a vector using function `c()`, which stands for "combine":
-
-```{r}
-c(5, 2, 4)
-
-c("cirrhosis", "fibrosis", "hepatitis")
-```
-
-Vectors can be used:
-
--   When the argument of a function needs to contain more than one element
--   When we want to apply a function to more than one object.
-
-```{r}
-# A function that will summarise all elements of a vector
-mean(c(6, 7, 8))
-
-# A function that will apply to each element separately
-log(c(100, 10))
-```
-
-Why do you think the output of the chunk above is different to the below?
-
-```{r}
-log(100, 10)
-```
-
-Objects in a vector can have names:
-
-```{r}
-c("age" = 19, "height" = 185, "systolic_BP" = 132)
-```
 
 ------------------------------------------------------------------------
 
