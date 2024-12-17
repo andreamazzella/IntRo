@@ -2,6 +2,7 @@
 title: "3: Summarising data"
 subtitle: "Introduction to R for health data"
 author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
+editor: visual
 ---
 
 ------------------------------------------------------------------------
@@ -16,7 +17,7 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 
 ------------------------------------------------------------------------
 
-# Recap from topic 03
+# Recap from topic 03_import
 
 ...
 
@@ -24,19 +25,18 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 
 Load packages
 
+https://sfirke.github.io/janitor/index.html
+
 ```{r}
 library(dplyr)        # count, group_by, summarise
 library(ggplot2)
+library(janitor)
 library(gt)           # gtsave
 library(gtsummary)    # tbl_summary, as_gt
-library(summarytools) # freq, ctable
 ```
 
-NB:If you use Mac or Linux, you need to install some additional software to use `summarytools`. See [here](https://github.com/dcomtois/summarytools).
 
-*`The following objects are masked from 'package [...]` - what does it mean?*
 
-Two packages can contain a function with the same name - for example, `filter()` is present in both the base R module `stats` and in `dplyr`. If you load `dplyr`, R will warn you that from now on, every time you call `filter()`, it will use its `dplyr` form. In the rare cases in which you want to force R to use the function from a specific package, you can preface the function with `packagename::`. For example, `stats::filter(...)` will tell R to specifically use the `filter()` function from `stats` (and not the one from `dplyr`).
 
 ------------------------------------------------------------------------
 
@@ -75,27 +75,24 @@ This only works well if the variables are coded in the correct data classes, so 
 
 To tabulate categorical data, we have many options, among which:
 
--   `table()` from base R,
--   `count()` from `dplyr`,
--   `freq()` from package `summarytools`.
+-   `count()` from `dplyr`
+-   `tabyl()` from `janitor`.
 
 *Exercise 2.*
 
-Run these lines of code *one at a time* and compare their outputs.
+Run these two chunks and compare their outputs.
 
--   What's the difference?
+-   What are the differences?
 -   Which function do you prefer?
--   What does the `useNA` argument do?
 
 ```{r}
-# Basic frequency table
-table(trial$response)
-
 # With missing values
 count(trial, response)
+```
 
+```{r}
 # With percentages
-freq(trial$response)
+tabyl(trial, response)
 ```
 
 *Exercise 3.*
@@ -119,114 +116,30 @@ We're often interested in showing the distribution of *two* categorical variable
 
 To make two-way tables you can use:
 
--   `table()` from base R, but it doesn't calculate percentages.
 -   `count()` from `dplyr`, but it returns an output in long format and without percentages.
--   `ctable()` from `summarytools`; it's a very customisable function.
+-   `tabyl()` and some more functions from `janitor`
 
 ```{r}
 table(trial$trt, trial$response, useNA = "ifany")
 
 count(trial, trt, response)
 
-# With row percentages
-# NB: summarytools 1.0.1 has an issue with R 4.1 - the following two lines do not work
-ctable(trial$trt, trial$response, useNA = "no")
+# Just counts
+tabyl(trial, trt, response)
 
-# With column percentages (proportions)
-ctable(trial$trt, trial$response, prop = "c", useNA = "no")
+tabyl(trial, trt, response) |>
+    # Change from counts to row percentages (as proportions)
+    adorn_percentages("row") |>
+    # Label percentages
+    adorn_pct_formatting() |>
+    # Add counts back 
+    adorn_ns()
 ```
+(Please ignore the `|>` symbol for now; we'll come back to it soon).
 
 *Exercise 4.*
 
 Write some code to calculate the percentage of people with `grade` `I` cancer who were alive at the end of the study. (If you can't remember the names of your variables, you can run `names(trial)`.
-
-```{r}
-
-```
-
-------------------------------------------------------------------------
-
-## Summarising continuous variables
-
-As we've seen previously, to summarise continuous variables, you can use functions `mean()`, `median()`, `sd()` -- or you can use `summary()` again:
-
-```{r}
-mean(trial$ttdeath)
-median(trial$ttdeath)
-sd(trial$ttdeath)
-descr(trial$ttdeath)
-```
-
-*Exercise 5.*
-
-1.  Try and calculate the average age with `mean()`.
-2.  Why do you get this result?
-3.  Use `help(mean)` to see if you can figure out how to fix this.
-
-```{r}
-
-```
-
-You can also get many summary measures in one go by passing a variable to `summary()`.
-
-```{r}
-summary(trial$marker)
-```
-
-------------------------------------------------------------------------
-
-## Grouped summaries with `dplyr`
-
-What if we wanted to calculate the mean age in specific groups of patients, such as by treatment group?
-
-We can use two powerful functions from package `dplyr`: `group_by()` and `summarise()`. Combined, these two functions collapse the dataset according to a categorical variable, and summarise it with on or more other functions.
-
-```{r}
-trial |>
-  group_by(trt) |> 
-  summarise(mean(age, na.rm = TRUE))
-```
-
-(NB: `summarise()` is different from the function we used above, `summary()`!)
-(Please ignore the `|>` symbol for now; we'll come back to it soon).
-
-You can summarise with any of these functions:
-
--   `mean()`, `median()`,
--   `sd()`, `IQR()`,
--   `min()`, `max()`,
--   `n()`, `n_distinct()`
-
-We can use as many of these as you want in a single `summarise()` call, and you can also summarise more than one variable at the same time. `n()` will count the observations in that group.
-
-```{r}
-trial |>
-  group_by(trt) |> 
-  summarise(count = n(),
-            avg_age = mean(age, na.rm = TRUE),
-            avg_follow_up = mean(ttdeath),
-            sd_follow_up = sd(ttdeath))
-```
-
-Remember that we can visualise the distribution of a continuous variable across a categorical variable with Box plots:
-
-```{r}
-trial |>
-  ggplot(aes(age, trt)) +
-  geom_boxplot()
-```
-
-We can also group by more than one variable.
-
-```{r}
-trial |>
-  group_by(trt, death) |> 
-  summarise(avg_follow_up = mean(ttdeath, na.rm = T) |> round(1))
-```
-
-*Exercise 6.*
-
-Calculate the median age and the age interquartile range in the two response groups.
 
 ```{r}
 
@@ -252,14 +165,111 @@ You can also have more than one pipe, as you've seen above. It still works the s
 
 ```{r}
 # This code...
-trial |>
-  group_by(trt) |> 
-  summarise(mean(ttdeath))
+trial |> 
+    tabyl(trt, response) |>
+    adorn_percentages("row") |>
+    adorn_pct_formatting() |>
+    adorn_ns()
 
 # ...is equivalent to:
-summarise(group_by(trial, trt), mean(ttdeath))
+adorn_ns(adorn_pct_formatting(adorn_percentages(tabyl(trial, trt, response), "row")))
 
 # Which one would you much rather write?
+```
+
+------------------------------------------------------------------------
+
+## Summarising continuous variables
+
+As we've seen previously, to summarise continuous variables, you can use functions `mean()`, `median()`, `sd()`
+
+```{r}
+mean(trial$ttdeath)
+median(trial$ttdeath)
+sd(trial$ttdeath)
+```
+
+*Exercise 5.*
+
+1.  Try and calculate the average age with `mean()`.
+2.  Why do you get this result?
+3.  Use `help(mean)` to see if you can figure out how to fix this.
+
+```{r}
+
+```
+
+You can also get many summary measures in one go by passing a variable to `summary()`.
+
+```{r}
+summary(trial$marker)
+```
+
+------------------------------------------------------------------------
+
+## Grouped summaries with `dplyr`
+
+What if we wanted to calculate the mean age in specific groups of patients, such as by treatment group?
+
+We can use the `summarise()` function from package `dplyr`, which collapses the dataset. You need to specify:
+
+- how to summarise the data, for example, `mean()`,
+- which variable indicates the groups, in the `.by = ` argument
+
+```{r}
+trial |>
+  summarise(
+      mean(age, na.rm = TRUE),
+      .by = trt
+      )
+```
+
+(NB: `summarise()` is different from the function we used above, `summary()`!)
+
+You can summarise with any of these functions:
+
+-   `mean()`, `median()`,
+-   `sd()`, `IQR()`,
+-   `min()`, `max()`,
+-   `n()`, `n_distinct()`
+
+We can use as many of these as you want in a single `summarise()` call, and you can also summarise more than one variable at the same time. `n()` will count the observations in that group.
+
+```{r}
+trial |>
+  summarise(
+      count = n(),
+      avg_age = mean(age, na.rm = TRUE),
+      avg_follow_up = mean(ttdeath),
+      sd_follow_up = sd(ttdeath),
+      .by = trt
+      )
+```
+
+Remember that we can visualise the distribution of a continuous variable across a categorical variable with Box plots:
+
+```{r}
+trial |>
+  ggplot(aes(age, trt)) +
+  geom_boxplot()
+```
+
+We can also group by more than one variable.
+
+```{r}
+trial |>
+  summarise(
+      avg_follow_up = mean(ttdeath, na.rm = T) |> round(1),
+      .by = c(trt, death)
+      )
+```
+
+*Exercise 6.*
+
+Calculate the median age and the age interquartile range in the two response groups.
+
+```{r}
+
 ```
 
 ------------------------------------------------------------------------
@@ -333,18 +343,17 @@ final_table |>
 
 ------------------------------------------------------------------------
 
-## Learn more
+# Learn more
 
 I recommend these resources:
 
--   R for Data Science
-    -   Chapter 7: [Exploratory data analysis](https://r4ds.had.co.nz/exploratory-data-analysis.html)
-    -   Chapter 5.6: [Grouped summaries with `summarise`](https://r4ds.had.co.nz/transform.html#grouped-summaries-with-summarise)
+-   R for Data Science (2ed) chapter 3.5.2: [Data transformation, `summarize`](https://r4ds.hadley.nz/data-transform.html#sec-summarize)
+-   `janitor` documentation, [tabyls](https://sfirke.github.io/janitor/articles/tabyls.html)
 -   `gtsummary` documentation, [Tutorial: `tbl_summary`](https://www.danieldsjoberg.com/gtsummary/articles/tbl_summary.html)
 
 ------------------------------------------------------------------------
 
-## Solutions
+# Solutions
 
 ```{r include=FALSE}
 # Exercise 3
@@ -353,23 +362,21 @@ ggplot(trial, aes(x = stage)) + geom_bar()
 
 # Exercise 4
   # With `tabyl`
-trial |> tabyl(grade, death) |>
-  adorn_totals(c("row", "col")) |> 
-  adorn_percentages() |>
-  adorn_pct_formatting() |>
-  adorn_ns(position = "front")
-
-  # With `ctable`
-ctable(trial$grade, trial$death, useNA = "no")
+tabyl(trial, grade, death) |>
+    adorn_percentages("row") |>
+    # Label percentages
+    adorn_pct_formatting()
 
 # Exercise 5
 mean(trial$age, na.rm = TRUE)
 
 # Exercise 6
 trial |>
-  group_by(response) |>
-  summarise(mean_age = mean(age, na.rm = TRUE),
-            IQR_age = IQR(age, na.rm = TRUE))
+  summarise(
+      mean_age = mean(age, na.rm = TRUE),
+      IQR_age = IQR(age, na.rm = TRUE),
+      .by = response
+      )
 
 # Exercise 7
 teeth <- datasets::ToothGrowth

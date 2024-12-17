@@ -25,6 +25,9 @@ Before you run the chunk below, ensure you have installed the `tidyverse` packag
 library(tidyverse)
 ```
 
+> *Want to know more?* Package conflicts. \
+> Two packages can contain a function with the same name - for example, `filter()` is present in both the base R module `stats` and in `dplyr`. If you load `dplyr`, R will warn you that from now on, every time you call `filter()`, it will use its `dplyr` form. In the rare cases in which you want to force R to use the function from a specific package, you can preface the function with `packagename::`. For example, `stats::filter(...)` will tell R to specifically use the `filter()` function from `stats` (and not the one from `dplyr`).
+
 # Recap from 01_basics
 
 1.  Calculate the minimum white blood cell count in the dataframe `bacteraemias`.
