@@ -213,7 +213,7 @@ pps
 
 Whatever you do to the dataset, it doesn't change the original file. If you want to make some changes permanent, you need to use a writing function.
 
-Important: never overwrite the initial, raw data file. Ideally, separate the data in different folders according to their type: raw files, processing tables, processed tables.
+Important: never overwrite the initial, raw data file. Ideally, separate the data in different folders according to their type: raw files, processing tables, processed tables. Let's create a new folder using `fs::dir_create()`.
 
 ```{r}
 dir_create("data/processed")
@@ -221,18 +221,24 @@ dir_create("data/processed")
 
 ### Exporting as csv
 
-You can use `readr::write_csv`.
+You can use `readr::write_csv`. For example, let's save the pps data frame in CSV format.
 
 ```{r}
-dm |> write_csv("data/processed/diabetes_edited.csv")
+pps |> write_csv("data/processed/point_prevalence.csv")
 ```
 
 ### Exporting as rds
 
+```{r}
+
+```
+
 `readr::write_rds` or base R `saveRDS()` let you save in the native R format, which will keep the data types. I recommend doing this for intermediate data tables you are processing.
 
+*Exercise 5*. Save the `pps` data frame as an RDS file in the "processing" folder.
+
 ```{r}
-# dm |> write_rds("data/processed/diabetes_edited.rds")
+
 ```
 
 I recommend *against* saving to .RData because it doesn't make it clear which objects are imported in this way.
@@ -278,14 +284,18 @@ con_LookupsShared <-
 
 If the code in the chunk above worked, you will now see that the Connections tab in the panel at the top right of this window will have become active and show all databases within this server.
 
-*Exercise X*. Create a separate connection to another database within a server you have access to.
+*Exercise 6*. Create a separate connection to another database within a server you have access to.
+
+```{r}
+
+```
 
 ## Pull data from a SQL table
 
 You can get data from a SQL database table in a variety of ways:
 
 -   Use package `dbplyr` to query a database using `dplyr` code - detailed below
--   Write the SQL query in a SQL chunk within a qmd - detailed below
+-   Write the SQL query in a SQL chunk within a qmd - detailed below (but we may want to remove this)
 -   Write the SQL query as a character string in `DBI::dbGetQuery()`
 -   Call a SQL query (e.g. `query.sql`) from within R code by using `readr::read_lines()` and then passing it to `DBI::dbGetQuery()`
 
@@ -313,7 +323,7 @@ sicbl_name_lookup <- collect(sicbl_name_lookup_db)
 sicbl_name_lookup
 ```
 
-### Using SQL chunks within a qmd - IMO we don't need this, the above is enough
+### Using SQL chunks within a qmd - IMO we don't need this, the above is enough at this stage as it gets the job done
 
 If you're working from a qmd script (like this one), you can use a SQL chunk, that lets you write the SQL query and run it directly from this script.
 
@@ -338,11 +348,10 @@ SELECT *
 FROM LookupsShared.dbo.vLKP_SICBL24
 ```
 
-You can then use this object in the rest of your R code. Remember to close the connection once you don't need it anymore.
+You can then use this object in the rest of your R code.
 
 ```{r}
 head(lookup_sicbl)
-dbDisconnect(con_LookupsShared)
 ```
 
 ## Writing data to a SQL database
@@ -361,6 +370,27 @@ dbWriteTable(
     name = "vLKP_test",
     value = test
     )
+```
+
+------------------------------------------------------------------------
+
+*Stretch exercise*. If you have access to LookupsShared:
+
+1.  Find the table containing the 2013 European Standard Population
+2.  Create an object that represents this table
+3.  Read all the data in this table and store it in a `data.frame`
+4.  Visualise this data with a bar chart.
+
+```{r}
+
+```
+
+------------------------------------------------------------------------
+
+Once you're done with a SQL database, please disconnect from it.
+
+```{r}
+dbDisconnect(con_LookupsShared)
 ```
 
 ------------------------------------------------------------------------
@@ -414,6 +444,38 @@ candi_antifung <- read_excel("data/raw/candidaemias.xlsx", sheet = "meds")
 
 ```{r}
 #| label: exerc4 solution
+
 pps_raw <- read_dta("data/processing/point_prevalence.dta")
 pps_raw
+```
+
+```{r}
+#| label: exerc5 solution
+
+pps |> write_rds("data/processing/point_prevalence.rds")
+```
+
+```{r}
+#| label: exerc6 solution
+
+# Just an example - this will only work if you have access to this database
+con_staging <-
+    dbConnect(
+        odbc(),
+        Driver = "SQL Server",
+        Server = "SQLCLUSCOLHFN17\\HFN17",
+        Database = "HCAI_Analysis_Staging")
+```
+
+```{r}
+#| label: stretch exerc solution
+
+esp_db <- tbl(con_LookupsShared, "vRef_ESP2013")
+
+esp <- collect(esp_db)
+
+esp |>
+    ggplot(aes(Age_Band_Min, Population)) +
+    # The data is already aggregated
+    geom_col()
 ```
