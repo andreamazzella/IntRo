@@ -1,0 +1,9 @@
+organism,antimicrobial,year,perc_resistant,source
+Pseudomonas spp.,Ciprofloxacin,2023,6.9,Edited from ESPAUR report 2024 table 2.5
+Pseudomonas spp.,Gentamicin,2023,3.7,Edited from ESPAUR report 2024 table 2.5
+Pseudomonas spp.,Carbapenems,2023,7.6,Edited from ESPAUR report 2024 table 2.5
+Pseudomonas spp.,Piperacillin with tazobactam,2023,6.9,Edited from ESPAUR report 2024 table 2.5
+Acinetobacter spp.,Gentamicin,2023,3.9,Edited from ESPAUR report 2024 table 2.5
+Acinetobacter spp.,Ciprofloxacin,2023,4.9,Edited from ESPAUR report 2024 table 2.5
+Acinetobacter spp.,Piperacillin with tazobactam,2023,14.3,Edited from ESPAUR report 2024 table 2.5
+Acinetobacter spp.,Carbapenems,2023,3.1,Edited from ESPAUR report 2024 table 2.5

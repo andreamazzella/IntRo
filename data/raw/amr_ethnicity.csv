@@ -1,0 +1,7 @@
+ethn_group,perc_resist,perc_resist_lwr,perc_resist_upr,median_age,source
+White,20.1,19.8,20.4,43,"edited from ESPAUR report 2024, table 2.2; Census 2021"
+Asian,26.5,24.8,28.2,32,"edited from ESPAUR report 2024, table 2.2; Census 2021"
+Black,39.4,38,40.8,32,"edited from ESPAUR report 2024, table 2.2; Census 2021"
+Mixed,22.3,19.1,25.5,19,"edited from ESPAUR report 2024, table 2.2; Census 2021"
+Other,18.2,13.9,22.6,33,"edited from ESPAUR report 2024, table 2.2; Census 2021"
+Unknown,16,14,17.9,NA,"edited from ESPAUR report 2024, table 2.2; Census 2021"

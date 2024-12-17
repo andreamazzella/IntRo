@@ -3,5 +3,8 @@
 .RData
 .Ruserdata
 *.lnk
+*.png
 create_data.Rmd
-data/Fake_Health_Dataset.csv
+data/raw/Fake_Health_Dataset.csv
+data/processed/
+data/processing/point_prevalence.rds

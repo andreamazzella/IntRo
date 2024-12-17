@@ -1,5 +1,5 @@
 ---
-title: "2: Data visualisation"
+title: "2: Visualising data"
 subtitle: "Introduction to R for health data"
 author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 editor: visual
@@ -12,6 +12,7 @@ editor: visual
 -   Exploring a `data.frame`
 -   Visualising data with `ggplot2`
     -   Bar charts
+    -   Line charts
     -   Box plots
     -   Scatterplots
     -   Saving a plot
@@ -42,25 +43,25 @@ bacteraemias <- read_csv("data/raw/bacteraemias.csv")
 
 # Exploring a data frame
 
-For this topic, we will use a sample dataset called `msleep`.
-
-It contains data on sleep for 83 different mammal species.
+For this session, we'll use some antimicrobial resistance data adapted from the ESPAUR 2024 report.
 
 ```{r}
 # Import data
-msleep <- ggplot2::msleep
+amr_ethnicity <- read_csv("data/raw/amr_ethnicity.csv")
+amr_klebsiella <- read_csv("data/raw/amr_klebsiella.csv")
+amr_pseud_acinetobac <- read_csv("data/raw/pseud_acinetobac.csv")
 
 # Preview of dataset
-msleep
-
-head(msleep)
+amr_pseud_acinetobac
 
 # RStudio Viewer
-View(msleep)
+View(amr_klebsiella)
 
 # Structure
-glimpse(msleep)
+glimpse(amr_ethnicity)
 ```
+
+*Exercise 1*. Which of these tables are line lists and which are aggregated data?
 
 ------------------------------------------------------------------------
 
@@ -74,23 +75,25 @@ It works in "layers" separated by `+` signs: you can have a very simple graph wi
 
 ## Bar charts
 
-Bar charts are useful to visualise frequencies of a categorical variable, such as diet type (`vore`) in our dataset.
+Bar charts are useful to visualise frequencies of a categorical variable. The function you use to make these depends on whether your data is in aggregated or individual-level data.
 
-They are made by using `geom_bar()`. This is how to make a basic bar chart in `ggplot2`:
+### From aggregated data
+
+If your data is in aggregated format, you can make a bar chart using `geom_col()`. Here's how to make a basic version:
 
 ```{r}
 # You start with the dataset and variable to plot
-ggplot(msleep, aes(x = vore)) +
+ggplot(amr_ethnicity, aes(x = ethn_group, y = perc_resist)) +
   # You then add the type of graph
-  geom_bar()
+  geom_col()
 ```
 
 Let's break this code down.
 
 -   `ggplot()` is the base function; it needs as arguments:
--   the dataset name (`msleep`)
--   `aes()` stands for "aesthetics", and basically means what we want to appear on the graph. `x = vore` means that we want variable `vore` to be plotted on the x-axis.
--   `geom_bar` is a geometry function: it specifies that we want the variable above to be represented in a bar chart.
+-   the data frame name (`amr_ethnicity`)
+-   `aes()` stands for "aesthetics", and basically means what we want to appear on the graph. `x = ethn_group` means that we want variable `ethn_group` to be plotted on the x-axis. `y = perc_resist` means that we want those values to show on the y-axis.
+-   `geom_col` is a geometry function: it specifies that we want the variables above to be represented in a bar chart.
 -   The `+` sign links the base function with the geometry function.
 
 Note that code can span over more than one line - it makes it more readable.
@@ -103,23 +106,22 @@ Computers take your instructions very literally, so tiny mistakes can easily bre
 
 1.  Remove the two `#` from this chunk.
 2.  You will see that this chunk won't run properly.
-3.  Can you spot the *three* bugs that break the code, and fix them?
+3.  Can you spot the *four* bugs that break the code, and fix them?
 
 ```{r}
-# ggplot(msleep, aes(x = Vore)
-#   geom_bar()
+# ggplot(amr_ethnicity, aes(x = Ethn_group, y = perc resist)
+#   geom_col()
 ```
 
-(Hint: if you're accessing this qmd file in Source mode, RStudio will *sometimes* help with some of these bugs. Look tothe left of the chunk. Sometimes the advice can actually be misleading, so take with a pinch of salt).
+(Hint: if you're accessing this qmd file in Source mode, RStudio will *sometimes* help with some of these bugs. Look to the left of the chunk. Sometimes the advice can actually be misleading, so take with a pinch of salt).
 
-*Exercise 3.*
+### From individual-level data
 
-Visualise the conservation status of the mammals in this dataset with a bar chart.
-
-Hint: you can run the dataset name if you don't know what the variables are called.
+If your data is not already aggregated, you need to use `geom_bar()` instead. This will count the number of rows in each group.
 
 ```{r}
-
+ggplot(amr_klebsiella, aes(x = susceptibility_result)) +
+    geom_bar()
 ```
 
 ### Colour as decoration
@@ -129,150 +131,175 @@ We can build on these simple graphs by adding some optional arguments.
 For example, let's change the fill colour from the default gray.
 
 ```{r}
-ggplot(msleep, aes(x = vore)) +
-  geom_bar(fill = "darkgreen")
+ggplot(amr_klebsiella, aes(x = susceptibility_result)) +
+    geom_bar(fill = "darkgreen")
 ```
 
-### Colour that conveys information
+*Exercise 3.*
 
-However colour can also be use to convey information - for example, to stratify a plot by a categorical variable.
+1.  Visualise the summarised age of the different ethnic groups in the `amr_ethnicity` data with a bar chart.
+2.  Colour all the bars with a single colour of your choice.
+
+```{r}
+
+```
+
+*Want to know more?* Reordering bars is covered in session `08_clean`.
+
+### Clustered bar charts
+
+However colour can also be use to convey information - for example, to stratify a plot by another categorical variable.
 
 To do this, we add `fill` to the `aes()` function, rather than keeping it outside of it, and we link it to a variable name, rather than to a specific colour. This will also add a legend.
 
+Best practice is:
+
+-   to use clustered bar charts rather than stacked bar charts. You make a clustered bar chart by adding `position = position_dodge()` to the `geom_col()` or `geom_bar()`.
+-   *not* to use more than 4 colours as they become difficult to make accessible. If you have 5 or more categories, consider using facets instead (see below).
+-   *not* to use this when you're visualising a time series, like years on the x-axis. You should use a line chart instead.
+
 ```{r}
-ggplot(msleep, aes(x = vore, fill = conservation)) +
-  geom_bar()
+ggplot(amr_pseud_acinetobac, aes(x = organism, y = perc_resistant, fill = antimicrobial)) +
+  geom_col(position = position_dodge(0.8), width = 0.7)
 ```
 
-*Exercise 4.* Now create a bar chart that shows counts of different conservation groups. Then, stratify by diet type.
+*Exercise 4.*
+
+1.  Create a bar chart that shows the same data, but with antimicrobials on the x-axis and colours indicating organism.
+2.  Which of the two visualisations do you find more helpful?
 
 ```{r}
 
 ```
 
-*Want to know more?* To change the *value* labels in a categorical variable, you either use `+ scale_<aes>_discrete(labels = c("value1" = "label1", "value2" = "label2"))`, or you recode the values before plotting. I recommend you ignore this for now.
+*Want to know more?*
+
+-   To italicise part of some text, I invite you to look into `ggtext::element_markdown()`.
+-   To change the *value* labels in a categorical variable, you either use `+ scale_<aes>_discrete(labels = c("value1" = "label1", "value2" = "label2"))`, or you recode the values before plotting. I recommend you ignore this for now.
 
 ------------------------------------------------------------------------
 
-## Line charts
-
-```{r}
-library(tidyverse)
-dat <- tribble(
-    ~sex, ~year, ~rate_bacteraemia,
-    "female", 2025, 13,
-    "female", 2026, 15,
-    "female", 2027, 14,
-    "female", 2028, 13,
-    "female", 2029, 13,
-    "female", 2030, 14,
-    "male", 2025, 21,
-    "male", 2026, 24,
-    "male", 2027, 26,
-    "male", 2028, 25,
-    "male", 2029, 26,
-    "male", 2030, 24)
-
-dat |>
-    ggplot(aes(x = year, y = rate_bacteraemia, colour = sex)) +
-    geom_line() +
-    coord_cartesian(ylim = c(0, NA))
-```
-
-## Box plots
-
-Box plots are helpful to compactly display the distribution of a continuous variable. The ggplot2 function is `geom_boxplot()`.
-
-In its simplest form, you have a single Box plot. For example, we can display the distribution of hours of sleep (regardless of animal type):
-
-```{r}
-ggplot(msleep, aes(y = sleep_total)) +
-  geom_boxplot()
-```
-
-A Box plot shows:
-
-1.  The thick *central line* indicates the *median*
-2.  The *lower and upper hinges* indicate the *25th and 75th percentile* respectively - so the distance between them is the interquartile range (IQR)
-3.  The *upper whisker*: extends to the largest value no further than *1.5×IQR* from the hinge
-
-If there are any data points that are beyond the whiskers, they will be individually displayed as *dots*.
-
-### Stratified Box plots
-
-However, Box plots are more helpful to compare the distribution of a continuous variable across different groups.
-
-For example, we can show how animals of different eating behaviours differ in terms of sleeping duration.
-
-```{r}
-ggplot(msleep, aes(x = vore, y = sleep_total)) +
-  geom_boxplot()
-```
-
-### Labels
+## Labels
 
 Now let's add a plot title and rename the axes.
 
 You do this by adding another `+` sign and then the `labs()` function - which can include a `title =`, `x =`, and many other arguments.
 
 ```{r}
-ggplot(msleep, aes(x = vore, y = sleep_total)) +
-  geom_boxplot() +
-  labs(title = "Eating behaviour and sleep across 83 mammal species",
-       x = "Eating behaviour",
-       y = "Sleep duration (h)")
+ggplot(amr_pseud_acinetobac, aes(x = organism, y = perc_resistant, fill = antimicrobial)) +
+  geom_col(position = position_dodge(0.8), width = 0.7) +
+  labs(title = "Antibiotic resistance in Acinetobacter and Pseudomonas",
+       x = "Organism",
+       y = "Percentage of isolates that are resistant")
 ```
 
 *Exercise 5.*
 
--   Make a new Box plot of a continuous variable of your choice.
--   Stratify it by a categorical variable of your choice.
--   Rename the axes appropriately.
--   Add a title.
-
-Hint: do it layer by layer, so that if it doesn't work, you can try and fix it more easily, before making it very complex.
+Update the code to make the graph above to: 1. Show a subtitle (England, 2023) 2. Show a caption with the data source (ESPAUR report 2024) 3. Change the label title from "antimicrobial" to "Antibiotic".
 
 ```{r}
-# Dataframe and variables
-
-# Graph type
-
-# Labels
 
 ```
 
 ------------------------------------------------------------------------
 
-## Scatterplots
+## Line charts for time series
 
-You can plot two continuous variables against each other in a scatterplot. The function is `geom_point()`; a basic scatterplot is made this way:
+We often use line charts to show time series data: time is on the x-axis and a numerical variable on the y-axis. Line charts are made using `geom_line()`.
+
+### Single line
+
+The simplest line chart has a single line, and is equivalent to a bar chart.
+
+I recommend you have your time variable in a numerical data class - such as integers, dates, `zoo::yearmon`, `zoo::yearqtr`, rather than in character or factor format (like "2021/22", or "Apr-Jun 2024" for example). This makes plotting easier, especially when deciding which labels to show.
 
 ```{r}
-ggplot(msleep, aes(x = sleep_total, y = sleep_rem)) +
-  geom_point()
+amr_tb <- read_csv("data/raw/amr_tb.csv")
 ```
 
-*Exercise 6.*
+```{r}
+# An equivalent bar chart
+amr_tb |>
+    ggplot(aes(year, resistant_count)) +
+    geom_col()
 
-Add a title and rename the axes on the scatterplot above.
+# Simple line chart
+amr_tb |>
+    ggplot(aes(year, resistant_count)) +
+    geom_line()
+
+# do you notice any difference?
+```
+
+*Want to know more?* If you want your y-axis to start from 0 in a line chart, you can add a new layer: `coord_cartesian(ylim = 0, NA))`.
+
+### 2 to 4 lines
+
+If you want to compare your `y` in 2 to 4 groups, you can use the `colour` argument in the `aes()` function.
 
 ```{r}
+rates_bacteraemia_grampos <- read_csv("data/raw/rates_bacteraemia_grampos.csv")
+rates_bacteraemia_all <- read_csv("data/raw/rates_bacteraemia_all.csv")
 
+```
+
+```{r}
+rates_bacteraemia_grampos |> 
+    ggplot(aes(year, rate, colour = organism)) +
+    geom_line()
+```
+
+*Want to learn more?*
+
+-   Ideally, you wouldn't rely on colour alone to differentiate lines. It is preferable to label the lines directly, for example with `ggrepel::geom_label_repel()` - a bit fiddly.
+
+### 5 or more lines
+
+If you have 5 or more groups to compare, they become difficult to distinguish - you risk making a spaghetti plot. Instead, you can split the chart into small multiple plots, using `facet_wrap()` or `facet_grid()`.
+
+```{r}
+# Not accessible
+rates_bacteraemia_all |>
+    ggplot(aes(year, rate, colour = organism)) +
+    geom_line()
+
+rates_bacteraemia_all |>
+    ggplot(aes(year, rate)) +
+    facet_wrap(~organism) +
+    geom_line()
+```
+
+*Want to learn more?*
+
+-   If your aim is showing the time trend in each facet, you can set the y-axis scales to be independent of each other, with `facet_wrap(~organism, scales = "free_y"`. That will zoom in.
+-   If you aim is comparing lines, you can show all other lines in a lighter shade to each small plot using the `gghighlight` package.
+
+## Scatterplots
+
+You can plot two continuous variables against each other in a scatterplot, for example `age` and creatinine clearance (`CrCl`, a measure of kidney function).
+
+The function is `geom_point()`; a basic scatterplot is made this way:
+
+```{r}
+ggplot(amr_klebsiella, aes(x = age, y = CrCl)) +
+  geom_point()
 ```
 
 We can also stratify by a categorical variable thanks to the `colour` aesthetic.
 
 ```{r}
-ggplot(msleep, aes(x = sleep_total, y = sleep_rem)) +
-  geom_point(aes(colour = vore))
+ggplot(amr_klebsiella, aes(x = age, y = CrCl, colour = sex)) +
+  geom_point()
 ```
 
 *Exercise 7.*
 
-Show different diet types (`vore`) with different *shapes*, rather than different colours.
+Show the two sexes with different *shapes*, rather than different colours.
 
 ```{r}
-
+# TODO
+ggplot(amr_klebsiella, aes(x = age, y = CrCl, shape = sex)) +
+  geom_point()
 ```
 
 ### More customisation
@@ -281,21 +308,36 @@ Show different diet types (`vore`) with different *shapes*, rather than differen
 
 Run this chunk and then try to understand what each line does.
 
+*Tip*: you can reverse engineer what a line does by deleting it and see what happens to the output.
+
 ```{r}
-ggplot(msleep, aes(x = sleep_total, y = sleep_rem)) +
-  geom_smooth(method = "lm", colour = "darkgrey", linetype = "dashed") +
-  geom_point(aes(shape = vore, colour = conservation)) +
-  coord_cartesian(xlim = c(0, 20)) +
-  labs(title = "Relationship between total and REM sleep duration",
-       subtitle = "Among 83 mammal species",
-       x = "Daily hours of sleep",
-       y = "Daily hours of REM sleep",
-       colour = "Conservation\nstatus",
-       shape = "Eating behaviour",
-       caption = "Data: Savage & West 2007, 'A quantitative, theoretical framework for understanding mammalian sleep'"
-       ) +
-  theme_bw() +
-  scale_colour_brewer(palette  = "Dark2")
+ggplot(amr_klebsiella, aes(x = age, y = CrCl)) +
+    geom_point(
+        aes(colour = sex, shape = sex),
+        alpha = 0.5
+        ) +
+    geom_smooth(
+        method = "lm",
+        linetype = "dashed"
+        ) +
+    coord_cartesian(xlim = c(18, 100)) +
+    scale_x_continuous(breaks = c(18, seq(40, 100, by = 20))) +
+    scale_colour_brewer(palette  = "Dark2") +
+    labs(
+        title = "Relationship between age and creatinine clearance",
+        subtitle = "Klebsiella spp. bacteraemia, England, 2023",
+        x = "Age (years)",
+        y = "Creatinine\nclearace\n(mL/min)",
+        colour = "Sex",
+        shape = "Sex",
+        caption = "Data: simulated"
+        ) +
+    theme_classic() +
+    theme(
+        panel.grid.major.y = element_line(),
+        axis.title.y = element_text(angle = 0),
+        legend.position = "bottom"
+        )
 ```
 
 ------------------------------------------------------------------------
@@ -304,13 +346,11 @@ ggplot(msleep, aes(x = sleep_total, y = sleep_rem)) +
 
 You can save a plot with function `ggsave()`. You need to specify the name of the file and its extension.
 
-By default, it will save:
-
--   the last plot you've generated
--   into the current directory (i.e. the same directory as this .Rmd file)
+By default, it will save:\
+- the last plot you've generated - into the current directory; if you're running code from a qmd, this will be the same directory as the .qmd file). However, I recommend you save all your graphs in an output folder.
 
 ```{r}
-ggsave("REM_mammals_scatterplot.png")
+ggsave("output/scatterplot_age_crcl.png")
 ```
 
 You can save to pdf, jpeg, png, svg, and other formats, and you can change height and width.
@@ -324,6 +364,37 @@ Save a plot of your choice in pdf format.
 ```{r}
 
 ```
+
+------------------------------------------------------------------------
+
+## Box plots
+
+Box plots are helpful to compactly display the distribution of a continuous variable. The ggplot2 function is `geom_boxplot()`.
+
+In its simplest form, you have a single Box plot. This is equivalent to a histogram. For example, we can display the age distribution in this line list:
+
+```{r}
+ggplot(amr_klebsiella, aes(age)) +
+  geom_boxplot()
+
+ggplot(amr_klebsiella, aes(age)) +
+  geom_histogram()
+```
+
+*Want to know more?* To check what the lines and dots represent, please run `help(geom_boxplot)` and read the section "Summary statistics".
+
+### Stratified Box plots
+
+However, Box plots are more helpful to compare the distribution of a continuous variable across different groups.
+
+For example, we can show how the age distribution differs according to sex.
+
+```{r}
+ggplot(amr_klebsiella, aes(x = age, y = sex)) +
+  geom_boxplot()
+```
+
+*Want to know more?* Box plots hide the number of observations as well as any irregular distributions. I invite you to look into `ggbeeswarm::geom_beeswarm()` as an alternative (or an adjunct).
 
 ------------------------------------------------------------------------
 
@@ -346,23 +417,59 @@ I recommend these resources for `ggplot2` and data visualisation:
 ## Solutions
 
 ```{r}
-# Recap exercise
-# You can check if you have a package installed by going to the Packages panel (bottom right of the screen)
-# You can install a package by clicking on the Install button (in that panel)
+#| label: recap exercise solution
+
+# Q1
 min(bacteraemias$wbc)
+
+# Q2
+# You can do that with Ctrl Shift I (if you've set up this keyboard shortcut) or via the toolbar > Code > Insert chunk.
+
+# Q3
 min_white <- min(bacteraemias$wbc)
+```
 
-# Exercise 2
-ggplot(msleep, aes(x = vore)) +
-   geom_bar()
+```{r}
+#| label: ex1 solution
 
-# Exercise 3
-ggplot(msleep, aes(x = conservation)) +
-   geom_bar()
+# amr_klebsiella is the only line list; the others are aggregated.
+```
 
-# Exercise 4
-ggplot(msleep, aes(x = conservation, fill = vore)) +
-  geom_bar() 
+```{r}
+#| label: ex2 tips
+
+# Just some tips: look at case, spaces, and symbols
+```
+
+```{r}
+#| label: ex3 solution
+
+ggplot(amr_ethnicity, aes(x = ethn_group, y = median_age)) +
+  geom_col(fill = "#007C91")
+```
+
+```{r}
+#| label: ex4 solution
+
+ggplot(amr_pseud_acinetobac, aes(x = antimicrobial, y = perc_resistant, fill = organism)) +
+  geom_col(position = position_dodge(0.8), width = 0.7)
+```
+
+```{r}
+#| label: ex5 solution
+
+ggplot(amr_pseud_acinetobac, aes(x = organism, y = perc_resistant, fill = antimicrobial)) +
+  geom_col(position = position_dodge(0.8), width = 0.7) +
+  labs(title = "Antibiotic resistance in Acinetobacter and Pseudomonas",
+       subtitle = "England, 2023",
+       x = "Organism",
+       y = "Percentage of isolates that are resistant",
+       fill = "Antibiotic",
+       caption = "Data source: ESPAUR report 2024")
+```
+
+```{r}
+#| label: ex6 solution
 ```
 
 ------------------------------------------------------------------------
