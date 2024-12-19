@@ -7,9 +7,8 @@ editor: visual
 
 ------------------------------------------------------------------------
 
-# What you will learn
+## What you will learn
 
--   Exploring a `data.frame`
 -   Visualising data with `ggplot2`
     -   Bar charts
     -   Line charts
@@ -19,56 +18,41 @@ editor: visual
 
 ------------------------------------------------------------------------
 
+## Recap from 01_basics
+
+1.  Create a new R script or qmd and save it to file.
+2.  Create a new object called `year` containing the value `2025`.
+3.  Preview the `Theoph` data frame (no need to import it first, it's built into R) using a function of your choice.
+
+------------------------------------------------------------------------
+
+## Setup
+
 Before you run the chunk below, ensure you have installed the `tidyverse` package. This includes `readr`, `ggplot2` and other packages that we will frequently use.
 
 ```{r}
 library(tidyverse)
 ```
 
-> *Want to know more?* Package conflicts. \
+> *Want to know more?* Package conflicts.\
 > Two packages can contain a function with the same name - for example, `filter()` is present in both the base R module `stats` and in `dplyr`. If you load `dplyr`, R will warn you that from now on, every time you call `filter()`, it will use its `dplyr` form. In the rare cases in which you want to force R to use the function from a specific package, you can preface the function with `packagename::`. For example, `stats::filter(...)` will tell R to specifically use the `filter()` function from `stats` (and not the one from `dplyr`).
 
-# Recap from 01_basics
+Let's import some data - for now, please just run this chunk; we'll come back to how to do it in session `03_import`.
 
-1.  Calculate the minimum white blood cell count in the dataframe `bacteraemias`.
-
-```{r}
-bacteraemias <- read_csv("data/raw/bacteraemias.csv")
-
-# Your code goes here ↓
-
-```
-
-2.  Create a chunk in the space below.
-3.  In the newly created chunk, create a new object called `min_white` that contains this value.
-
-------------------------------------------------------------------------
-
-# Exploring a data frame
-
-For this session, we'll use some antimicrobial resistance data adapted from the ESPAUR 2024 report.
+We'll use some antimicrobial resistance data adapted from the ESPAUR 2024 report.
 
 ```{r}
 # Import data
 amr_ethnicity <- read_csv("data/raw/amr_ethnicity.csv")
 amr_klebsiella <- read_csv("data/raw/amr_klebsiella.csv")
 amr_pseud_acinetobac <- read_csv("data/raw/pseud_acinetobac.csv")
-
-# Preview of dataset
-amr_pseud_acinetobac
-
-# RStudio Viewer
-View(amr_klebsiella)
-
-# Structure
-glimpse(amr_ethnicity)
 ```
 
 *Exercise 1*. Which of these tables are line lists and which are aggregated data?
 
 ------------------------------------------------------------------------
 
-# Data visualisation with `ggplot2`
+## Data visualisation with `ggplot2`
 
 Package `ggplot2` can make high-quality graphs.
 
@@ -101,7 +85,7 @@ Let's break this code down.
 
 Note that code can span over more than one line - it makes it more readable.
 
-### Bugs
+#### Bugs
 
 Computers take your instructions very literally, so tiny mistakes can easily break some code.
 
@@ -182,18 +166,18 @@ ggplot(amr_pseud_acinetobac, aes(x = organism, y = perc_resistant, fill = antimi
 
 ------------------------------------------------------------------------
 
-## Labels
+### Labels
 
 Now let's add a plot title and rename the axes.
 
 You do this by adding another `+` sign and then the `labs()` function - which can include a `title =`, `x =`, and many other arguments.
 
 ```{r}
-ggplot(amr_pseud_acinetobac, aes(x = organism, y = perc_resistant, fill = antimicrobial)) +
+ggplot(amr_pseud_acinetobac, aes(y = organism, x = perc_resistant, fill = antimicrobial)) +
   geom_col(position = position_dodge(0.8), width = 0.7) +
   labs(title = "Antibiotic resistance in Acinetobacter and Pseudomonas",
-       x = "Organism",
-       y = "Percentage of isolates that are resistant")
+       y = "Organism",
+       x = "Percentage of isolates that are resistant")
 ```
 
 *Exercise 5.*
@@ -225,13 +209,15 @@ amr_tb <- read_csv("data/raw/amr_tb.csv")
 amr_tb |>
     ggplot(aes(year, resistant_count)) +
     geom_col()
+```
 
-# Simple line chart
-amr_tb |>
-    ggplot(aes(year, resistant_count)) +
-    geom_line()
+*Exercise 6*.
 
-# do you notice any difference?
+1.  Create a line chart equivalent to the bar chart above.
+2.  Do you notice any other difference?
+
+```{r}
+
 ```
 
 *Want to know more?* If you want your y-axis to start from 0 in a line chart, you can add a new layer: `coord_cartesian(ylim = 0, NA))`.
@@ -243,7 +229,6 @@ If you want to compare your `y` in 2 to 4 groups, you can use the `colour` argum
 ```{r}
 rates_bacteraemia_grampos <- read_csv("data/raw/rates_bacteraemia_grampos.csv")
 rates_bacteraemia_all <- read_csv("data/raw/rates_bacteraemia_all.csv")
-
 ```
 
 ```{r}
@@ -297,12 +282,10 @@ ggplot(amr_klebsiella, aes(x = age, y = CrCl, colour = sex)) +
 
 *Exercise 7.*
 
-Show the two sexes with different *shapes*, rather than different colours.
+Show the two sexes with different *shapes* as well as different colours.
 
 ```{r}
-# TODO
-ggplot(amr_klebsiella, aes(x = age, y = CrCl, shape = sex)) +
-  geom_point()
+
 ```
 
 ### More customisation
@@ -311,10 +294,13 @@ ggplot(amr_klebsiella, aes(x = age, y = CrCl, shape = sex)) +
 
 Run this chunk and then try to understand what each line does.
 
-*Tip*: you can reverse engineer what a line does by deleting it and see what happens to the output.
+*Tip*: you can reverse engineer what a line does by deleting it and see what happens to the output, or by looking up the function's documentation.
 
 ```{r}
 ggplot(amr_klebsiella, aes(x = age, y = CrCl)) +
+    # Highlight chronic kidney disease stage 3-5
+    annotate("rect", ymin = 0, ymax = 60, xmin = 0, xmax = 150, fill = "red", alpha = 0.1) +
+    annotate("text", x  = 50, y = 40, label = "CKD 3-5") +
     geom_point(
         aes(colour = sex, shape = sex),
         alpha = 0.5
@@ -324,6 +310,8 @@ ggplot(amr_klebsiella, aes(x = age, y = CrCl)) +
         linetype = "dashed"
         ) +
     coord_cartesian(xlim = c(18, 100)) +
+    # Show the CrCl thresholds for the various stages of CKD
+    scale_y_continuous(breaks = c(0, 15, seq(30, 160, by = 30))) +
     scale_x_continuous(breaks = c(18, seq(40, 100, by = 20))) +
     scale_colour_brewer(palette  = "Dark2") +
     labs(
@@ -333,24 +321,48 @@ ggplot(amr_klebsiella, aes(x = age, y = CrCl)) +
         y = "Creatinine\nclearace\n(mL/min)",
         colour = "Sex",
         shape = "Sex",
-        caption = "Data: simulated"
-        ) +
-    theme_classic() +
-    theme(
-        panel.grid.major.y = element_line(),
-        axis.title.y = element_text(angle = 0),
-        legend.position = "bottom"
+        caption = "Data: simulated. The blue dashed line is fitted  using linear regression."
         )
 ```
 
+## Themes
+
+The `theme_...()` functions allow you to customise the appearance of a ggplot. If you want some changes to apply to all graphs you'll produce in this session, you can use `theme_set()` and `theme_update()`. I recommend adding this code to the top of your script that produces graphs.
+
+```{r}
+# Set theme_bw() as the start point but increase the starting character size to 12 points
+theme_set(theme_bw(base_size = 12))
+theme_update(
+    panel.grid.minor.x = element_blank(),
+    panel.grid.minor.y = element_blank(),
+    panel.border = element_blank(),
+    axis.line = element_line(colour = "black"),
+    axis.title.y = element_text(
+        angle = 0,
+        hjust = 0
+        ),
+    axis.title = element_text(face = "bold"),
+    strip.background = element_blank(),
+    strip.text = element_text(size = 11),
+    panel.spacing = unit(1, "lines"),
+    axis.text = element_text(size = 11),
+    legend.title = element_blank(),
+    legend.text = element_text(size = 11)
+    )
+```
+
+*Exercise* 8. Rerun the chunk that produces the creatinine clearance graph and notice the differences.
+
 ------------------------------------------------------------------------
 
-## Saving a plot
+## Saving a plot to file
 
-You can save a plot with function `ggsave()`. You need to specify the name of the file and its extension.
+You can save a plot to file with function `ggsave()`. You need to specify the name of the file and its extension.
 
-By default, it will save:\
-- the last plot you've generated - into the current directory; if you're running code from a qmd, this will be the same directory as the .qmd file). However, I recommend you save all your graphs in an output folder.
+By default, it will save:
+
+-   the last plot you've generated
+-   into the current directory; if you're running code from a qmd, this will be the same directory as the .qmd file). However, I recommend you save all your graphs in an output folder.
 
 ```{r}
 ggsave("output/scatterplot_age_crcl.png")
@@ -358,11 +370,14 @@ ggsave("output/scatterplot_age_crcl.png")
 
 You can save to pdf, jpeg, png, svg, and other formats, and you can change height and width.
 
-See `help(ggsave)` for more options.
+Please refer to the function's documentation for more options.
 
-*Exercise 8.*
+*Exercise 8.* Save this same plot to file, but:
 
-Save a plot of your choice in pdf format.
+1.  Give it a different name
+2.  Use jpeg format
+3.  Set the size to 1200×500 pixels
+4.  Set the resolution to 150 dpi.
 
 ```{r}
 
@@ -420,19 +435,6 @@ I recommend these resources for `ggplot2` and data visualisation:
 ## Solutions
 
 ```{r}
-#| label: recap exercise solution
-
-# Q1
-min(bacteraemias$wbc)
-
-# Q2
-# You can do that with Ctrl Shift I (if you've set up this keyboard shortcut) or via the toolbar > Code > Insert chunk.
-
-# Q3
-min_white <- min(bacteraemias$wbc)
-```
-
-```{r}
 #| label: ex1 solution
 
 # amr_klebsiella is the only line list; the others are aggregated.
@@ -447,32 +449,62 @@ min_white <- min(bacteraemias$wbc)
 ```{r}
 #| label: ex3 solution
 
-ggplot(amr_ethnicity, aes(x = ethn_group, y = median_age)) +
+ggplot(amr_ethnicity, aes(y = ethn_group, x = median_age)) +
   geom_col(fill = "#007C91")
 ```
 
 ```{r}
 #| label: ex4 solution
 
-ggplot(amr_pseud_acinetobac, aes(x = antimicrobial, y = perc_resistant, fill = organism)) +
+ggplot(amr_pseud_acinetobac, aes(y = antimicrobial, x = perc_resistant, fill = organism)) +
   geom_col(position = position_dodge(0.8), width = 0.7)
 ```
 
 ```{r}
 #| label: ex5 solution
 
-ggplot(amr_pseud_acinetobac, aes(x = organism, y = perc_resistant, fill = antimicrobial)) +
+ggplot(amr_pseud_acinetobac, aes(y = organism, x = perc_resistant, fill = antimicrobial)) +
   geom_col(position = position_dodge(0.8), width = 0.7) +
   labs(title = "Antibiotic resistance in Acinetobacter and Pseudomonas",
        subtitle = "England, 2023",
-       x = "Organism",
-       y = "Percentage of isolates that are resistant",
+       y = "Organism",
+       x = "Percentage of isolates that are resistant",
        fill = "Antibiotic",
        caption = "Data source: ESPAUR report 2024")
 ```
 
 ```{r}
 #| label: ex6 solution
+
+# Q1
+amr_tb |>
+    ggplot(aes(year, resistant_count)) +
+    geom_line()
+
+# Q2
+# The y-axis has been cut in order to zoom into the data.
+```
+
+```{r}
+#| label: ex7 solution
+
+ggplot(amr_klebsiella, aes(x = age, y = CrCl, shape = sex, colour = sex)) +
+  geom_point()
+```
+
+```{r}
+#| label: ex8 solution
+
+ggsave(
+    # Q1, Q2
+    "output/scatter_creat_clearance.jpeg",
+    # Q3
+    width = 1200,
+    height = 500,
+    unit = "px",
+    # Q4
+    dpi = 150
+    )
 ```
 
 ------------------------------------------------------------------------

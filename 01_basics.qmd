@@ -11,12 +11,13 @@ editor: visual
 
 -   The RStudio interface
 -   Using the console
--   Creating R scripts
--   Creating Quarto Markdown documents
+-   Using and creating scripts
+    -   R scripts
+    -   Quarto Markdown documents
 -   Assigning values
 -   Using functions
 -   Using packages
--   Using data frames
+-   Exploring data frames
 
 ------------------------------------------------------------------------
 
@@ -55,7 +56,7 @@ An R script, for example `analysis.R`, mainly contains code, and any non-code te
 
 The output will only appear in the console and in the Plots panel.
 
-We won't be using R scripts in this course, but you will see them elsewhere. An advantage is that they can be run from other
+An advantage of R scripts over Quarto Markdown documents is that they can be run from other scripts.
 
 To create a new R script, you can:
 
@@ -63,19 +64,31 @@ To create a new R script, you can:
 -   Use a keyboard short-cut: `Ctrl` + `Shift` + `N` on Windows.
 -   Go to the Files tab in the bottom right of the screen and click on the `New Blank File` icon → `R Script` (this will automatically save the file in the folder you see)
 
+You can keep your R script organised using sections, which will appear in the Outline. You create an R script section by:
+
+1.  Clicking on the toolbar: `Code` → `Insert Section...` (or using the short-cut `Ctrl` + `Shift` + `R` on Windows)
+2.  Writing the section title
+
 ------------------------------------------------------------------------
 
 # Quarto Markdown documents (.qmd)
 
 A Quarto Markdown document like this one (`intRo1 basics.qmd`) is mainly composed of two things:
 
--   **Text**, which is the main component. This can be formatted *as if it's a text editor* using Markdown syntax; for example, if a line starts with a hash symbol, `#`, it will become a heading.
+-   **Text**, which is the main component.
+    -   This can be formatted *as if it's a text editor.* If you're using Visual editing, you will find a tool bar with formatting options. If you're using Source, you can use Markdown syntax.
+    -   You can keep your qmd organised with headings. If a line starts with a hash symbol, `#`, it will become a level 1 heading; with `##`, a level 2 heading, etc. Headings will be shown in the Outline.
 -   **Chunks**, which contain code (and comments, which are preceded by a hash symbol, `#`). A chunk looks like this:
 
 ```{r}
-# This section is a chunk, that contains code.
+# This section is a chunk. This line is a comment; the line below is code.
 print(R.version.string)
 ```
+
+You can use a qmd:
+
+-   Interactively, running chunks yourself
+-   By rendering it into a document (this will be covered in session `12_markdown`)
 
 To **run all the code in a chunk**, you click on the green triangle button at the top right of the chunk (or you place your cursor inside it and press on Windows `Ctrl` + `Shift` + `Enter`; on Mac: `⌘` + `⌥` + `Enter`.
 
@@ -118,7 +131,10 @@ You can create a new Markdown document, you can:
 -   Go to the toolbar: `File` → `New File` → `Quarto document...` → set options → click `Create`
 -   Go to the Files tab in the bottom right of the screen and click on the `New Blank File` icon → `Quarto doc...` (this will automatically save the file in the folder you see)
 
-*Exercise 4.* Add a new chunk in the space below, and use it to divide 6 by 2.
+*Exercise 4.*
+
+1.  Add a new chunk in the space below
+2.  Use this new chunk to divide 6 by 2
 
 ------------------------------------------------------------------------
 
@@ -188,102 +204,83 @@ help(seq)
 
 R has some core functions, like the ones we've used so far: `sqrt()`, `mean()` and `seq()` and several more advanced ones (for example, the function for logistic regression). There are also extra functions made by programmers and grouped into "packages", which need to be downloaded (and loaded) separately.
 
+Just like an app, you only need to install a package only once, but you then need to load it every time you're in a new R session and want to use some of its functions. You can then update them as required.
+
 ## Step 1: Download and install a package
 
 To download and install a package, I recommend you use one these options:
 
 -   via the RStudio graphical interface: in the bottom right quarter of the screen, click on `Packages` and then `Install`. You type the name of the package in the empty field and then click on the `Install` button.
--   by calling the `install.packages()` function *from the console*, adding the package name in quotes. This might take a bit of time if the packages are large. (I recommend *against* keeping this function in a script, as this action is only needed once, among other reasons).
+-   by calling the `install.packages()` function *from the console*, adding the package name in quotes. This might take a bit of time if the packages are large. I recommend *against* keeping `install.packages()` calls in your script - this is because you only need to run it once, among other reasons.
 
 You can check if a package is already installed by going to the `Packages` tab and searching for its name.
 
-*Exercise 8.* Install packages `readr` and `ggplot2` with either method.
+*Exercise 8.* Install packages `readr`, `ggplot2` and `dplyr`.
 
 ## Step 2: Load the package
 
-You can then load (open) the package with `library()` so that you can use its functions.
+You can then load (open) the package with `library()`.
 
 ```{r}
 library(readr)
 ```
 
-You only need to install packages once, but you then need to open it every time you want to use some of its functions.
-
 ------------------------------------------------------------------------
 
-# Using data frames
+## Step 3: Using functions from a package
+
+If you've loaded a package, you can directly use all functions contained within it. For example, we're soon going to use `readr`'s function `read_csv()` just by calling it.
+
+You can also use a function from a package that you have installed, even if you haven't loaded it, by using `packagename::function()`:
+
+```{r}
+ggplot2::ggplot()
+```
+
+This can be helpful when you want to clarify which package the function is from, for example because:
+
+-   Two packages have a function with the same name (e.g., `filter` is a function in both `stats` and `dplyr`)
+-   The function is not commonly used
+
+# Exploring data frames
 
 A large part of R is built around `data.frame`s: data in table format.
 
 For example, let's explore a small table of patient-level data on bacteraemias. For the moment, run this code without focussing on the `read_csv` function - we'll cover it in session `03_import`.
 
+```{r}
+bacteraemias <- read_csv("data/raw/bacteraemias.csv")
+```
+
 To have a look at this dataset, you can:
 
 -   Option 1: "call" its name. As you're in a qmd document, the table will be displayed immediately under the chunk. You can use the arrows and the numbers to show more columns and more rows.
--   Option 2: use function `View()` (caution: R is case-sensitive) or click on its name in the Environment tab. This will open a new tab.
 
 ```{r}
-# Import the table of bacteraemias
-bacteraemias <- read_csv("data/raw/bacteraemias.csv")
-
-# Option 1: dataframe name
 bacteraemias
 ```
 
+-   Option 2: use function `View()` or click on its name in the Environment tab. This will open a spreadsheet-style data viewer in new tab.
+
 ```{r}
-# Option 2: using View().
-# NB - this will open a new tab
 View(bacteraemias)
 ```
 
-A `data.frame` should have one observation per row and one variable per column.
-
-## Using functions on a dataset column
-
-Now let's use the `mean()` and `sd()` functions to calculate the average age and its standard deviation.
-
-Unlike Stata, R can keep more than one dataset in memory at the same time. For this reason, every time you refer to a column, you also need to tell R which `data.frame` is that variable from. You do this by typing a `$` sign between the `data.frame` and the variable name. (The `$` sign is technically called the "exposition operator").
+You can use `glimpse()` (from package `dplyr`) to have a quick summary of the number of rows and columns, the list of variables, their types and the first few values in each column.
 
 ```{r}
-# Calculate the mean of variable `len`, taken from data.frame `teeth`
-mean(bacteraemias$age)
-
-# Calculate its standard deviation
-sd(bacteraemias$age)
+dplyr::glimpse(bacteraemias, width = 100)
 ```
-
-*Exercise 9.* Let's use another dataset, `metabolic.csv`. This contains info on some patient factors and outcomes for metabolic disease.
-
-1.  Preview the data.
-2.  Calculate the `median` systolic blood pressure.
-3.  Calculate the maximum hours of physical activity per week.
-4.  Add comments to the chunk that explain what each line is doing.
-
-```{r}
-# Load the data
-metabolic <- read_csv("data/raw/metabolic.csv")
-```
-
 
 ------------------------------------------------------------------------
 
-*Push exercise.*
+*Push exercise*.
 
-1.  Preview the `aggregated_results.csv` dataset
-2.  Calculate the mean count across all years
-3.  Assign this to an object called `mean_count`.
-
-```{r}
-# Import
-aggregated_results <- read_csv("data/raw/aggregated_results.csv")
-
-# Preview
-
-# Calculate mean count
-
-# Assign the result to an object called `mean_count`
-
-```
+1.  Create a new chunk in the space below.
+2.  Preview the `msleep` data frame, which is available from package `ggplot2`.
+3.  Assign it to a new object called `mammals_sleep`.
+4.  Look up the documentation for function `summary()`.
+5.  Use `summary()` to summarise the new object you've created.
 
 ------------------------------------------------------------------------
 
@@ -298,38 +295,29 @@ aggregated_results <- read_csv("data/raw/aggregated_results.csv")
 # Solutions
 
 ```{r}
-# Exercise 6
+#| label: exercise 6 solution
 2 * radius
 ```
 
 ```{r}
-# Exercise 7
+#| label: exercise 7 solution
 log(100)
 ```
 
 ```{r}
-# Exercise 9
+#| label: push exercise solution
 
-# Preview the data
-metabolic
+# Q2
+ggplot2::msleep
 
-# Calculate median sBP
-median(metabolic$blood_pressure_systolic)
+# Q3
+mammals_sleep <- ggplot2::msleep
 
-# Calculate max activity
-max(metabolic$physical_activity_hours_per_week)
-```
+# Q4
+help(summary)
 
-```{r}
-# Push exercise
-# Preview
-aggregated_results
-
-# Calculate mean count
-mean(aggregated_results$count)
-
-# Assign the result to an object called `mean_count`
-mean_count <- mean(aggregated_results$count)
+# Q5
+summary(mammals_sleep)
 ```
 
 ------------------------------------------------------------------------

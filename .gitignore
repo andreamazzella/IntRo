@@ -4,6 +4,7 @@
 .Ruserdata
 *.lnk
 *.png
+*.jpeg
 create_data.Rmd
 data/raw/Fake_Health_Dataset.csv
 data/processed/
