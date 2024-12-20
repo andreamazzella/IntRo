@@ -20,6 +20,33 @@ editor: visual
 
 ------------------------------------------------------------------------
 
+# Recap from 02_visualise
+
+1.  Explore the in-built dataset below.
+    -   This contains data from an experiment on theophylline, a drug used to treat asthma and COPD.
+    -   Each subject was given a dose of the drug and then had repeat blood samples taken to measure its serum concentration.
+
+```{r}
+theoph <- tibble::as_tibble(datasets::Theoph)
+
+# Your code goes here ↓
+
+```
+
+2.  Create a concentration-time graph with `ggplot2`:
+    -   time from dose will be on the x-axis
+    -   concentration will be on the y-axis
+    -   there will be a coloured line indicating each participant, showing how their concentration changed through time
+    -   *bonus*: also add a point for each (time, concentration) value.
+
+```{r}
+
+```
+
+------------------------------------------------------------------------
+
+# Load packages
+
 In this session, you'll use functions from a few packages:
 
 -   [`readr`](https://readr.tidyverse.org/reference/index.html) to read and write files in most formats - part of the core tidyverse, so it's automatically loaded when calling `library(tidyverse)`
@@ -45,30 +72,6 @@ library(fs)
 
 ------------------------------------------------------------------------
 
-# Recap from 02_visualise
-
-1.  Explore the in-built dataset below.
-    -   This contains data from an experiment on theophylline, a drug used to treat asthma and COPD.
-    -   Each subject was given a dose of the drug and then had repeat blood samples taken to measure its serum concentration.
-
-```{r}
-theoph <- as_tibble(datasets::Theoph)
-
-# Your code goes here ↓
-
-```
-
-2.  Create a concentration-time graph with `ggplot2`:
-    -   time from dose will be on the x-axis
-    -   concentration will be on the y-axis
-    -   there will be a coloured line indicating each participant, showing how their concentration changed through time
-    -   *bonus*: also add a point for each (time, concentration) value.
-
-```{r}
-
-```
-
-------------------------------------------------------------------------
 
 # Importing and exporting data files
 

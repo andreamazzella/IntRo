@@ -147,12 +147,16 @@ You can tell R that something has a name; R will remember it and you can use tha
 ```{r}
 # "radius" gets the value of 5.7
 radius <- 5.7
-
-# Visualising the value of "radius"
-radius
 ```
 
 From now, you can use the object "radius" in the rest of your code, and R will know what you mean.
+
+Please note that when you assign a value, R does not show you any result. If you want to see the result, you need to ask for it:
+
+```{r}
+# Visualising the value of "radius"
+radius
+```
 
 *Exercise 6.* Calculate the double of the value assigned to radius, without typing 5.7.
 

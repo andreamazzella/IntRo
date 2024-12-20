@@ -32,7 +32,7 @@ In this session, you'll use functions from a few more packages:
 
 -   [`dplyr`](https://dplyr.tidyverse.org/reference/index.html) to transform data with `summarise()` and `count()` - part of the core tidyverse
 -   [`janitor`](https://sfirke.github.io/janitor/index.html) to count and cross-tabulate data with `tabyl()`
--   [`gtsummary`](https://www.danieldsjoberg.com/gtsummary/) andto create and save a summary Table 1 with `tbl_summary()`
+-   [`gtsummary`](https://www.danieldsjoberg.com/gtsummary/) to create and save a summary Table 1 with `tbl_summary()`
 -   [`gt`](https://gt.rstudio.com/) to save a table to file.
 
 Before running this chunk, please ensure that you have these packages installed.
@@ -99,7 +99,7 @@ trial |>
   summarise(mean(ttdeath))
 ```
 
-We can also include more summary metrics in the same `summarise()` call:
+We can also include more summary metrics in the same `summarise()` call. For example, I recommend always including `n()` so you can get the count of records in each group.
 
 ```{r}
 trial |> 
@@ -163,6 +163,7 @@ We can also group by more than one variable.
 ```{r}
 trial |>
   summarise(
+    n(),
     avg_follow_up = mean(ttdeath, na.rm = T) |> round(1),
     .by = c(trt, death)
     )

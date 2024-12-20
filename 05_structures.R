@@ -46,16 +46,6 @@ log(100, 5)
 c("age" = 19, "height" = 185, "systolic_BP" = 132)
 
 
-# Matrices -------------------------------------------------------------------------------------------------------------
-
-# A matrix is like a 2d vector.
-
-matrix(
-    c(1, 3, 5, 2, 4, 6),
-    nrow = 3,
-    ncol = 2
-    )
-
 # Lists ----------------------------------------------------------------------------------------------------------------
 
 # An R list is also a list of object in a specific order, but unlike a vector, these don't have to be of the same type.

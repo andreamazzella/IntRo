@@ -99,6 +99,8 @@ msleep_herbi <- msleep |>
   filter(vore == "herbi")
 ```
 
+Remember that when you assign a value, R does not show you any result. If you want to see the output, you need to ask R to do it, for example in this case by calling `msleep_herbi`.
+
 ### Exercise 2
 
 Use `filter()` to identify which animals sleeps on average 4 hours per night.

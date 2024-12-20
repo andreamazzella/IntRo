@@ -171,6 +171,8 @@ falls_condensed <- falls_trimmed |> filter(!is.na(id))
 
 ## Sorting rows by a column
 
+NB - already shown in 0x_subset.
+
 Function `arrange()` from `dplyr` lets you sort the dataframe by the order of values in a column.
 
 ```{r}
