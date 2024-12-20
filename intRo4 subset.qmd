@@ -8,51 +8,79 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 
 # What you will learn
 
--   Data subsets with `dplyr`
-    -   Filtering rows
-    -   Selecting columns
+-   Sorting rows
+-   Filtering rows
+-   Selecting columns
 -   Conditions
--   Pipes
-    -   More about `|>`
-    -   `%>%`
-    -   `%$%`
+-   Piping function calls together
+
+------------------------------------------------------------------------
+
+# Recap from topic 04_summarise
+
+1.  Insert a new chunk below.
+2.  Import `amr_klebsiella.csv`, contained in the `/data/raw` folder.
+3.  Cross-tabulate age group against antimicrobial susceptibility.
 
 ------------------------------------------------------------------------
 
 ## Load packages
 
-
+In this session, you'll use functions from [`dplyr`](https://dplyr.tidyverse.org/reference/index.html), part of the core tidyverse. We used its `summarise()` and `count()` functons in session 04_summarise; now we'll use `arrange()`, `filter()`, `select()` and the `slice_` functions.
 
 ```{r}
 #| label: setup
 
-library(dplyr)
-library(ggplot2)
+library(tidyverse)
 ```
+
 *Want to know more?* When you're using a qmd, if you use label a chunk with the word "setup", it will automatically run first whenever you try and run any other code in the qmd.
 
-------------------------------------------------------------------------
-
-# Data subsets with `dplyr`
-
-`dplyr` is a package that makes manipulating data easier. We used its functions `count()`, and `summarise()` in topic `04_summarise`.
-
-In this topic, we'll focus on two main tasks for which this package is helpful: reducing rows (`filter()`) and reducing columns (`select()`). We'll use the in-built dataset `msleep` containing information on sleep of 83 mammal species.
+We'll use the in-built dataset `msleep` containing information on sleep of 83 mammal species.
 
 ```{r}
 msleep <- ggplot2::msleep
 msleep
 ```
 
+------------------------------------------------------------------------
+
+## Sort rows
+
+You can use `arrange()` to change the order of the rows according to the value of one or more columns. By default, it uses ascending order. Please note that rows with missing values are always listed at the end. If you list more than one column, each additional column will be used to break ties.
+ 
+```{r}
+msleep |>
+  arrange(brainwt)
+```
+
+You can use `desc()` inside of `arrange()` to use descending order.
+
+```{r}
+msleep |>
+  arrange(desc(sleep_total))
+```
+
+### Exercise 1
+
+Reorder the rows so that the animals are listed by taxonomic `order`. If there are multiple animals in the same order, list them by `genus`.
+
+```{r}
+
+```
+
+------------------------------------------------------------------------
+
 ## Filter rows
 
-Sometimes you don't need to use all the observations (rows) in your dataset, but only a group of those: for example, you might want to plot sleep duration only among herbivores.
+Sometimes you don't need to use all the records (rows) in your dataset, but only a group of those: for example, you might want to plot sleep duration only among herbivores.
 
-The function `filter()` lets you do just that: it filters your dataset according to a condition. Its first argument is the dataset name, just like function `ggplot()`. Its second argument is a condition.
+The function `filter()` lets you do just that: it filters your dataset according to a condition. Its first argument is the data frame name, just like function `ggplot()` and `summarise()`. Its second argument is a condition.
 
 ```{r}
 # Only keep herbivores
-filter(msleep, vore == "herbi")
+msleep |>
+  filter(vore == "herbi")
 # note that it's a double = sign!
 ```
 
@@ -67,10 +95,11 @@ msleep
 If you want to keep a copy of a filtered dataset, you need to assign it a name.
 
 ```{r}
-msleep_herbi <- filter(msleep, vore == "herbi")
+msleep_herbi <- msleep |>
+  filter(vore == "herbi")
 ```
 
-*Exercise 1.*
+### Exercise 2
 
 Use `filter()` to identify which animals sleeps on average 4 hours per night.
 
@@ -78,50 +107,50 @@ Use `filter()` to identify which animals sleeps on average 4 hours per night.
 
 ```
 
-You can use filtered data in a plot: you simply replace the dataset name with the new filtered dataset as the first `ggplot()` argument.
+### Conditions
 
-```{r}
-# Plotting all mammals
-msleep |>
-  ggplot(aes(sleep_rem, awake, colour = vore)) +
-  geom_point()
+You can use these conditions:
 
-# Plotting only herbivores
-msleep |> 
-  filter(vore == "herbi") |>
-  ggplot(aes(sleep_rem, awake, colour = vore)) +
-  geom_point() +
-  # The line below will make the two graphs more comparable
-  scale_colour_manual(values = "#7CAE00") + coord_cartesian(xlim = c(0, 6.5), ylim = c(4, 22)) 
-```
-
-Common conditions in R:
-
--   `x == y` (NB: *two* equal signs) - can be used for numbers or text.
--   `x != z`: different than - can be used for numbers or text.
--   `x > z`, `<`, `>=`, `<=` like in maths.
+- `>`, `>=`, `<`, `<=`
+- `==` (equal to; please note that this has two `=` signs!)
+- `!=` (not equal to)
 -   `is.na(x)` - is this a missing value?
 -   `!is.na(x)` - is this a non-missing value?
--   `x %in% c(3, 7)` - is this value present in this list?
 
 For example, we can use `is.na()` to only keep observation with missing sleep cycle data:
 
 ```{r}
-filter(msleep, is.na(sleep_cycle))
+msleep |>
+  filter(is.na(sleep_cycle))
 ```
+
+To remove rows with missing data in a given variable, you can also use `short_na(x)` (from package `tidyr`) as shorthand:
+
+```{r}
+msleep |>
+  drop_na(conservation)
+
+# Is equivalent to
+msleep |>
+  filter(!is.na(conservation))
+```
+
+### Linking conditions
 
 You can also filter on more than one condition; for example, you might want to only filter herbivores that sleep more than 15 hours a day.
 
 ```{r}
-filter(msleep, vore == "herbi" & sleep_total > 15)
+msleep |>
+  filter(vore == "herbi" & sleep_total > 15)
 ```
 
-Linking two conditions:
+You can also link two or more conditions.
 
 -   `&`: and. The overall condition will be TRUE only if both conditions are TRUE.
 -   `|`: or. The overall condition will be TRUE if either condition is TRUE.
+-   `x %in% c(3, 7)`: this is shorthand for `x == 3 | x == 7`.
 
-*Exercise 2.*
+#### Exercise 3
 
 Filter domesticated mammals that weight more than 50 kg. Which are they?
 
@@ -129,7 +158,7 @@ Filter domesticated mammals that weight more than 50 kg. Which are they?
 
 ```
 
-*Exercise 3.*
+#### Exercise 4
 
 Make a bar chart of diet type, but only for mammals whose brain weighs less than 50 grams.
 
@@ -137,7 +166,22 @@ Make a bar chart of diet type, but only for mammals whose brain weighs less than
 
 ```
 
+## Extract rows by group
+
+Imagine you want to only keep one row in each group; for example, only the carnivore, omnivore and herbivore with the longest total sleep duration. We can use the `slice_` functions with a `by =` argument for that.
+
+```{r}
+msleep |>
+  slice_max(
+    sleep_total,
+    by = vore
+    )
+```
+
+
 ------------------------------------------------------------------------
+
+
 
 ## Select columns
 
@@ -146,184 +190,161 @@ Function `select()` keeps only certain variables (columns), and removes the rest
 Imagine we wanted a dataset containing only information about mammal `name` and `order`:
 
 ```{r}
-select(msleep, name, order)
+msleep |>
+  select(name, order)
 ```
 
 We can add as many variables as we need.
 
-*Exercise 4*
+#### Exercise 5
 
-Show a dataset containing names, brain weights and body weights for all mammals.
+Show a dataset only containing names, brain weights and body weights for all mammals.
 
 ```{r}
 
 ```
+
+### Selection helpers
 
 There are a number of functions to help us select more efficiently; for example, `starts_with()`:
 
 ```{r}
-msleep |> select(name, starts_with("sleep"))
+msleep |>
+  select(name, starts_with("sleep"))
 ```
 
-------------------------------------------------------------------------
+Other helper functions are:
 
-# Pipes
-
-## More about `|>`
-
-Let's go back to the pipe, `|>`, that we first saw in the previous topic.
-
-Remember that `|>` does this:
-
-1.  It takes what's on its left hand-side
-2.  It makes it the first argument of the next function.
-
-Examples:
-
-```{r}
-# Code with the pipe
-msleep |> filter(order == "Primates")
-
-# Code without the pipe
-filter(msleep, order == "Primates")
-```
-
-In the chunk above, the `|>` pipe takes `msleep` and shifts it inside `filter()`, in first position, and then adds a comma. It effectively makes `msleep` the first argument of `filter()`.
-
-You might think that it's not particularly helpful in this case. However, it can simplify more complex code - for example, think about doing plots with an intermediate subsetting step. You have three options which produce the same result.
-
-```{r}
-# Option 1: nested functions
-ggplot(filter(msleep, vore == "herbi"), aes(sleep_rem, awake, colour = vore)) +
-  geom_point()
-
-# Option 2: intermediate assignment
-msleep_herbi <- filter(msleep, vore == "herbi")
-ggplot(msleep_herbi, aes(sleep_rem, awake, colour = vore)) +
-  geom_point()
-
-# Option 3: piping
-msleep |> 
-  filter(vore == "herbi") |> 
-  ggplot(aes(sleep_rem, awake, colour = vore)) +
-  geom_point()
-```
-
-An explanation of the code above.
-
-1.  Make a plot of a filtered version of `msleep`. This makes code more difficult to read - you don't immediately understand which dataset is being plotted.
-2.  Create a new object called `msleep_herbi`, containing a filtered version of `msleep`. Then make a plot of `msleep_herbi`. This is clearer, but you risk ending up with a very busy Environment if you create a lot of new objects.
-3.  You take `msleep` *and then* you `filter()` it, *and then* you use that in a `ggplot()`.
-
-You can combine `select()` and `filter()` by piping. For example, you might want to only focus on weight information for animals with missing `conservation` data.
+- `ends_with()`
+- `contains()`
+- `where()` 
 
 ```{r}
 msleep |>
-  filter(is.na(conservation)) |> 
-  select(name, ends_with("wt"))
+  select(name, where(is.numeric))
 ```
+
+To avoid having to write down many columns, you can select all sequential columns using `:`
+
+```{r}
+msleep |>
+  select(name:sleep_total)
+```
+
 
 ------------------------------------------------------------------------
 
-*Exercise 7.*
+## Piping function calls together
 
-1.  Create a new dataset called `sleepy` containing only data on name, genus and order - just for insectivores who sleep at least 9 hours per day.
-2.  How many mammals satisfy these filters?
-3.  Which animal orders do they belong to?
+Because `dplyr` functions take a data frame as the first argument and return a data frame, you can pipe them into other functions that take a data frame as a first argument.
+
+For example, you can take a dataset, select only the columns you need, filter it, and then summarise it.
+
+```{r}
+msleep |>
+  select(name, order, vore, bodywt) |> 
+  filter(order %in% c("Carnivora", "Artiodactyla", "Rodentia")) |>
+  summarise(
+    n(),
+    mean(bodywt),
+    .by = order
+    )
+```
+
+Using the `|>` pipes has the advantage of making the code easier to read for humans.
+
+Compare with the alternatives:
+
+```{r}
+# Nesting functions
+summarise(
+  filter(
+    select(msleep, name, order, vore, bodywt),
+    order %in% c("Carnivora", "Artiodactyla", "Rodentia")
+    ),
+  n(),
+  mean(bodywt),
+  .by = order
+  )
+```
+
+```{r}
+# Creating intermediate objects
+msleep_essential_cols <- select(msleep, name, order, vore, bodywt) |> 
+msleep_relevant_orders <- filter(msleep_essential_cols, order %in% c("Carnivora", "Artiodactyla", "Rodentia"))
+summarise(
+  msleep_relevant_orders,
+  n(),
+  mean(bodywt),
+  .by = order
+  )
+```
+
+Another good use case for pipelines is modifying a data frame before feeding it to `ggplot()`:.
+
+```{r}
+# Plotting REM sleep for herbivores only
+msleep |> 
+  filter(vore == "herbi") |>
+  ggplot(aes(sleep_rem, name)) +
+  geom_col(fill = "#7CAE00")
+```
+
+
+------------------------------------------------------------------------
+
+#### Exercise 6
+
+Create a new dataset called `sleepy` containing only data on name and total sleep - just for insectivores who sleep at least 9 hours per day - and in descending order of total sleep.
 
 ```{r}
 
 ```
 
-
-
-
-------------------------------------------------------------------------
-
-# Data subsets in base R
-
-You might see code that subsets data without using `dplyr`.
-
-This uses the `[` operator: after writing the dataset name, you follow it with `[]`, containing instructions on how to subset.
-
-------------------------------------------------------------------------
-
-## Select columns in base R
-
-Columns can be listed by name.
-
-```{r}
-# Base R
-msleep["name"]
-
-# dplyr equivalent
-msleep |> select(name)
-```
-
-More than one column can be passed with `c()`.
-
-```{r}
-# Base R
-msleep[c("name", "sleep_total")]
-
-# dplyr
-msleep |> select(name, sleep_total)
-```
-
-------------------------------------------------------------------------
-
-## Filter rows in base R
-
-Two options:
-
-1.  The variable needs to be identified with the `$` operator, and the condition is followed by a comma.
-2.  `subset()` function - very similar to `dplyr::filter()`.
-
-```{r}
-# Base R
-msleep[msleep$bodywt > 50, ]
-msleep |> subset(bodywt > 50)
-
-# dplyr
-msleep |> filter(bodywt > 50)
-```
 
 ------------------------------------------------------------------------
 
 # Solutions
 
 ```{r}
-# Recap
-teeth <- datasets::ToothGrowth
+#| label: Exercise 1 solution
+msleep |>
+  arrange(order, genus)
+```
 
-teeth |> 
-  group_by(supp) |>
-  summarise(min(len),
-            mean(len),
-            max(len))
+```{r}
+#| label: Exercise 2 solution
+msleep |>
+  filter(sleep_total == 4)
+```
 
-# Exercise 1
-filter(msleep, sleep_total == 4)
+```{r}
+#| label: Exercise 3 solution
+msleep |>
+  filter(conservation == "domesticated" & bodywt > 50)
+```
 
-# Exercise 2
-filter(msleep, conservation == "domesticated" & bodywt > 50)
+```{r}
+#| label: Exercise 4 solution
 
-# Exercise 3
-ggplot(filter(msleep, brainwt < 50/1000), aes(vore)) + geom_bar()
+msleep |>
+  filter(brainwt < 50/1000) |>
+  ggplot(aes(vore)) +
+  geom_bar()
+```
 
-# Exercise 4
-select(msleep, name, brainwt, bodywt)
+```{r}
+#| label: Exercise 5 solution
+msleep |> 
+  select(name, brainwt, bodywt)
+```
 
-# Exercise 5
-msleep |> select(name)
-
-# Exercise 6
-filter(msleep, awake > 21)
-
-# Exercise 7
+```{r}
+#| label: Exercise 6 solution
 sleepy <- msleep |>
   filter(vore == "insecti" & sleep_total >= 13) |>
-  select(name, genus, order)
+  select(name, sleep_total) |> 
+  arrange(desc(sleep_total))
 
 sleepy
 ```
