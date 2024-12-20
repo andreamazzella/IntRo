@@ -35,9 +35,6 @@ library(gt)           # gtsave
 library(gtsummary)    # tbl_summary, as_gt
 ```
 
-
-
-
 ------------------------------------------------------------------------
 
 For this topic, we'll use `trial`, a sample dataset from package `gtsummary`. This contains the baseline characteristics of 200 patients who received two different cancer drugs (`trt`) and treatment outcomes: `response` and `death`. Check its documentation to learn more.
@@ -50,9 +47,11 @@ help(trial)
 
 ------------------------------------------------------------------------
 
-# Data summarisation
+## Summarising data
 
-`summary()` is a useful function that lets you get a quick summary of your entire dataset (or just a single variable).
+### Using `summary()`
+
+You can use `summary()` to get a quick summary of your entire dataset.
 
 *Exercise 1.*
 
@@ -65,9 +64,120 @@ help(trial)
 summary(trial)
 ```
 
-*Want to know more?*
+*Want to know more?* This function doesn't provide a helpful summary of character variables, like `trt`. Once you specify the data class, the output will be more telling; see `intRo6 clean.Rmd` for how to do this.
 
-This only works well if the variables are coded in the correct data classes, so it will not work well with datasets that have not been cleaned first. See `intRo6 clean.Rmd` for how to do this.
+------------------------------------------------------------------------
+
+### `dplyr` basics
+
+We'll frequently use `dplyr` functions, like `summarise()`. They have some things in common:
+
+- Their first argument is always a data frame.
+- The following arguments refer to columns by using their names, without quotes
+- The output is always a new data frame; the original data frame is left unchanged.
+
+Because the first argument is always the dataframe, we can use @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ the pipe @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+```{r}
+# TODO: continue reviewing from here - I want a quick intro to the pipe.
+
+# I've reordered sections so need to reorder exercises as well
+# I also need to replace four spaces with two spaces.
+```
+
+
+## Using `summarise()`
+
+We can summarise a data.frame using the `summarise()` function from package `dplyr` and some helper functions like `min()`, `mean()`, `median()`, `sd()`. See `help(summarise)` for a list of helper functions.
+
+For example, to calculate the mean `ttdeath` across every row we can run:
+
+```{r}
+trial |> 
+  summarise(mean(ttdeath))
+```
+
+We can also include more summary metrics in the same `summarise()` call:
+```{r}
+trial |> 
+  summarise(
+    n(),
+    mean(ttdeath),
+    sd(ttdeath)
+    )
+```
+
+*Exercise 6.*
+
+1.  Try and calculate the average age.
+2.  Why do you get an `NA` result?
+3.  Use `help(mean)` and see if you can figure out how to calculate the mean age.
+
+```{r}
+
+```
+
+------------------------------------------------------------------------
+
+## Grouped summaries
+
+What if we wanted to calculate the mean age in specific groups of patients, such as by treatment group?
+
+We can use the `summarise()` again, but this time we specify which variable indicates the groups, in the `.by =` argument
+
+```{r}
+trial |>
+  summarise(
+    n(),
+    mean(age, na.rm = TRUE),
+    .by = trt
+    )
+```
+
+We can also add a name to the new summary columns:
+
+```{r}
+trial |>
+  summarise(
+      count = n(),
+      avg_age = mean(age, na.rm = TRUE),
+      avg_follow_up = mean(ttdeath),
+      sd_follow_up = sd(ttdeath),
+      .by = trt
+      )
+```
+
+Remember that we can visualise the distribution of a continuous variable across a categorical variable with Box plots:
+
+```{r}
+trial |>
+  ggplot(aes(age, trt)) +
+  geom_boxplot()
+```
+
+We can also group by more than one variable.
+
+```{r}
+trial |>
+  summarise(
+      avg_follow_up = mean(ttdeath, na.rm = T) |> round(1),
+      .by = c(trt, death)
+      )
+```
+
+*Exercise 7.*
+
+Calculate the median and maximum marker levels in the four stage groups.
+
+```{r}
+# TODO: move
+trial |>
+    summarise(
+        median(marker, na.rm = TRUE),
+        max(marker, na.rm = TRUE),
+        .by = stage
+    )
+```
 
 ------------------------------------------------------------------------
 
@@ -86,7 +196,6 @@ Run these two chunks and compare their outputs.
 -   Which function do you prefer?
 
 ```{r}
-# With missing values
 count(trial, response)
 ```
 
@@ -120,8 +229,6 @@ To make two-way tables you can use:
 -   `tabyl()` and some more functions from `janitor`
 
 ```{r}
-table(trial$trt, trial$response, useNA = "ifany")
-
 count(trial, trt, response)
 
 # Just counts
@@ -135,11 +242,12 @@ tabyl(trial, trt, response) |>
     # Add counts back 
     adorn_ns()
 ```
+
 (Please ignore the `|>` symbol for now; we'll come back to it soon).
 
 *Exercise 4.*
 
-Write some code to calculate the percentage of people with `grade` `I` cancer who were alive at the end of the study. (If you can't remember the names of your variables, you can run `names(trial)`.
+Write some code to calculate the percentage of people who were alive at the end of the study stratified by cancer grade. (If you can't remember the names of your variables, you can run `names(trial)`.
 
 ```{r}
 
@@ -147,7 +255,7 @@ Write some code to calculate the percentage of people with `grade` `I` cancer wh
 
 ------------------------------------------------------------------------
 
-## What is `|>`?
+## The `|>` pipe
 
 `|>` is called a *pipe*; it's a programming tool that helps improve code readability. It was introduced in R version 4.1.
 
@@ -159,7 +267,10 @@ trial |> count(response)
 count(trial, response)
 ```
 
-You can see that the pipe is taking what's before it and it's shifting it as the first argument of the function that follows.
+You can see that the pipe is:
+
+1. Taking what's before it
+2. Shifting it to the function that follows, as its first argument.
 
 You can also have more than one pipe, as you've seen above. It still works the same, but it makes code much easier to write and read.
 
@@ -174,105 +285,38 @@ trial |>
 # ...is equivalent to:
 adorn_ns(adorn_pct_formatting(adorn_percentages(tabyl(trial, trt, response), "row")))
 
-# Which one would you much rather write?
+# and this
+tab_trial <- tabyl(trial, trt, response)
+tab_trial_perc <- adorn_percentages(tab_trial, "row")
+tab_trial_perc_formt <- adorn_pct_formatting(tab_trial_perc)
+adorn_ns(tab_trial_perc_formt)
+
+# Which one would you much rather write? And read?
 ```
+
+You can set a keyboard shortcut for the `|>` pipe. Go to Tools → Global options → Code → tick "Use native pipe operator". After this, pressing *Ctrl + Shift + M* (on Windows) will insert a `|>` pipe.
+
+*Exercise 5.* Rewrite the following code using the pipe.
+
+```{r}
+# Without a pipe
+tabyl(trial, trt, response)
+
+# With the pipe
+
+```
+
+Many functions from modern R packages list the data.frame as their first argument. This includes key functions from `ggplot2`, `dplyr`, `janitor`.
+
+```{r}
+trial |>
+    ggplot(aes(trt, age)) +
+    geom_boxplot()
+```
+
 
 ------------------------------------------------------------------------
 
-## Summarising continuous variables
-
-As we've seen previously, to summarise continuous variables, you can use functions `mean()`, `median()`, `sd()`
-
-```{r}
-mean(trial$ttdeath)
-median(trial$ttdeath)
-sd(trial$ttdeath)
-```
-
-*Exercise 5.*
-
-1.  Try and calculate the average age with `mean()`.
-2.  Why do you get this result?
-3.  Use `help(mean)` to see if you can figure out how to fix this.
-
-```{r}
-
-```
-
-You can also get many summary measures in one go by passing a variable to `summary()`.
-
-```{r}
-summary(trial$marker)
-```
-
-------------------------------------------------------------------------
-
-## Grouped summaries with `dplyr`
-
-What if we wanted to calculate the mean age in specific groups of patients, such as by treatment group?
-
-We can use the `summarise()` function from package `dplyr`, which collapses the dataset. You need to specify:
-
-- how to summarise the data, for example, `mean()`,
-- which variable indicates the groups, in the `.by = ` argument
-
-```{r}
-trial |>
-  summarise(
-      mean(age, na.rm = TRUE),
-      .by = trt
-      )
-```
-
-(NB: `summarise()` is different from the function we used above, `summary()`!)
-
-You can summarise with any of these functions:
-
--   `mean()`, `median()`,
--   `sd()`, `IQR()`,
--   `min()`, `max()`,
--   `n()`, `n_distinct()`
-
-We can use as many of these as you want in a single `summarise()` call, and you can also summarise more than one variable at the same time. `n()` will count the observations in that group.
-
-```{r}
-trial |>
-  summarise(
-      count = n(),
-      avg_age = mean(age, na.rm = TRUE),
-      avg_follow_up = mean(ttdeath),
-      sd_follow_up = sd(ttdeath),
-      .by = trt
-      )
-```
-
-Remember that we can visualise the distribution of a continuous variable across a categorical variable with Box plots:
-
-```{r}
-trial |>
-  ggplot(aes(age, trt)) +
-  geom_boxplot()
-```
-
-We can also group by more than one variable.
-
-```{r}
-trial |>
-  summarise(
-      avg_follow_up = mean(ttdeath, na.rm = T) |> round(1),
-      .by = c(trt, death)
-      )
-```
-
-*Exercise 6.*
-
-Calculate the median age and the age interquartile range in the two response groups.
-
-```{r}
-
-```
-
-------------------------------------------------------------------------
 
 # Summary tables
 
@@ -321,7 +365,7 @@ final_table <- trial |>
 final_table
 ```
 
-*Exercise 7.*
+*Exercise 8.*
 
 Create a table 1 of the `ToothGrowth` dataset, stratifying by supplement type but keeping an overall column.
 
@@ -361,16 +405,15 @@ tabyl(trial, stage)
 ggplot(trial, aes(x = stage)) + geom_bar()
 
 # Exercise 4
-  # With `tabyl`
 tabyl(trial, grade, death) |>
     adorn_percentages("row") |>
-    # Label percentages
     adorn_pct_formatting()
 
-# Exercise 5
-mean(trial$age, na.rm = TRUE)
-
 # Exercise 6
+summarise(trial, mean(age))
+summarise(trial, mean(age, na.rm = TRUE))
+
+# Exercise 7
 trial |>
   summarise(
       mean_age = mean(age, na.rm = TRUE),
@@ -378,7 +421,7 @@ trial |>
       .by = response
       )
 
-# Exercise 7
+# Exercise 8
 teeth <- datasets::ToothGrowth
 
 teeth |> 
