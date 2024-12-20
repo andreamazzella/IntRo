@@ -5,6 +5,7 @@
 *.lnk
 *.png
 *.jpeg
+*.html
 create_data.Rmd
 data/raw/Fake_Health_Dataset.csv
 data/processed/

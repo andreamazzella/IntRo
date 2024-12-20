@@ -9,30 +9,40 @@ editor: visual
 
 # What you will learn
 
--   Data summarisation
+-   Summarising data with `dplyr` and `janitor`
     -   Categorical variables
     -   Continuous variables
     -   Grouped summaries
--   Table 1 with `gtsummary`
+-   Creating a Table 1 with `gtsummary`
 
 ------------------------------------------------------------------------
 
 # Recap from topic 03_import
 
-...
+1.  Insert a new chunk below.
+2.  Import the `sites` sheet from the `syphilis.xlsx` file, contained in the `/data/raw` folder.
+3.  Preview it.
+4.  *Bonus:* Create a graph with a dot indicating the date of opening of each site; the dot should have a different colour according to that trust's type.
 
 ------------------------------------------------------------------------
 
-Load packages
+# Load packages
 
-https://sfirke.github.io/janitor/index.html
+In this session, you'll use functions from a few more packages:
+
+-   [`dplyr`](https://dplyr.tidyverse.org/reference/index.html) to transform data with `summarise()` and `count()` - part of the core tidyverse
+-   [`janitor`](https://sfirke.github.io/janitor/index.html) to count and cross-tabulate data with `tabyl()`
+-   [`gtsummary`](https://www.danieldsjoberg.com/gtsummary/) andto create and save a summary Table 1 with `tbl_summary()`
+-   [`gt`](https://gt.rstudio.com/) to save a table to file.
+
+Before running this chunk, please ensure that you have these packages installed.
 
 ```{r}
-library(dplyr)        # count, group_by, summarise
+library(dplyr)
 library(ggplot2)
 library(janitor)
-library(gt)           # gtsave
-library(gtsummary)    # tbl_summary, as_gt
+library(gt)
+library(gtsummary)
 ```
 
 ------------------------------------------------------------------------
@@ -72,19 +82,11 @@ summary(trial)
 
 We'll frequently use `dplyr` functions, like `summarise()`. They have some things in common:
 
-- Their first argument is always a data frame.
-- The following arguments refer to columns by using their names, without quotes
-- The output is always a new data frame; the original data frame is left unchanged.
+-   Their first argument is always a data frame.
+-   The following arguments refer to columns by using their names, without quotes
+-   The output is always a new data frame; the original data frame is left unchanged.
 
-Because the first argument is always the dataframe, we can use @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ the pipe @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-```{r}
-# TODO: continue reviewing from here - I want a quick intro to the pipe.
-
-# I've reordered sections so need to reorder exercises as well
-# I also need to replace four spaces with two spaces.
-```
-
+Because the first argument and the output is always the dataframe, we chain `dplyr` functions one after the other using the pipe, `|>`. We'll cover pipes in more detail later, but for the moment, be aware that `dat |> summarise(...)` is equivalent to `summarise(dat, ...)`.
 
 ## Using `summarise()`
 
@@ -98,6 +100,7 @@ trial |>
 ```
 
 We can also include more summary metrics in the same `summarise()` call:
+
 ```{r}
 trial |> 
   summarise(
@@ -107,7 +110,7 @@ trial |>
     )
 ```
 
-*Exercise 6.*
+*Exercise 2.*
 
 1.  Try and calculate the average age.
 2.  Why do you get an `NA` result?
@@ -139,12 +142,12 @@ We can also add a name to the new summary columns:
 ```{r}
 trial |>
   summarise(
-      count = n(),
-      avg_age = mean(age, na.rm = TRUE),
-      avg_follow_up = mean(ttdeath),
-      sd_follow_up = sd(ttdeath),
-      .by = trt
-      )
+    count = n(),
+    avg_age = mean(age, na.rm = TRUE),
+    avg_follow_up = mean(ttdeath),
+    sd_follow_up = sd(ttdeath),
+    .by = trt
+    )
 ```
 
 Remember that we can visualise the distribution of a continuous variable across a categorical variable with Box plots:
@@ -160,23 +163,17 @@ We can also group by more than one variable.
 ```{r}
 trial |>
   summarise(
-      avg_follow_up = mean(ttdeath, na.rm = T) |> round(1),
-      .by = c(trt, death)
-      )
+    avg_follow_up = mean(ttdeath, na.rm = T) |> round(1),
+    .by = c(trt, death)
+    )
 ```
 
-*Exercise 7.*
+*Exercise 3.*
 
 Calculate the median and maximum marker levels in the four stage groups.
 
 ```{r}
-# TODO: move
-trial |>
-    summarise(
-        median(marker, na.rm = TRUE),
-        max(marker, na.rm = TRUE),
-        .by = stage
-    )
+
 ```
 
 ------------------------------------------------------------------------
@@ -188,7 +185,7 @@ To tabulate categorical data, we have many options, among which:
 -   `count()` from `dplyr`
 -   `tabyl()` from `janitor`.
 
-*Exercise 2.*
+*Exercise 4.*
 
 Run these two chunks and compare their outputs.
 
@@ -196,15 +193,16 @@ Run these two chunks and compare their outputs.
 -   Which function do you prefer?
 
 ```{r}
-count(trial, response)
+trial |>
+  count(response)
 ```
 
 ```{r}
-# With percentages
-tabyl(trial, response)
+trial |>
+  tabyl(response)
 ```
 
-*Exercise 3.*
+*Exercise 5.*
 
 1.  Write a line of code that will calculate the percentage of patients with each cancer stage.
 2.  Show the same with an appropriate graph.
@@ -213,7 +211,7 @@ tabyl(trial, response)
 # 1. Frequency table
 
 
-# 2. Bar plot
+# 2. Graph
 
 ```
 
@@ -229,23 +227,24 @@ To make two-way tables you can use:
 -   `tabyl()` and some more functions from `janitor`
 
 ```{r}
-count(trial, trt, response)
-
 # Just counts
-tabyl(trial, trt, response)
+trial |>
+  count(trt, response)
 
-tabyl(trial, trt, response) |>
-    # Change from counts to row percentages (as proportions)
-    adorn_percentages("row") |>
-    # Label percentages
-    adorn_pct_formatting() |>
-    # Add counts back 
-    adorn_ns()
+trial |>
+  tabyl(trt, response)
+
+trial |>
+  tabyl(trt, response) |>
+  # Change from counts to row percentages (as proportions)
+  adorn_percentages("row") |>
+  # Label percentages
+  adorn_pct_formatting() |>
+  # Add counts back 
+  adorn_ns()
 ```
 
-(Please ignore the `|>` symbol for now; we'll come back to it soon).
-
-*Exercise 4.*
+*Exercise 6.*
 
 Write some code to calculate the percentage of people who were alive at the end of the study stratified by cancer grade. (If you can't remember the names of your variables, you can run `names(trial)`.
 
@@ -257,7 +256,7 @@ Write some code to calculate the percentage of people who were alive at the end 
 
 ## The `|>` pipe
 
-`|>` is called a *pipe*; it's a programming tool that helps improve code readability. It was introduced in R version 4.1.
+`|>` is called a *pipe*; it's a programming tool that helps improve code readability. It was introduced in R version 4.1 after the success of the `magrittr` pipe, `%>%`.
 
 These two lines are equivalent:
 
@@ -269,18 +268,18 @@ count(trial, response)
 
 You can see that the pipe is:
 
-1. Taking what's before it
-2. Shifting it to the function that follows, as its first argument.
+1.  Taking what's before it
+2.  Shifting it to the function that follows, as its first argument.
 
 You can also have more than one pipe, as you've seen above. It still works the same, but it makes code much easier to write and read.
 
 ```{r}
 # This code...
 trial |> 
-    tabyl(trt, response) |>
-    adorn_percentages("row") |>
-    adorn_pct_formatting() |>
-    adorn_ns()
+  tabyl(trt, response) |>
+  adorn_percentages("row") |>
+  adorn_pct_formatting() |>
+  adorn_ns()
 
 # ...is equivalent to:
 adorn_ns(adorn_pct_formatting(adorn_percentages(tabyl(trial, trt, response), "row")))
@@ -310,13 +309,11 @@ Many functions from modern R packages list the data.frame as their first argumen
 
 ```{r}
 trial |>
-    ggplot(aes(trt, age)) +
-    geom_boxplot()
+  ggplot(aes(trt, age)) +
+  geom_boxplot()
 ```
 
-
 ------------------------------------------------------------------------
-
 
 # Summary tables
 
@@ -365,7 +362,7 @@ final_table <- trial |>
 final_table
 ```
 
-*Exercise 8.*
+*Exercise 7.*
 
 Create a table 1 of the `ToothGrowth` dataset, stratifying by supplement type but keeping an overall column.
 
@@ -375,14 +372,14 @@ Create a table 1 of the `ToothGrowth` dataset, stratifying by supplement type bu
 
 ## Save a `gtsummary` table to file
 
-We can use `gtsave()` to save a `gt` table to a file, so we first need to convert our `gtsummary` table into a regular `gt` table using `as_gt()`. Valid extensions include `.pdf`, `.html`, `.png`, `.docx`, `rtf`\`.
+We can use `gtsave()` to save a `gt` table to a file, so we first need to convert our `gtsummary` table into a regular `gt` table using `as_gt()`. Valid extensions include `.pdf`, `.html`, `.png`, `.docx`, `.rtf`.
 
 NB: This system is not perfect - for example, with .docx and .pdf the formatting might be partially lost in translation.
 
 ```{r}
 final_table |>
   as_gt() |> 
-  gtsave("table1.html")
+  gtsave("output/table1.html")
 ```
 
 ------------------------------------------------------------------------
@@ -399,29 +396,44 @@ I recommend these resources:
 
 # Solutions
 
-```{r include=FALSE}
-# Exercise 3
-tabyl(trial, stage)
-ggplot(trial, aes(x = stage)) + geom_bar()
+```{r}
+#| label: Exercise 2 solution
 
-# Exercise 4
-tabyl(trial, grade, death) |>
-    adorn_percentages("row") |>
-    adorn_pct_formatting()
+trial |>
+  summarise(mean(age))
+trial |>
+  summarise(mean(age, na.rm = TRUE))
+```
 
-# Exercise 6
-summarise(trial, mean(age))
-summarise(trial, mean(age, na.rm = TRUE))
+```{r}
+#| label: Exercise 3 solution
 
-# Exercise 7
 trial |>
   summarise(
-      mean_age = mean(age, na.rm = TRUE),
-      IQR_age = IQR(age, na.rm = TRUE),
-      .by = response
-      )
+    median(marker, na.rm = TRUE),
+    max(marker, na.rm = TRUE),
+    .by = stage
+  )
+```
 
-# Exercise 8
+```{r}
+#| label: Exercise 5 solution
+trial |>
+  tabyl(stage)
+trial |>
+  ggplot(aes(x = stage)) + geom_bar()
+```
+
+```{r}
+#| label: Exercise 6 solution
+trial |>
+  tabyl(grade, death) |>
+  adorn_percentages("row") |>
+  adorn_pct_formatting()
+```
+
+```{r}
+#| label: Exercise 7 solution
 teeth <- datasets::ToothGrowth
 
 teeth |> 
