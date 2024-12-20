@@ -10,7 +10,6 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 
 -   Data transformation
     -   calculate new variables
-    -   calculate age
     -   categorise continuous variables
     -   combine levels of a categorical variable
         -   create a dummy variable
@@ -18,7 +17,7 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 
 ------------------------------------------------------------------------
 
-# Recap from topic 4
+# Recap from topic 06
 
 From default dataset `Theoph`, identify at which time point participant 11 had a plasma theophylline concentration higher than 7.5 mg/L (without scrolling through the dataset manually).
 
@@ -30,6 +29,10 @@ Load packages
 library(tidyverse)
 ```
 
+```{r}
+dm <- read_rds("data/processing/diabetes.rds")
+```
+
 ------------------------------------------------------------------------
 
 
@@ -38,96 +41,61 @@ library(tidyverse)
 
 During data analysis, it's very common to need to derive new information from the raw data. For example:
 
--   We have date of births, but we don't have ages
--   BMI is continuous, but we might want to analyse it divided in clinical categories.
+-   The body mass index (BMI) is a continuous variable, but we might want to analyse it divided in clinical categories.
 -   We have data on disability with three levels: able-bodied, mild disability, severe disability, but we want to change it to a binary variable (disability yes/no).
 
 ------------------------------------------------------------------------
 
 ## Calculate new variables
 
-In `dplyr`, function `mutate()` is used to add new variables (or change existing ones). The first argument is the dataset name, then you have the new variable name, an equals sign, and then the formula to use to calculate the values in the new variable. Formulae can incorporate values from other columns.
+In `dplyr`, function `mutate()` is used to add new variables (or change existing ones).
+
+The first argument is the dataset name, then you have the new variable name, a single `=` sign, and then the formula to use to calculate the values in the new variable. Formulae can incorporate values from other columns.
 
 As an example, let's convert height from its current unit (cm) into meters.
 
-The following code reads: take dataset "dm", change it by adding a new column called "height_m", and populate its values with the corresponding "height" value on the same row, divided by 100.
+The following code reads: take dataset "dm", change it by adding a new column called "height_m", and populate this new column values with the corresponding "height" value on the same row, divided by 100.
 
 ```{r}
-# dplyr
-dm |> mutate(height_m = height / 100)
+dm |>
+  mutate(height_m = height / 100)
 ```
 
-This change is temporary; if you want this column to be permanently added to the dataset, you need to assign it.
+By default, new variables are added on the right-hand side of the data frame. You can change this with the `.before =` or `.after =` argument.
+
+Like with all `dplyr` functions, this change is temporary; if you want this column to be permanently added to the dataset, you need to assign it. In this case, I generally recommend creating a new object with a meaningful name, but occasionally you might want to ovderwrite the existing data frame.
 
 ```{r}
-dm <- dm |> mutate(height_m = height / 100)
+# Creating a new object
+dm_metric <- dm |>
+  mutate(height_m = height / 100)
+
+# Overwriting
+dm <- dm |>
+  mutate(height_m = height / 100)
 ```
 
-NB: There is no output to this. If you want to check whether it worked, you can have a look at the dataset. By default, new variables are appended at the end.
-
-This can also be done in base R by exposing the variable with `$`, doing the calculation, and assigning it to a new *variable name* (not to the dataset).
-
-```{r}
-# Base R
-# dm$height_m <- dm$height / 100
-```
+Remember that when you assign something, you can't see any output.  If you want to check whether it worked, you can have a look at the dataset. 
 
 Whenever you calculate a new variable, I recommend having a quick sanity check to make sure that it did what you intended.
 
 ```{r}
 # Sanity check
-dm |> select(height, height_m)
+dm |>
+  count(height, height_m)
 ```
 
-*Exercise 1.*
+### Exercise 1
 
-Convert weight into pounds (1 kg = 2.20462 lbs) and add this to the dataset.
+1. Convert weight into pounds (1 kg = 2.20462 lbs)
+2. Create a new data frame that contains this column.
 
-(Note: if you make a mistake and you want to recalculate the variable, you don't need to drop the old one first. When you assign it again, R will overwrite the old variable)
+(Note: unlike Stata, if you make a mistake and you need to recalculate the variable, you don't need to drop the old one first. When you assign it again, R will overwrite the old variable.)
 
 ```{r}
-#| label: new_variable
 
 ```
 
-------------------------------------------------------------------------
-
-## Calculate age
-
-Now we can calculate each observation's age at the study start - let's say this is 05 Sep 2022.
-
-Dealing with dates in all programming languages is tricky. We'll come back to this in the next topic; for now, please know that:
-
--   Computers think of dates as *number of days* from a specific time point.
--   `lubridate::dmy()` transforms text to an R date.
-
-```{r}
-# Create a calculated age variable
-dm <- dm |>
-    mutate(
-        # Calculate age as a period
-        age_interval = interval(start = date_birth, end = dmy("05-Sep-2022")),
-        age_period = as.period(age_interval),
-        # Convert age period into decimal years
-        age_duration = as.duration(age_period),
-        age_decimal = as.numeric(age_duration, "years"),
-        # Drop the decimal digits
-        age_years = floor(age_decimal)
-    )
-
-# Sanity check
-dm |> select(date_birth, starts_with("age"))
-```
-
-*Exercise 2.*
-
-1.  Explore the distribution of age with a histogram.
-2.  What are the median age, Q1 and Q3?
-
-```{r}
-#| label: histogram
-
-```
 
 ------------------------------------------------------------------------
 
@@ -144,15 +112,17 @@ summary(dm$bmi)
 We can then use `mutate()`, this time with helper function `cut()` - we need to specify the `breaks`, i.e., which values delimit groups.
 
 ```{r}
-dm <- dm |>
+dm_bmi <- dm |>
     mutate(bmi_group = cut(bmi, breaks = c(0, 18.5, 25, 30, Inf), right = FALSE))
 
 # Check that the new variable was created correctly
-dm |>
-  group_by(bmi_group) |>
-  summarise(min(bmi),
-            max(bmi),
-            n())
+dm_bmi |>
+  summarise(
+    n(),
+    min(bmi),
+    max(bmi),
+    .by = bmi_group
+    )
 ```
 
 By default `cut()`:
@@ -163,26 +133,33 @@ By default `cut()`:
 We can add custom labels to each group by adding the argument `labels =`. NB: labels should have 1 fewer element than `breaks =`.
 
 ```{r}
-dm <- dm |>
-  mutate(bmi_group_new = cut(bmi, right = FALSE,
-                             breaks = c(0, 18.5, 25, 30, Inf),
-                             labels = c("underweight",
-                                        "regular weight",
-                                        "overweight",
-                                        "obese")
-         ))
+dm_bmi <- dm |>
+  mutate(
+    bmi_group_label = cut(
+      bmi,
+      right = FALSE,
+      breaks = c(0, 18.5, 25, 30, 40),
+      labels = c("underweight", "regular weight", "overweight", "obese")
+      )
+    )
 
-dm |> count(bmi_group, bmi_group_new)
+dm_bmi |>
+  summarise(
+    n(),
+    min(bmi),
+    max(bmi),
+    .by = bmi_group_label
+    )
 ```
 
 NB: categorising continuous variables, and especially dichotomising them, is potentially highly problematic - see this paper: Turner E, Dobson J & Pocock S. (2010). [Categorisation of continuous risk factors in epidemiological publications: A survey of current practice](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2972292/).
 
-*Exercise 3.*
+### Exercise 3
 
 Categorise age into groups.
 
 ```{r}
-#| label: categories
+
 
 ```
 
@@ -190,9 +167,15 @@ Categorise age into groups.
 
 ## Combine levels of a categorical variable
 
-Sometimes we might need to combine two or more levels of a categorical variables.
+Sometimes we might need to combine two or more levels of a categorical variable.
 
 For example, the `continent` variable contains both South and North America; imagine we want to combine them into a single level, Americas.
+
+```{r}
+# Explore levels
+dm |>
+  count(continent)
+```
 
 To do this, we can use `mutate()` to create the new variable and `fct_collapse()` to combine the levels of the old one. This function, from package `forcats`, takes these arguments:
 
@@ -201,62 +184,77 @@ To do this, we can use `mutate()` to create the new variable and `fct_collapse()
 -   (any other new manually defined names)
 
 ```{r}
-# Explore levels
-dm |> count(continent)
-
 # Regroup
-dm <- dm |>
-    mutate(macrocontinent = fct_collapse(continent,
-                                         americas = c("n_america", "s_america"),
-                                         eurasia = c("europe", "asia")))
+dm_macro <- dm |>
+    mutate(
+      macrocontinent = fct_collapse(
+        continent,
+        america = c("n_america", "s_america"),
+        eurasia = c("europe", "asia")
+        )
+      )
 
 # Check it worked
-dm |> count(continent, macrocontinent)
+dm_macro |>
+  count(continent, macrocontinent)
 ```
 
-You might also want to lump together the levels with few observations - for example, there are less than 10 people in this dataset doing swimming, yoga, or gymnastics; let's lump them into an "other" category.
-
-For this, we can use the `fct_lump_` functions from `forcats`.
+You might also want to lump together the levels with few observations - for example, there are only 16 people in this dataset doing swimming, yoga, or gymnastics.
 
 ```{r}
 # Check before
-dm |> count(exercise_type) |> arrange(desc(n))
+dm |>
+  count(exercise_type, sort = TRUE)
+```
 
+Let's lump them into an "other" category. For this, we can use the `fct_lump_` functions from `forcats`.
+
+```{r}
 # Lump
-dm <- dm |> mutate(exercise_type_2 = fct_lump_min(exercise_type, 10))
+dm <- dm |>
+  mutate(exercise_type_2 = fct_lump_min(exercise_type, 10, other_level = "OTHER"))
 
 # Sanity check
-dm |> count(exercise_type, exercise_type_2) |> arrange(desc(n))
+dm |>
+  count(exercise_type, exercise_type_2, sort = TRUE)
 ```
 
 ------------------------------------------------------------------------
 
-### Create a dummy variable
+## Create a dummy variable
 
 If you want to reduce the levels to two (dummy variable), I recommend creating a logical variable (i.e., that contains only TRUE or FALSE), rather than a "yes"/"no" or 1/0 variable.
 
-For example, the "disability" variable has three levels: "able-bodied", "mild" and "severe"; let's turn this into a `disabled` variable that can be either TRUE (= yes) or FALSE (= no).
+For example, the "disability" variable has three levels: "able-bodied", "mild" and "severe".
 
 ```{r}
 # Data exploration
-dm |> count(disability)
+dm |>
+  count(disability)
+```
 
+Let's turn this into a `disabled` variable that can be either TRUE (= yes) or FALSE (= no).
+
+```{r}
 # Regroup
-dm <- dm |> mutate(disabled = disability == "mild" | disability == "severe")
+dm <- dm |> 
+  mutate(disabled = disability == "mild" | disability == "severe")
 
 # Check it worked
-dm |> count(disability, disabled)
+dm |>
+  count(disability, disabled)
 ```
 
 NB: do *not* use the `%in%` shortcut in these circumstances, otherwise missing values will be incorrectly recoded as FALSE!
 
-*Exercise 4.* (Pick one)
+### Exercise 4
 
-1.  Create a new variable with three levels: eats meat, eats fish, doesn't eat either, using `diet` as reference.
-2.  Create a new binary variable that indicates whether a patient is inactive, using `exercise` as reference.
+Pick one:
+
+-  Create a new variable with three levels: eats meat, eats fish, doesn't eat either, using `diet` as reference.
+-  Create a new binary variable that indicates whether a patient is inactive, using `exercise` as reference.
 
 ```{r}
-#| label: group_levels
 
 ```
 
@@ -266,23 +264,26 @@ NB: do *not* use the `%in%` shortcut in these circumstances, otherwise missing v
 
 We can also create a new categorical variables that summarises two other categorical variables.
 
-For example, we can create a new variable, `frailty`, that reflects the combination of disability and lack of exercise. Suppose we want to specify that someone with a mild disability is moderately frail if they don't exercise, and only mildly frail if they do.
-
-To do this, we may use `case_when()`. This allows us to check for many logical statements and give specific values when these are met.
+For example, we can create a new variable, `frailty`, that reflects the combination of disability and lack of exercise.
 
 ```{r}
 # Cross-tabulation
 dm |> count(disability, exercise)
+```
 
+Suppose we want to specify that someone with a mild disability is moderately frail if they don't exercise, and only mildly frail if they do. To do this, we may use `case_when()`.
+
+This allows us to check for many logical statements (on the left-hand side of `~` and give specific values when these are met (on the right-hand side).
+
+```{r}
 # Create the new variable
 dm <- dm |>
-    mutate(frailty = case_when(disability == "severe" ~ "severely frail",
-                               disability == "mild" & exercise == "none" ~ "moderately frail",
-                               disability == "mild" & exercise != "none" ~ "mildly frail",
-                               disability == "able-bodied" ~ "not frail",
-                               is.na(disability) | is.na(exercise) ~ NA_character_
+    mutate(frailty = case_when(
+      disability == "severe"                    ~ "severely frail",
+      disability == "mild" & exercise == "none" ~ "moderately frail",
+      disability == "mild" & exercise != "none" ~ "mildly frail",
+      disability == "able-bodied"               ~ "not frail"
     ))
-
 
 # Check it worked
 dm |> count(disability, exercise, frailty)
@@ -292,7 +293,7 @@ dm |> count(disability, exercise, frailty)
 
 
 
-*Exercise 5.*
+### Exercise 5
 
 1. Import the `bristol.rds` dataset.
 2. Explore the data.
@@ -323,17 +324,21 @@ dm |> count(disability, exercise, frailty)
 ```{r}
 #| label: solution_recap
 theoph <- datasets::Theoph
-theoph |> filter(Subject == 11 & conc > 7.5)
+theoph |>
+  filter(Subject == 11 & conc > 7.5)
 ```
 
 ```{r}
 #| label: solution_new_variable
-dm <- dm |> mutate(pounds = weight * 2.20462)
+dm_imperial <- dm |>
+  mutate(pounds = weight * 2.20462)
 ```
 
 ```{r}
 #| label: solution_histogram 
-ggplot(dm, aes(age, fill = gender)) + geom_histogram(bins = 20)
+dm |>
+  ggplot(aes(age, fill = gender)) +
+  geom_histogram(bins = 20)
 summary(dm$age)
 ```
 
@@ -344,30 +349,39 @@ summary(dm$age)
 
 # Categorise
 dm <- dm |>
-    mutate(age_grp = cut(age,
-                         breaks = c(16, 18, 30, 60, 81),
-                         labels = c("underage", "young adult", "adult", "older adult"),
-                         right = FALSE))
+  mutate(age_grp = cut(
+    age,
+    breaks = c(16, 18, 30, 60, 81),
+    labels = c("underage", "young adult", "adult", "older adult"),
+    right = FALSE)
+    )
 
 # Sanity check
 dm |>
-  group_by(age_grp) |>
   summarise(min(age),
             max(age),
-            n())
+            n(),
+            .by = age_grp)
 ```
 
 ```{r}
 #| label: solution_group_levels
-dm |> count(diet)
-dm |> count(exercise)
+dm |>
+  count(diet)
+
+dm |>
+  count(exercise)
 
 dm <- dm |>
-  mutate(diet_new = fct_collapse(diet, no_meat = c("vegan", "vegetar")),
-         inactive = exercise == "none")
+  mutate(
+    diet_new = fct_collapse(diet, no_meat = c("vegan", "vegetar")),
+    inactive = exercise == "none")
 
-dm |> count(exercise, inactive)
-dm |> count(diet, diet_new)
+dm |>
+  count(exercise, inactive)
+
+dm |>
+  count(diet, diet_new)
 ```
 
 ```{r}
@@ -378,21 +392,25 @@ bristol <- read_rds("data/bristol.rds")
 # Explore
 View(bristol)
 glimpse(bristol)
-count(bristol, bristol_type)
+bristol |>
+  count(bristol_type)
 
 # Categorise
 bristol <- bristol |>
-    mutate(stool_type = case_when(bristol_type <= 2 ~ "constipation",
-                                  between(bristol_type, 3, 5) ~ "normal",
-                                  bristol_type >= 6 ~ "diarrhoea"
-    ))
-# NB: this may also be done with cut()
+    mutate(
+      stool_type = case_when(bristol_type <= 2 ~ "constipation",
+                             between(bristol_type, 3, 5) ~ "normal",
+                             bristol_type >= 6 ~ "diarrhoea"
+                             )
+      )
 
 # Check
-bristol |> count(bristol_type, stool_type)
+bristol |>
+  count(bristol_type, stool_type)
 
 # Export
-# bristol |> write_rds("data/bristol_v2.rds")
+# bristol |>
+#   write_rds("data/bristol_v2.rds")
 ```
 
 ------------------------------------------------------------------------
