@@ -21,20 +21,23 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 
 ## Load packages
 
-Remember to run this chunk!
+
 
 ```{r}
+#| label: setup
+
 library(dplyr)
 library(ggplot2)
 ```
+*Want to know more?* When you're using a qmd, if you use label a chunk with the word "setup", it will automatically run first whenever you try and run any other code in the qmd.
 
 ------------------------------------------------------------------------
 
 # Data subsets with `dplyr`
 
-`dplyr` is a package that makes manipulating data easier. We used its functions `count()`, `group_by()` and `summarise()` in the last topic.
+`dplyr` is a package that makes manipulating data easier. We used its functions `count()`, and `summarise()` in topic `04_summarise`.
 
-In this topic, we'll focus on two main tasks for which this package is helpful: reducing rows (`filter()`) and reducing columns (`select()`). We'll use the dataset `msleep` containing information on sleep of 83 mammal species.
+In this topic, we'll focus on two main tasks for which this package is helpful: reducing rows (`filter()`) and reducing columns (`select()`). We'll use the in-built dataset `msleep` containing information on sleep of 83 mammal species.
 
 ```{r}
 msleep <- ggplot2::msleep
@@ -212,32 +215,6 @@ An explanation of the code above.
 2.  Create a new object called `msleep_herbi`, containing a filtered version of `msleep`. Then make a plot of `msleep_herbi`. This is clearer, but you risk ending up with a very busy Environment if you create a lot of new objects.
 3.  You take `msleep` *and then* you `filter()` it, *and then* you use that in a `ggplot()`.
 
-*Exercise 5.*
-
-Rewrite this command using a pipe.
-
-NB - You can set a keyboard shortcut for the `|>` pipe. Go to Tools → Global options → Code → tick "Use native pipe operator". After this, pressing *Ctrl + Shift + M* (on Windows) will insert a `|>` pipe.
-
-```{r}
-# Code without a pipe
-select(msleep, name)
-
-# Code with a pipe
-
-```
-
-*Exercise 6.*
-
-Rewrite this command without the pipe.
-
-```{r}
-# With a pipe
-msleep |> filter(awake > 21)
-
-# Without a pipe
-
-```
-
 You can combine `select()` and `filter()` by piping. For example, you might want to only focus on weight information for animals with missing `conservation` data.
 
 ```{r}
@@ -258,58 +235,8 @@ msleep |>
 
 ```
 
-------------------------------------------------------------------------
 
-## Other pipes
 
-You will sometimes see other pipes. The two more common ones are: - `%>%` - in most circumstances it works the same as `|>`. It's very popular because it was created before `|>`. - `%$%` - this is the equivalent of `|>` for functions that require columns to be identified with `$`.
-
-I don't think it's important to know more about these pipes at this stage.
-
-*Want to know more?*
-
-### `%>%` pipe
-
-`%>%` is originally from package `magrittr`, but it's also loaded whenever you use any `tidyverse` package.
-
-```{r}
-mean(c(2, 3, 6)) |> sqrt()
-
-mean(c(2, 3, 6)) %>% sqrt()
-```
-
-By default, in RStudio you can insert this pipe by typing *Ctrl + Shift + M* (on Windows).
-
-### `%$%` pipe
-
-You might remember the `$` operator, which extracts a variable from a dataset: `data$variable1` subsets the variable called `variable1` from the dataset `data`.
-
-```{r}
-msleep$vore
-```
-
-We use this syntax when a function requires a variable (and not the whole dataset); for example, if we want to get the frequencies of a categorical variable with `table()`, we must use the syntax below.
-
-```{r}
-table(msleep$vore)
-```
-
-This means that you can't use the native pipe: `msleep |> table(conservation, vore)` would transform into `table(msleep, conservation, vore)` which is not what the `table()` function is expecting.
-
-The `%$%` pipe, from package `magrittr`, takes what's on its left (usually, the dataset name) and moves it inside the function, before each argument, and adds a `$` in between. It lets you avoid typing the dataset name and `$` twice, and it makes the true arguments of the function stand out.
-
-It's particularly useful when a function uses multiple variables, because otherwise you would need to specify which dataset is each variable from -- this would quickly become verbose.
-
-The two commands below generate the same output.
-
-```{r}
-# Without a pipe (= base R)
-table(msleep$conservation, msleep$vore)
-
-# With the %$% pipe
-library(magrittr)
-msleep %$% table(conservation, vore)
-```
 
 ------------------------------------------------------------------------
 
