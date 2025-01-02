@@ -18,7 +18,7 @@ NB - I'm currently restructuring this.
 - **10. SQL** (to be created)
 - **11. Git** (to be created)
 - **12. Markdown** (to be created)
-- **13. Workflows** (to be created)
+- **13. Workflows** (How to structure analytical projects and data)
 
 Author: [Andrea Mazzella](https://github.com/andreamazzella)
 
