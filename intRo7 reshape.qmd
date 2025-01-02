@@ -6,7 +6,7 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 
 ------------------------------------------------------------------------
 
-# What you will learn
+# Content
 
 -   Join multiple datasets
     -   Append rows
@@ -17,27 +17,22 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 
 ------------------------------------------------------------------------
 
-# Recap from topic 6
+# Recap from topic 08_clean
 
-1. Run this chunk to create a dirty dataframe containing information on patients with myocardial infarctions seen by different ambulance teams.
-2. Clean the column names.
-3. Clean the third column so that you can calculate mean and standard deviation.
-4. Replace "NW" with "North West" in column 2.
+1.  Run this chunk to create a dirty dataframe containing information on patients with myocardial infarctions seen by different ambulance teams.
+2.  Clean the column names.
+3.  Clean the third column so that you can calculate mean and standard deviation.
+4.  Replace "NW" with "North West" in column 2.
 
 ```{r}
-(
-  ambulances <- data.frame(
-  County = c("Derby", "Bedford", "Norfolk", "Merseyside", "Cheshire", "Hampshire", "Kent", "Plymouth", "Swindon", "Wiltshire"),
-  Region = c("East Midlands", "East of England", "East of England", "NW", "North West", "South East", "South East", "South West", "South West", "South West"),
-  `How many patients with a pre hospital diagnosis of suspected STEMI confirmed on ECG?` = c("104", "105", "266", "140", "188", "No data", "236", "78", "190", "70"))
-  )
+ambulance_stemi <- read_csv("data/raw/ambulance_stemi.csv")
+ambulance_stemi
 ```
 
 ```{r}
 # Your code here 👇
 
 ```
-
 
 ------------------------------------------------------------------------
 
@@ -58,14 +53,14 @@ Throughout this topic we'll use data from a study of candidaemia. All data are i
 
 Please open the file in Excel first (you can find it and open it directly via the RStudio user interface: bottom right, Files.)
 
-```{r import_data}
-site5 <- read_excel("data/candidaemias.xlsx", sheet = "site5")
-site7 <- read_excel("data/candidaemias.xlsx", sheet = "site7")
-site8 <- read_excel("data/candidaemias.xlsx", sheet = "site8")
-cfupcr <- read_excel("data/candidaemias.xlsx", sheet = "cfupcr")
-demographics <- read_excel("data/candidaemias.xlsx", sheet = "demographics")
-meds <- read_excel("data/candidaemias.xlsx", sheet = "meds")
-outcomes <- read_excel("data/candidaemias.xlsx", sheet = "outcomes")
+```{r}
+site_5 <- read_excel("data/raw/candidaemias.xlsx", sheet = "site5")
+site_7 <- read_excel("data/raw/candidaemias.xlsx", sheet = "site7")
+site_8 <- read_excel("data/raw/candidaemias.xlsx", sheet = "site8")
+cfupcr <- read_excel("data/raw/candidaemias.xlsx", sheet = "cfupcr")
+demogr <- read_excel("data/raw/candidaemias.xlsx", sheet = "demographics")
+antifn <- read_excel("data/raw/candidaemias.xlsx", sheet = "meds")
+outcms <- read_excel("data/raw/candidaemias.xlsx", sheet = "outcomes")
 ```
 
 ------------------------------------------------------------------------
@@ -75,8 +70,8 @@ outcomes <- read_excel("data/candidaemias.xlsx", sheet = "outcomes")
 It looks like the β-D-glucan (`bdg`) results are scattered over three separate sheets, one per study site.
 
 ```{r}
-site5
-site7
+site_5
+site_7
 ```
 
 However, they contain the same type of information, so it makes sense to join them in a single dataframe. We could do this in Excel, but that would be time-consuming, boring and error-prone if we had dozens of sheets, each containing thousands of rows.
@@ -84,12 +79,12 @@ However, they contain the same type of information, so it makes sense to join th
 `bind_rows()` from package `dplyr` lets you bind two dataframes by rows. You can then assign this combined dataframe to a new object.
 
 ```{r}
-lab <- bind_rows(site5, site7)
+lab <- bind_rows(site_5, site_7)
 
 lab
 ```
 
-*Exercise 1.*
+### Exercise 1
 
 1.  Try to add the data from site 8 to this new combined dataset.
 2.  What happens?
@@ -103,7 +98,7 @@ Now we want to join lab results with outcome data. They're in two separate dataf
 
 ```{r}
 lab
-outcomes
+outcms
 ```
 
 The join functions from `dplyr` add columns from one dataset to another, using a key to match rows. If the two dataframes don't contain the same rows, we need to specify which rows to include - by picking a specific join function.
@@ -111,41 +106,41 @@ The join functions from `dplyr` add columns from one dataset to another, using a
 Note that, in this case:
 
 1.  Both datasets share a unique `id` variable;
-2.  `lab` contains information on many patients that are not listed in `outcomes` - because `outcomes` only lists patients who died.
-3.  Similarly, `outcomes` contains data on patients who are not listed in `lab` - because not everyone who died had a candidaemia.
+2.  `lab` contains information on many patients that are not listed in `outcms` - because `outcms` only lists patients who died.
+3.  Similarly, `outcms` contains data on patients who are not listed in `lab` - because not everyone who died had a candidaemia.
 
 We now need to decide how to join these two datasets.
 
-| Aim                                                      | dplyr function |
-|----------------------------------------------------------|----------------|
-| Only include participants that are present in `lab`      | `left_join()`  |
-| Only include participants that are present in `outcomes` | `right_join()` |
-| Only include participants that are present in both       | `inner_join()` |
-| Include all participants                                 | `full_join()`  |
+| Aim                                                    | `dplyr` function |
+|--------------------------------------------------------|------------------|
+| Only include participants that are present in `lab`    | `left_join()`    |
+| Only include participants that are present in `outcms` | `right_join()`   |
+| Only include participants that are present in both     | `inner_join()`   |
+| Include all participants                               | `full_join()`    |
 
 Compare what happens:
 
 ```{r}
-left_join(lab, outcomes, by = "id")
-right_join(lab, outcomes, by = "id")
-inner_join(lab, outcomes, by = "id")
-full_join(lab, outcomes, by = "id")
+left_join(lab, outcms, by = "id")
+right_join(lab, outcms, by = "id")
+inner_join(lab, outcms, by = "id")
+full_join(lab, outcms, by = "id")
 ```
 
-*Exercise 2.*
+### Exercise 2
 
 1.  Join demographic data to the dataframe containing lab results.
 2.  (Extra practice) Make a scatterplot to explore the relation between age and BDG at baseline, with different species identified by different shapes.
 
-*Exercise 3.*
+### Exercise 3
 
-Run the chunk below which joins data from `meds` and `lab`.
+Run the chunk below which joins data from `antifn` and `lab`.
 
 1.  Do you notice anything odd?
 2.  Why do you think this happened?
 
 ```{r}
-left_join(lab, meds, by = "id")
+left_join(lab, antifn, by = "id")
 ```
 
 ------------------------------------------------------------------------
@@ -186,21 +181,26 @@ At the bare minimum, we need to specify which columns need to be reshaped.
 I also recommend using the arguments `names_to =` and `values_to` to rename the two new columns that will contain the old column names and the old values (if you don't, they will get the nondescript default names: "name" and "value")
 
 ```{r}
-lab |> pivot_longer(cols = starts_with("bdg"),
-                    names_to = "hours",
-                    values_to = "bdg")
+lab |>
+  pivot_longer(
+    cols = starts_with("bdg"),
+    names_to = "hours",
+    values_to = "bdg"
+    )
 ```
 
 NB: this has the side effect of duplicating IDs and species! It's an unavoidable evil, but you need to be aware of it.
 
-In order to turn the `hours` column into a numeric class we need to first remove the now unneeded "bdg_" prefix - we can do this by adding a `names_prefix =` argument:
+In order to turn the `hours` column into a numeric class we need to first remove the now unneeded "bdg\_" prefix - we can do this by adding a `names_prefix =` argument:
 
 ```{r}
 lab_long <- lab |>
-  pivot_longer(starts_with("bdg"),
-               names_to = "hours",
-               names_prefix = "bdg_",
-               values_to = "bdg") |>
+  pivot_longer(
+    starts_with("bdg"),
+    names_to = "hours",
+    names_prefix = "bdg_",
+    values_to = "bdg"
+    ) |>
   mutate(hours = as.numeric(hours))
 
 lab_long
@@ -219,24 +219,11 @@ lab_long |>
 Let's now look at a WHO dataset of new cases of tuberculosis among young women in South American countries in 2010.
 
 ```{r}
-# Just run this chunk to generate the data
-# No need to understand this code if you're short in time
-
-s_america <- tibble(
-  country = c("Brazil", "Colombia", "Bolivia (Plurinational State of)",
-              "Argentina", "Venezuela (Bolivarian Republic of)", "Uruguay",
-              "Paraguay", "Ecuador", "Peru", "Suriname", "Guyana", "Chile"),
-  popul = c(216182201, 52571220, 12039798, 46148799, 27360459,
-            3501838, 7335451, 18331909, 34234477, 598919, 794910, 19682578))
-
-tb_amer <- tidyr::who |>
-  filter(year == 2010, country %in% s_america$country) |> 
-  select(country, pulmonary = new_sp_f2534, extrapulm = new_ep_f2534)
-
+tb_amer <- read_csv("data/raw/tb_amer.csv")
 tb_amer
 ```
 
-*Exercise 4.*
+### Exercise 4
 
 1.  Try making a bar chart to compare the total new cases of tuberculosis across countries. Each bar should be split in two different colours to indicate whether cases are pulmonary or extra-pulmonary TB.
 2.  What issue are you facing, and how can you fix it?
@@ -252,7 +239,7 @@ ggplot(tb_amer, aes( # complete here
 
 ------------------------------------------------------------------------
 
-### Complex `pivot_longer`
+### Complex `pivot_longer()`
 
 Some datasets are more complex. For example, there can be many variables that are repeated in multiple columns, like in this case, timing, CFU count and PCR result in samples A-C.
 
@@ -264,9 +251,11 @@ Reshaping this to a long format is more complex; we need to use other arguments 
 
 ```{r}
 cfupcr |> 
-  pivot_longer(!id,
-               names_to = c(".value", "sample"),
-               names_sep = "_")
+  pivot_longer(
+    !id,
+    names_to = c(".value", "sample"),
+    names_sep = "_"
+    )
 ```
 
 To learn more about complex joins, please see the Resources section further below.
@@ -277,13 +266,13 @@ To learn more about complex joins, please see the Resources section further belo
 
 Sometimes it might be helpful to go the other way - turn a long dataset wider, i.e., turning rows into columns. For example, to facilitate calculating new columns, or to increase readability.
 
-Let's look at the `meds` dataframe, which contains information on days of each antifungal in long format.
+Let's look at the `antifn` dataframe, which contains information on days of each antifungal in long format.
 
 ```{r}
-meds
+antifn
 ```
 
-The function `pivot_wider()` from `dplyr` can do this.
+The function `pivot_wider()` from `tidyr` can do this.
 
 We need to specify the following arguments:
 
@@ -292,59 +281,59 @@ We need to specify the following arguments:
 3.  Which column contains the values that will be sorted in each new column
 
 ```{r}
-meds |>
-  pivot_wider(id_cols = !key,
-              names_from = "antifungal",
-              values_from = "days")
-
+antifn |>
+  pivot_wider(
+    id_cols = !key,
+    names_from = "antifungal",
+    values_from = "days"
+    )
 ```
 
 Now let's look at another subset of the WHO tuberculosis data. This time we're comparing new pulmonary TB cases among 35-44yo men in three European countries from 1995 to 2010.
 
 ```{r}
 tb_eur <-  tidyr::who |> 
-  filter(!is.na(new_sp_m3544), iso3 %in% c("DEU", "FRA", "GBR", "ITA", "ESP"), year %in% seq(1995, 2010, 5)) |> 
+  filter(!is.na(new_sp_m3544) & iso3 %in% c("DEU", "FRA", "GBR", "ITA", "ESP") & year %in% seq(1995, 2010, 5)) |> 
   select(country = iso3, year, new_cases = new_sp_m3544)
  
 tb_eur
 ```
 
-*Exercise 5.*
+### Exercise 5
 
 1.  Reshape this dataset so that there is one column per year, containing the new number of cases in that country in that year.
 2.  Change the name of the columns so that the numbers they contain are clear.
-
 
 ------------------------------------------------------------------------
 
 ## More resources
 
 -   Joining data
-
-    -   Epi R Handbook, Chapter 14: [Joining data](https://epirhandbook.com/en/joining-data.html)
+    -   Epi R Handbook, Chapter 14: [Joining data](https://epirhandbook.com/new_pages/joining_matching.html)
     -   `dplyr` documentation, [Two-table verbs](https://dplyr.tidyverse.org/articles/two-table.html)
-    -   R for Data Science, Chapter 13: [Relational data](https://r4ds.had.co.nz/relational-data.html)
-
+    -   R for Data Science (2ed), Chapter 19: [Joins](https://r4ds.hadley.nz/joins.html)
 -   Reshaping data
-
-    -   Epi R Handbook, Chapter 12: [Pivoting data](https://epirhandbook.com/en/pivoting-data.html)
+    -   Epi R Handbook, Chapter 12: [Pivoting data](https://epirhandbook.com/new_pages/pivoting.html)
     -   `tidyr` documentation, [Pivoting vignette](https://tidyr.tidyverse.org/articles/pivot.html)
-    -   R for Data Science, Chapter 12: [Tidy data](https://r4ds.had.co.nz/tidy-data.html)
+    -   R for Data Science, Chapter 5: [Data tidying](https://r4ds.hadley.nz/data-tidy.html)
 
 ------------------------------------------------------------------------
 
 ## Solutions
 
-```{r ex1_solution}
+```{r}
+#| label: ex1_solution
 # Trial
 bind_rows(lab, site8)
 
 # Fix
-site8 |> rename(species = isolate) |> 
+site8 |>
+  rename(species = isolate) |> 
   bind_rows(lab)
 ```
 
-```{r ex2_solution}
+```{r}
+#| label: ex2_solution
 # Q1
 lab_demographics <- left_join(lab, demographics, by = "id")
 
@@ -354,23 +343,25 @@ lab_demographics |>
   geom_point()
 ```
 
-```{r ex3_solution}
+```{r}
+#| label: ex3_solution
 # Q1
 # `lab` contained 10 rows, but the new dataset has to 15 rows. Some IDs are now duplicated, and the same happened with values in the BDG columns.
 
 # Q2
-# This is because `meds` contained more than 1 row per participant, if that participant received more than 1 antifungal drug. 
+# This is because `antifn` contained more than 1 row per participant, if that participant received more than 1 antifungal drug. 
 ```
 
-```{r ex4_solution}
+```{r}
+#| label: ex4_solution
 # Q1
 ggplot(tb_amer, aes(y = country, x = pulmonary)) + 
   geom_bar(stat = "identity")
-# You can either plot pulmonary OR extrapulmonary cases, not both, because they're not in the same column
+# You can either plot pulmonary OR extra-pulmonary cases, not both, because they're not in the same column
 
 # Q2
 tb_amer |>
-  pivot_longer(-country, names_to = "site", values_to = "new_cases") |>
+  pivot_longer(!country, names_to = "site", values_to = "new_cases") |>
   ggplot(aes(y = country, x = new_cases, fill = site)) + 
   geom_bar(stat = "identity")
 
@@ -384,10 +375,15 @@ tb_amer |>
   geom_bar(stat = "identity")
 ```
 
-```{r ex5_solution}
-# Q1
-tb_eur |> pivot_wider(names_from = year,
-                      values_from = new_cases,
-                      # Q2
-                      names_prefix = "new_TB_35-44M_")
+```{r}
+#| label: ex5_solution
+
+tb_eur |>
+  # Q1
+  pivot_wider(
+    names_from = year,
+    values_from = new_cases,
+    # Q2
+    names_prefix = "new_TB_35-44M_"
+    )
 ```
