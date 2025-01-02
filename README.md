@@ -13,7 +13,7 @@ NB - I'm currently restructuring this.
 - **05. Data classes** (How R represents different variable types, including numerical, categorical, dates; vectors; lists; data.frames)
 - **06. Data subsets** (Sorting and filtering rows and selecting columns with `dplyr`)
 - **07. Data transformation** (Calculate new variables, categorise continuous variables, regroup a categorical variable)
-- **08. (currently: intro6) Data cleaning** (Deleting and renaming variables; data classes; factors; labelling and recoding values)
+- **08. Data cleaning** (Deleting and renaming variables; parsing data classes; labelling and recoding values)
 - **09. (currently: intro7) Data reshaping** (Joining datasets; wide and long formats; reshaping wide to long and vice versa)
 - **10. SQL** (to be created)
 - **11. Git** (to be created)
