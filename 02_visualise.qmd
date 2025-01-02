@@ -1,5 +1,5 @@
 ---
-title: "2: Visualising data"
+title: "02: Visualising data"
 subtitle: "Introduction to R for health data"
 author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 editor: visual
