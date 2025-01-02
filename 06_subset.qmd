@@ -1,7 +1,8 @@
 ---
-title: "4: Subsetting data"
+title: "06: Subsetting data"
 subtitle: "Introduction to R for health data"
 author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
+editor: visual
 ---
 
 ------------------------------------------------------------------------
@@ -16,11 +17,10 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 
 ------------------------------------------------------------------------
 
-# Recap from topic 04_summarise
+# Recap from topic 05_structures
 
-1.  Insert a new chunk below.
-2.  Import `amr_klebsiella.csv`, contained in the `/data/raw` folder.
-3.  Cross-tabulate age group against antimicrobial susceptibility.
+1. Create a vector with the following values: 1.2 9.3 0.6
+2. Create a data frame with the following columns: id (1, 2, 3, 4, 5), initials (BN, NX, ED, ST, VN).
 
 ------------------------------------------------------------------------
 

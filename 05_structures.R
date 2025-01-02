@@ -1,4 +1,13 @@
-# Started moving stuff here from other sessions
+
+# DRAFT
+# title: "04: Summarising data"
+# subtitle: "Introduction to R for health data"
+# author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
+
+# Recap from topic 04_summarise  ---------------------------------------------------------------------------------------
+
+# 1.  Import `amr_klebsiella.csv`, contained in the `/data/raw` folder.
+# 2.  Cross-tabulate age group against antimicrobial susceptibility.
 
 # Data classes ---------------------------------------------------------------------------------------------------------
 
@@ -43,7 +52,11 @@ log(c(100, 5))
 log(100, 5)
 
 # Objects in a vector can have names:
-c("age" = 19, "height" = 185, "systolic_BP" = 132)
+c(
+  "age" = 19,
+  "height" = 185,
+  "systolic_BP" = 132
+  )
 
 
 # Lists ----------------------------------------------------------------------------------------------------------------
