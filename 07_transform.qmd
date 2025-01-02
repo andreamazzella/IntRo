@@ -2,7 +2,6 @@
 title: "07: Transforming data"
 subtitle: "Introduction to R for health data"
 author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
-editor: visual
 ---
 
 ------------------------------------------------------------------------
@@ -13,7 +12,7 @@ editor: visual
     -   calculate new variables
     -   categorise continuous variables
     -   combine levels of a categorical variable
-        -   create a dummy variable
+    -   create a dummy variable
     -   combine values of two categorical variables
 
 ------------------------------------------------------------------------
@@ -35,8 +34,6 @@ dm <- read_rds("data/processing/diabetes.rds")
 ```
 
 ------------------------------------------------------------------------
-
-
 
 # Data transformation
 
@@ -76,7 +73,7 @@ dm <- dm |>
   mutate(height_m = height / 100)
 ```
 
-Remember that when you assign something, you can't see any output.  If you want to check whether it worked, you can have a look at the dataset. 
+Remember that when you assign something, you can't see any output. If you want to check whether it worked, you can have a look at the dataset.
 
 Whenever you calculate a new variable, I recommend having a quick sanity check to make sure that it did what you intended.
 
@@ -88,15 +85,14 @@ dm |>
 
 ### Exercise 1
 
-1. Convert weight into pounds (1 kg = 2.20462 lbs)
-2. Create a new data frame that contains this column.
+1.  Convert weight into pounds (1 kg = 2.20462 lbs)
+2.  Create a new data frame that contains this column.
 
 (Note: unlike Stata, if you make a mistake and you need to recalculate the variable, you don't need to drop the old one first. When you assign it again, R will overwrite the old variable.)
 
 ```{r}
 
 ```
-
 
 ------------------------------------------------------------------------
 
@@ -128,7 +124,7 @@ dm_bmi |>
 
 By default `cut()`:
 
--   creates a left-open and right-closed interval, i.e., (25,30] excludes 25 and includes 30.
+-   creates a left-open and right-closed interval, i.e., `(25,30]` excludes 25 and includes 30.
 -   creates labels in mathematical notation.
 
 We can add custom labels to each group by adding the argument `labels =`. NB: labels should have 1 fewer element than `breaks =`.
@@ -155,9 +151,9 @@ dm_bmi |>
 
 NB: categorising continuous variables, and especially dichotomising them, is potentially highly problematic - see this paper: Turner E, Dobson J & Pocock S. (2010). [Categorisation of continuous risk factors in epidemiological publications: A survey of current practice](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2972292/).
 
-### Exercise 3
+### Exercise 2
 
-Categorise age into groups.
+Categorise weekly exercise into groups of your choosing.
 
 ```{r}
 
@@ -248,12 +244,12 @@ dm |>
 
 NB: do *not* use the `%in%` shortcut in these circumstances, otherwise missing values will be incorrectly recoded as FALSE!
 
-### Exercise 4
+### Exercise 3
 
 Pick one:
 
--  Create a new variable with three levels: eats meat, eats fish, doesn't eat either, using `diet` as reference.
--  Create a new binary variable that indicates whether a patient is inactive, using `exercise` as reference.
+-   A: Create a new variable with three levels: eats meat, eats fish, doesn't eat either, using `diet` as reference.
+-   B: Create a new binary variable that indicates whether a patient is inactive, using `exercise` as reference.
 
 ```{r}
 
@@ -292,18 +288,14 @@ dm |> count(disability, exercise, frailty)
 
 ------------------------------------------------------------------------
 
+### Exercise 4
 
-
-### Exercise 5
-
-1. Import the `bristol.rds` dataset.
-2. Explore the data.
-3. Categorise the type of stool in the Bristol scale into three levels: "constipation" (type 1-2), "normal" (type 3-5), "diarrhoea" (type 6-7).
-4. Save a copy as `bristol_v2.rds`.
+1.  Import the `bristol.rds` dataset.
+2.  Explore the data.
+3.  Categorise the type of stool in the Bristol scale into three levels: "constipation" (type 1-2), "normal" (type 3-5), "diarrhoea" (type 6-7).
+4.  Save a copy as `bristol_v2.rds`.
 
 ```{r}
-#| label: recap
- 
 # Import
 
 
@@ -323,70 +315,62 @@ dm |> count(disability, exercise, frailty)
 # Solutions
 
 ```{r}
-#| label: solution_recap
-theoph <- datasets::Theoph
-theoph |>
-  filter(Subject == 11 & conc > 7.5)
-```
-
-```{r}
-#| label: solution_new_variable
+#| label: solution_1
 dm_imperial <- dm |>
   mutate(pounds = weight * 2.20462)
 ```
 
 ```{r}
-#| label: solution_histogram 
-dm |>
-  ggplot(aes(age, fill = gender)) +
-  geom_histogram(bins = 20)
-summary(dm$age)
-```
-
-```{r}
-#| label: solution_categorise
+#| label: solution_2
 # Summarise age
-summary(dm$age)
+dm |>
+  ggplot(aes(exercise_weekly)) +
+  geom_histogram()
 
 # Categorise
 dm <- dm |>
-  mutate(age_grp = cut(
-    age,
-    breaks = c(16, 18, 30, 60, 81),
-    labels = c("underage", "young adult", "adult", "older adult"),
+  mutate(exercise_grp = cut(
+    exercise_weekly,
+    breaks = c(0, 1, seq(30, 120, by = 30), 240),
+    labels = c("0 min", "20-29 min", "30-59 min", "1-1.4 h", "1.5-1.9 h", "2 h or more"),
     right = FALSE)
     )
 
 # Sanity check
 dm |>
-  summarise(min(age),
-            max(age),
+  summarise(min(exercise_weekly),
+            max(exercise_weekly),
             n(),
-            .by = age_grp)
+            .by = exercise_grp) |>
+  arrange(exercise_grp)
 ```
 
 ```{r}
-#| label: solution_group_levels
+#| label: solution_3
+
+# Check the levels of the existing variables
 dm |>
   count(diet)
-
 dm |>
   count(exercise)
 
 dm <- dm |>
   mutate(
+    # Option A
     diet_new = fct_collapse(diet, no_meat = c("vegan", "vegetar")),
+    # Option B
     inactive = exercise == "none")
+
+# Check the recoding worked
+dm |>
+  count(diet, diet_new)
 
 dm |>
   count(exercise, inactive)
-
-dm |>
-  count(diet, diet_new)
 ```
 
 ```{r}
-#| label: solution_recap
+#| label: solution_4
 # Import
 bristol <- read_rds("data/bristol.rds")
 
