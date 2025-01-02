@@ -174,11 +174,18 @@ sample_months_factor <-
 # If we sort the vector, it will now sort correctly.
 sort(sample_months_factor)
 
+# In the background, factors have "levels" indicated by integers (1, 2, 3...) and corresponding "labels" which contain text.
+as.numeric(sample_months_factor)
+
 # You can use modify the order of levels in a factor with `forcats::fct_relevel()` to reorder bars or legend items in a ggplot.
 
 ## Dates ------------------------------------------------------------------------------------
 
-# Dates are more complicated that one initially thinks as they are affected by leap years and other variables.
+# Dates and times are not as straightforward as we might initially think; think about
+# leap years, time zones, daylight saving times, how Americans write dates, etc.
+# In R, dates are:
+# -   conceptualised as number of days passed since the 1st of January 1970.
+# -   shown in YYYY-MM-DD format, e.g., 1970-01-01.
 
 # Package `lubridate` (part of the core `tidyverse`) helps working with dates.
 library(lubridate)
@@ -263,6 +270,9 @@ dat |>
 tribble(~id, ~initials,
         1001, "NG",
         1002, "PT")
+
+# You can check the classes of all variables in a dataset with `glimpse()`, from `dplyr`:
+glimpse(dat)
 
 # Learn more ------------------------------------------------------------------------------------------------------------
 
