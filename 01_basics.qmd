@@ -7,7 +7,7 @@ editor: visual
 
 ------------------------------------------------------------------------
 
-# What you will learn
+# Content
 
 -   The RStudio interface
 -   Using the console

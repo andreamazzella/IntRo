@@ -2,7 +2,7 @@
 # subtitle: "Introduction to R for health data"
 # author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 
-# Content
+# Content  -------------------------------------------------------------------------------------------------------------
 # - Data classes
 #   - Logical
 #   - Numeric

@@ -7,7 +7,7 @@ editor: visual
 
 ------------------------------------------------------------------------
 
-# What you will learn
+# Content
 
 -   Summarising data with `dplyr` and `janitor`
     -   Categorical variables

@@ -6,7 +6,7 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 
 ------------------------------------------------------------------------
 
-# What you will learn
+# Content
 
 -   Data cleaning
     -   What is dirty data?

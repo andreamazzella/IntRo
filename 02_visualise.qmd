@@ -7,7 +7,7 @@ editor: visual
 
 ------------------------------------------------------------------------
 
-## What you will learn
+## Content
 
 -   Visualising data with `ggplot2`
     -   Bar charts
@@ -198,7 +198,7 @@ We often use line charts to show time series data: time is on the x-axis and a n
 
 The simplest line chart has a single line, and is equivalent to a bar chart.
 
-I recommend you have your time variable in a numerical data class - such as integers, dates, `zoo::yearmon`, `zoo::yearqtr`, rather than in character or factor format (like "2021/22", or "Apr-Jun 2024" for example). This makes plotting easier, especially when deciding which labels to show.
+I recommend you have your time variable in a numerical data class - such as integers (e.g. 2024), dates, `zoo::yearmon`, `zoo::yearqtr`, rather than in character or factor format (like "2021/22", or "Apr-Jun 2024" for example). This makes plotting easier, especially when deciding which labels to show.
 
 ```{r}
 amr_tb <- read_csv("data/raw/amr_tb.csv")

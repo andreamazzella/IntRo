@@ -1,6 +1,7 @@
 ---
-title: "Recommended workflows"
-format: html
+title: "13: Recommended workflows"
+subtitle: "Introduction to R for health data"
+author: Simon Thelwall [(GitHub)](https://github.com/simonthelwall)
 editor: visual
 ---
 
@@ -14,9 +15,9 @@ What follows are not demands, but strong recommendations. They won't all be appr
 
 ## Principles
 
--   Raw data and data sets with PII should be stored on a network folder where it is appropriate to store such data
+-   Raw data and data sets with patient-identifiable information should be stored on a network folder where it is appropriate to store such data
 
--   Outputs should be placed in a location where team members can access them (i.e. not in a personal folder or a laptop C: drive)
+-   Outputs should be placed in a location where team members can access them (i.e., not in a personal folder or a laptop C: drive)
 
 -   Look-up tables should be stored with your code and be tracked with git so that changes and the reasons for those changes can be tracked
 
@@ -26,9 +27,9 @@ Git does not like network folders and runs exceedingly slowly. So, I recommend s
 
 ## Using RStudio projects
 
-RStudio has the capacity to work in 'projects'. A similar capacity has now been added to Stata. These collect scripts, working directories and work history into one place. This makes it easier to switch between different work contexts, for example, one might wish to spend a couple of hours working on a *C. difficile* analysis, before switching to the analysis of BSI caused by *C. auris.*
+RStudio has the capacity to work in 'projects'. A similar capacity has now been added to Stata. These collect scripts, working directories and work history into one place. This makes it easier to switch between different work contexts, for example, one might wish to spend a couple of hours working on a *C. difficile* analysis, before switching to the analysis of *C. auris* bloodstream infection.
 
-To get started go to file -\> new project, then choose or create a folder to store your code.
+To get started go to `File` → `New Project...`, then choose or create a folder to store your code.
 
 Recently accessed projects can be accessed from the drop down menu in the top right corner of the RStudio window.
 
@@ -36,33 +37,37 @@ Recently accessed projects can be accessed from the drop down menu in the top ri
 
 Once you've got the project set up on RStudio and version control running with git, organising your files into folders makes a lot of sense.
 
+For example:
+
 ```         
 |
 | - scripts
 | - luts   (store look-up tables here)
 | - functions
 | - sql    (store sql scripts for data extraction here)
-| - misc   (store references, supporting docs, etc. Add this folder and contents to             the .gitignore file)
+| - misc   (store references, supporting docs, etc. Add this folder and contents to the .gitignore file)
 | - readme.md (add a readme, tell others what this project is about, how to run the analysis)
 ```
 
-### Filenaming conventions
+### File naming conventions
 
-**Scripts**: number in order in which they should be run to complete a task or analysis and provide a description of their purpose, e.g.
+**Scripts**. Analyses should be split into different scripts to do discrete pieces of work. Number in order in which they should be run to complete a task or analysis and provide a description of their purpose. For example, for a routine surveillance report:
 
 -   01_setup.R
 
 -   02_load_data_and_clean.R
 
--   03\_...
+-   03_produce_denominators.R
 
-Analyses should be split into different scripts to do discrete pieces of work. For a routine output it might make sense to have scripts split something like: 01_set_up.R, 02_load_data_and_clean.R, 03_produce_denominators.R, 04_produce_numerators.R, etc
+-   04_produce_numerators.R
+
+-   05_calculate_rates.R
 
 The loading of libraries, common data (e.g look-up tables), setting of paths, should all take place in the 01_setup.R file.
 
 **Functions**: Functions should be stored outside analytic scripts. Good practice is to run tests on synthetic data to ensure that you get the expected output. Better practice is building those synthetic data into the function file and having good documentation. Best practice is automated unit testing with [testthat](https://testthat.r-lib.org/) and [roxygen](https://roxygen2.r-lib.org/) documentation.
 
-Filenames could be the same as the function name, this makes it easier to find the code for a function when there is a problem.
+File names could be the same as the function name, this makes it easier to find the code for a function when there is a problem.
 
 Load functions at the start of an analysis by doing
 
@@ -76,7 +81,7 @@ or, source a list of files in your first script by:
 function_files <- list.files(path = glue("./functions"), pattern = "\.R$")
 function_files <- glue("{code_path}/functions/{function_files}")
 function_files # show the files in this object
-lapply(function_files, source) # applies the function 'source' over the list of            'function_files'
+lapply(function_files, source) # applies the function 'source' over the list of 'function_files'
 rm(function_files) # keep your workspace tidy
 ```
 

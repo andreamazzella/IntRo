@@ -7,7 +7,7 @@ editor: visual
 
 ------------------------------------------------------------------------
 
-# What you will learn
+# Content
 
 -   Sorting rows
 -   Filtering rows
@@ -126,7 +126,7 @@ msleep |>
   filter(is.na(sleep_cycle))
 ```
 
-To remove rows with missing data in a given variable, you can also use `short_na(x)` (from package `tidyr`) as shorthand:
+To remove rows with missing data in a given variable, you can also use `drop_na(x)` (from package `tidyr`) as shorthand:
 
 ```{r}
 msleep |>
