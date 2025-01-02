@@ -1,5 +1,5 @@
 ---
-title: "6: Cleaning data"
+title: "08: Cleaning data"
 subtitle: "Introduction to R for health data"
 author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 ---
@@ -12,14 +12,14 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
     -   What is dirty data?
     -   Rename variables
     -   Delete variables
-    -   Data classes
-        -   Label categorical values
+    -   Parsing data classes
+    -   Label categorical values
 -   Identify errors and change values
--   Relevel categories
+-   Re-level categories
 
 ------------------------------------------------------------------------
 
-# Recap from topic 5
+# Recap from topic 07_transform
 
 Using dataset `trial`, create a new categorical variable that indicates if that patient's `marker` was <0.5, between 0.5 and 1, or ≥1 ng/mL.
 
@@ -34,6 +34,7 @@ trial <- gtsummary::trial
 ------------------------------------------------------------------------
 
 ```{r}
+library(readxl)
 library(janitor)
 library(tidyverse)
 ```
@@ -51,12 +52,12 @@ Ian thought it was a good idea for the data collection to be done in Excel, and 
 Let's import this dataset, aptly named `S-Fall for analysis new final FINAL.xlsx`.
 
 ```{r}
-falls <- readxl::read_excel("data/S-Fall for analysis new final FINAL.xlsx")
+falls <- read_excel("data/raw/S-Fall for analysis new final FINAL.xlsx")
 
 falls
 ```
 
-*Exercise 1.*
+### Exercise 1
 
 1.  Can you spot at least 5 issues with this dataset?
 2.  Open the spreadsheet in Excel. What do you notice?
@@ -70,12 +71,14 @@ falls
 
 # Data cleaning
 
-In its current state, the dataset is unusable. We'll now work on "cleaning" this new dataset, to make it more useful.
+In its current state, the data frame is unusable. We'll now work on cleaning it to make it easier to work with.
 
 Some changes can already be done during data import - for example, we can tell R to skip the first rows that don't actually contain the column names.
 
+NB: you need to close the file in Excel to re-import it into R.
+
 ```{r}
-falls_v2 <- readxl::read_excel("data/S-Fall for analysis new final FINAL.xlsx", skip = 3)
+falls_v2 <- read_excel("data/raw/S-Fall for analysis new final FINAL.xlsx", skip = 3)
 
 head(falls_v2)
 ```
@@ -86,16 +89,23 @@ head(falls_v2)
 
 Some variables have unclear, long or upper-case names.
 
-*Exercise 2.* Use a function to count how many patients were previously admitted to a Mental Health hospital. What do you notice?
+------------------------------------------------------------------------
+
+### Exercise 2
+
+Use a function to count how many patients were previously admitted to a Mental Health hospital. What do you notice?
 
 
-
+------------------------------------------------------------------------
 
 Let's rename them so they're easier to understand, or to type.
 
 A helpful function to give a first scrub to all variable names at once is `clean_names()` from package `janitor`.
 
-*Exercise 3.* What differences do you notice?
+### Exercise 3
+
+What differences do you notice between the original and cleaned names?
+
 ```{r}
 falls_renamed <- clean_names(falls_v2)
 
@@ -103,10 +113,9 @@ data.frame(old_vrb_names = names(falls_v2),
            new_vrb_names = names(falls_renamed))
 ```
 
+Now we can make some custom changes to variable names, for example to shorten them.
 
-
-
-Now we can make custom changes to variable names. We can use `rename()` from `dplyr`. Note that the pattern is `newname = oldname`
+We can use `rename()` from `dplyr`. Note that the pattern is `newname = oldname`
 
 ```{r}
 falls_renamed_2 <- falls_renamed |>
@@ -125,7 +134,7 @@ falls_renamed_2 <- falls_renamed |>
 head(falls_renamed_2)
 ```
 
-*Exercise 4.*
+### Exercise 4
 
 Rename variable `duration_of_analgesia` to a name of your choice.
 
@@ -139,13 +148,15 @@ Rename variable `duration_of_analgesia` to a name of your choice.
 It looks like some variables don't contain any data - they didn't even have a name:
 
 ```{r}
-falls_renamed_2 |> select(starts_with("x"))
+falls_renamed_2 |>
+  select(starts_with("x"))
 ```
 
-Let's remove these empty variables from the dataset - as we did in topic 4.
+Let's remove these empty variables from the dataset - as we did in topic 06_subset.
 
 ```{r}
-falls_trimmed <- falls_renamed_2 |> select(!starts_with("x"))
+falls_trimmed <- falls_renamed_2 |>
+  select(!starts_with("x"))
 ```
 
 ------------------------------------------------------------------------
@@ -158,98 +169,68 @@ It looks like:
 2.  five rows at the end contain a separate table.
 
 ```{r}
-tail(falls_trimmed, n = 12)
+falls_trimmed |>
+  tail(n = 12)
 ```
 
 We need to remove all these rows. Before reading the chunk below, can you remember what function we can use to conditionally keep rows?
 
 ```{r}
-falls_condensed <- falls_trimmed |> filter(!is.na(id))
+falls_condensed <- falls_trimmed |>
+  filter(!is.na(id))
 ```
 
 ------------------------------------------------------------------------
 
 ## Sorting rows by a column
 
-NB - already shown in 0x_subset.
-
-Function `arrange()` from `dplyr` lets you sort the dataframe by the order of values in a column.
+Remember from topic 06_subset that you can use `arrange()` from `dplyr` to sort the dataframe by the order of values in a column.
 
 ```{r}
-falls_condensed |> arrange(age)
-```
-
-`arrange(desc())` lets you arrange in descending order.
-
-```{r}
-falls_condensed |> arrange(desc(age))
+falls_condensed |>
+  arrange(age)
 ```
 
 ------------------------------------------------------------------------
 
-## Data classes
+## Parsing data classes
 
-One of the main reasons for so many problems with the new dataset is that its *data classes* are not specified.
+One of the main reasons for so many problems with the new dataset is that its *data classes* are not specified. You might remember from topic 05_classes that R uses different classes for different variable types, for example numeric, factor (for categorical variables), Date, logical etc. However,Excel or `.csv` files do not hold this information. Certain R functions are designed to work with only specific data classes.
 
-We know that some variables are categorical, some are ordered, some are quantitative, but Excel or `.csv` files do not hold this information. Certain R functions are designed to work with only specific data classes.
-
-R data classes that are relevant to health data analysis are:
-
--   **numeric**
-    -   **integer** (a subset of the numeric class)
--   date variables
-    -   **date** and **datetime**
-    -   *POSIX*, with reference to time-zones
--   **character** (free text)
--   **factor** (categorical variable)
--   **logical** (possible values: `TRUE`, `FALSE`, `NA`)
--   For time series data, it can be useful to use package zoo's "yearmon" and "yearqtr" classes.
-
-To check which class an object (or a variable) is, you use `class()`:
+Remember we can use `class()` to check which class an object is:
 
 ```{r}
-class(3.2)
-class("Ménière's disease")
 class(falls_condensed$age)
-class(falls_condensed$date_admit)
+class(falls_condensed$fall)
 ```
 
-You can check the classes of all variables in a dataset with `glimpse()`, from `dplyr`:
+And that you can check the classes of all variables in a dataset with `glimpse()`, from `dplyr`:
 ```{r}
 glimpse(falls_condensed)
 ```
 
+Importing functions will guess which class each variable is, but in some cases we will need to give detailed instructions to R.
 
-So, after we import a raw dataset, we need to tell R which classes the variables actually are ("parsing" columns).
+To do this, we can specify column types when importing the data, or we can use "parsing" functions after importing:
+- for numerical variables: `readr::parse_integer()`, `readr::parse_double()` or `as.numeric()`
+- for dates: `lubridate::ymd()`, `lubridate::dmy()`, `readr::parse_date()` or `as.Date`
+- for factors: `forcats::fct`, `readr::parse_factor` or `as.factor()`
 
-To do this, we using parsing functions, such as `as.character()`, `as.numeric()`, `as.Date`, `as.factor()`.
+### Exercise 5
 
-------------------------------------------------------------------------
-
-### Factors
-
-Categorical variables are stored as factors. Factors have "levels" indicated by integers (1, 2, 3...) and corresponding "labels" which contain text. For example, in a "outcome" variable, level 1 can represent "alive", level 2 can represent "dead".
-
-Function `as.factor()` changes the class from character into factor.
+1. Use `summary()` on column `ward`.
+2. Change column `ward`'s class from character to factor.
+3. Note that once the data class matches the actual data type, `summary()` gives a much more useful output.
 
 ```{r}
-# Check class before
-class(falls_condensed$ward)
-summary(falls_condensed$ward)
 
-# Change class
-falls_c1 <- falls_condensed |> mutate(ward = as.factor(ward))
-
-# Check class after
-class(falls_c1$ward)
-summary(falls_c1$ward)
 ```
 
-Note that once the data class matches the actual data type, `summary()` gives a much more useful output.
+
 
 ------------------------------------------------------------------------
 
-### Value labels
+## Value labels
 
 It looks like some variables contain integers, but they are actually categorical, and should be factors.
 
@@ -262,16 +243,19 @@ If you look at the rudimentary codebook in the original Excel spreadsheet, you c
 ```{r}
 # Change to categorical and label values
 falls_c2 <- falls_c1 |> 
-  mutate(mood_disorder = factor(mood_disorder,
-                                levels = c(0, 1, 2),
-                                labels = c("no", "depressive", "bipolar")
-                                ))
+  mutate(
+    mood_disorder = factor(
+      mood_disorder,
+      levels = c(0, 1, 2),
+      labels = c("no", "depressive", "bipolar")
+      )
+    )
 
 # Sanity check
 falls_c2 |> count(mood_disorder)
 ```
 
-*Exercise 5.*
+### Exercise 6
 
 Now do the same with variable `dementia` (0: no, 1: yes, N/A: missing value). Note that any levels that you don't label will be converted into a missing value.
 
@@ -280,20 +264,11 @@ Now do the same with variable `dementia` (0: no, 1: yes, N/A: missing value). No
 
 ------------------------------------------------------------------------
 
-### Dates
-
-Dates and times are not as straightforward as we might initially think: think about leap years, time zones, daylight saving times, how Americans write dates, etc.
-
-In R, dates:
-
--   are conceptualised as number of days passed since the 1st of January 1970.
--   are presented in YYYY-MM-DD format, e.g., 1970-01-01.
+## Cleaning dates
 
 Some data import functions automatically understand if something is a date; others will keep it as a character column and you would then need to change them to dates.
 
-Let's check what `import()` did to our variable containing dates of admission:
-
-usually imported as character strings; we need to tell R they're, in fact, dates. Remember function `dmy()` from package `lubridate`? It transforms dates stored in any day-month-year format into the correct date class.
+Let's check what `read_excel()` did to our variable containing dates of admission:
 
 ```{r}
 # Before
@@ -301,7 +276,7 @@ summary(falls_c2$date_admit)
 class(falls_c2$date_admit)
 ```
 
-It was read as a date-time POSIX - taking time-zones into account. We don't really need this level of precision for this, so we can change it to a simple date.
+It was read as a date-time (POSIXct). We don't really need this level of precision for this, so we can change it to a simple date.
 
 ```{r}
 falls_c3 <- falls_c2 |> mutate(date_admit = as.Date(date_admit))
@@ -310,7 +285,7 @@ falls_c3 <- falls_c2 |> mutate(date_admit = as.Date(date_admit))
 summary(falls_c3$date_admit)
 ```
 
-If you instead had a date variable read as character, you can use `lubridate`'s delicious functions to fix this. As long as all the dates follow the same order, for example, day-month-year, one simple function such as `dmy()` will guess most dates correctly:
+If you instead had a date variable read as character, remember that you can use `lubridate`'s helper functions to fix this. As long as all the dates follow the same order, for example, day-month-year, one simple function such as `dmy()` will guess most dates correctly:
 
 ```{r}
 data.frame(date_birth = c("2/2/87", "3 Jan 1951", "12-08-47")) |> 
@@ -324,7 +299,7 @@ data.frame(excel_dates = c(42455, 42875, 41578)) |>
   mutate(dates_cleaned = excel_numeric_to_date(excel_dates))
 ```
 
-*Exercise 6*.
+### Exercise 7
 
 1.  Check the data class of the variable identifying the start of sedative medications.
 2.  Change its data class to date.
@@ -338,7 +313,7 @@ data.frame(excel_dates = c(42455, 42875, 41578)) |>
 
 Whilst exploring a dataset, you might notice that some values are incorrect. This could be because:
 
--   Data entry was inconsistent, e.g. spelling mistakes, upper and lowercase, or occasional use of abbreviations
+-   Data entry was inconsistent, e.g. spelling mistakes, upper- and lower-case, or occasional use of abbreviations
 -   The wrong numerical value was entered, e.g., different unit, or an extra digit was added by mistake, or a transposition error (1936 instead of 1963)
 -   A value was entered in the wrong column
 
@@ -354,7 +329,7 @@ falls_c3 |> count(gender)
 
 Not ideal.
 
-We can change everything to lower-case using `str_to_lower()`, and then use `case_match()` to fix the remaining inconsistencies. We finally use `as_factor()` to convert this character variable into a categorical variable.
+We can change everything to lower-case using `str_to_lower()`, and then use `case_match()` to fix the remaining inconsistencies. We finally use `as_factor()` to convert this character variable into a categorical variable. (Alternatively, you could use `forcats::fct_collapse()` as shown in topic 07_transofrm)
 
 Of note, in `case_match`:
 
@@ -375,7 +350,7 @@ falls_r1 <- falls_c3 |>
 falls_r1 |> count(gender_new, gender)
 ```
 
-*Exercise 7.*
+### Exercise 8
 
 1.  Check the current categories of the variable on hospital-based cognitive-behavioural therapy.
 2.  Fix any easy inconsistencies.
@@ -403,7 +378,9 @@ falls_r1 |> filter(age > 100) |> select(id, gender, age)
 
 Imagine Ian has checked and confirmed that ID 209 was indeed 103 years old, but ID 540 was 'only' 105.
 
-*Exercise 8* Let's correct this value.
+### Exercise 9
+
+Let's correct this value. Remember to add a comment to explain why you're editing a value.
 
 
 
@@ -427,7 +404,7 @@ falls_r2 |> ggplot(aes(outcome)) + geom_bar()
 
 ------------------------------------------------------------------------
 
-*Challenge exercise*
+### Challenge exercise
 
 1.  Import the `bristol.csv` dataset and briefly explore it.
 2.  Change the data classes to the correct ones.
@@ -453,7 +430,7 @@ falls_r2 |> ggplot(aes(outcome)) + geom_bar()
 
 ```
 
-*Extra practice.*
+### Extra practice
 
 The falls dataset is still not clean - many more variables need checking and fixing...
 
@@ -461,25 +438,11 @@ The falls dataset is still not clean - many more variables need checking and fix
 
 ## More resources
 
--   R for Data Science, [Chapter 11: Data import](https://r4ds.had.co.nz/data-import.html)
--   Epi R Handbook, [Chapter 8: Cleaning data](https://www.epirhandbook.com/en/cleaning-data-and-core-functions.html)
+-   Epi R Handbook, [Chapter 8: Cleaning data](https://epirhandbook.com/new_pages/cleaning.html)
 
 ------------------------------------------------------------------------
 
 ## Solutions
-
-```{r}
-#| label: ex0_solution
-# Create variable
-trial_new <- trial |>
-  mutate(marker_group = cut(marker,
-                            breaks = c(0, 0.5, 1, 4),
-                            labels = c("<0.5", "0.5-1", "≥1")))
-
-# Sense check
-trial_new |> group_by(marker_group) |> 
-  summarise(min(marker), max(marker))
-```
 
 ```{r }
 #| label: ex1_solution
@@ -500,47 +463,75 @@ trial_new |> group_by(marker_group) |>
 
 ```{r }
 #| label: ex2_solution
-summary(falls_v2$`Was this patient admitted to a mental health hospital previously?`)
+count(falls_v2, `Was this patient admitted to a mental health hospital previously?`)
 ```
 
 ```{r }
 #| label: ex3_solution
-# `clean_names()` converted all upper-case letters to lower-case, it changed spaces into underscores, and it replaced triple dots with an `x`. This is a good start.
+# `clean_names()`:
+# 1. converted all upper-case letters to lower-case
+# 2. changed spaces into underscores
+# 3. replaced triple dots with an `x`
+# 4. removed symbols such as >
 ```
 
 ```{r }
 #| label: ex4_solution
-falls_renamed_2 |> rename(analgesia_duration = duration_of_analgesia)
+falls_renamed_2 |>
+  rename(analgesia_dur = duration_of_analgesia)
 ```
 
-```{r }
+```{r}
 #| label: ex5_solution
-falls_c2 |> mutate(dementia = factor(dementia, levels = c(0, 1), labels = c("no", "yes")))
+# Check class before
+class(falls_condensed$ward)
+summary(falls_condensed$ward)
+
+# Change class
+falls_c1 <- falls_condensed |> mutate(ward = fct(ward))
+
+# Check class after
+class(falls_c1$ward)
+summary(falls_c1$ward)
 ```
 
 ```{r }
 #| label: ex6_solution
-class(falls_c3$date_start_sedation)
-falls_c3 |> mutate(date_admit = as.Date(date_start_sedation))
+falls_c2 |>
+  mutate(dementia = factor(dementia, levels = c(0, 1), labels = c("no", "yes")))
 ```
 
 ```{r }
 #| label: ex7_solution
-falls_r1 |> count(hosp_cbt)
+class(falls_c3$date_start_sedation)
+falls_c3 |>
+mutate(date_admit = as.Date(date_start_sedation))
+```
 
-falls_r1 |> mutate(hosp_cbt = str_lower(hosp_cbt),
-                   hosp_cbt = case_match(hosp_cbt,
-                                         "declined" ~ "no",
-                                         c("ys", "only 1 session") ~ "yes",
-                                         .default = hosp_cbt) |> 
-                              as_factor())
+```{r }
+#| label: ex8_solution
+falls_r1 |>
+  count(hosp_cbt)
+
+falls_r1 |>
+  mutate(
+    hosp_cbt = str_to_lower(hosp_cbt),
+    hosp_cbt = case_match(
+      hosp_cbt,
+      "declined" ~ "no",
+      c("ys", "only 1 session") ~ "yes",
+      .default = hosp_cbt) |>
+        as_factor()
+    )
 
 # I would check with Ian if 1 session is enough to count as a yes
 ```
 
 ```{r}
-#| label: ex8_solution
-falls_r1 |> mutate(age = recode(age, `125` = 105))
+#| label: ex9_solution
+falls_r1 |>
+  # Confirmed with Ian - value was incorrectly entered as 125 (years)
+  mutate(age = if_else(id == 540, 105, age))
 ```
 
 ```{r}
@@ -564,8 +555,11 @@ bristol_cleaned <- bristol |>
   )
 
 # Age and sex Box plot
-bristol_cleaned |> ggplot(aes(age, sex)) + geom_boxplot()
+bristol_cleaned |>
+  ggplot(aes(age, sex)) +
+  geom_boxplot()
 
 # Export
-# bristol_cleaned |> haven::write_dta("data/bristol_cleaned.dta")
+# bristol_cleaned |>
+#  haven::write_dta("data/processed/bristol_cleaned.dta")
 ```
