@@ -13,7 +13,7 @@ editor: visual
 -   Using the console
 -   Using and creating scripts
     -   R scripts
-    -   Quarto Markdown documents
+    -   Quarto documents
 -   Assigning values
 -   Using functions
 -   Using packages
@@ -290,9 +290,13 @@ dplyr::glimpse(bacteraemias, width = 100)
 
 # Learning more
 
+-   This course
+    -   Topic 12_quarto
+    -   Topic 13_workflows
 -   R for Data Science (2e)
     -   [Workflow: basics](https://r4ds.hadley.nz/workflow-basics)
     -   [Workflow: scripts and projects](https://r4ds.hadley.nz/workflow-scripts)
+    -   [Quarto](https://r4ds.hadley.nz/quarto.html)
 
 ------------------------------------------------------------------------
 

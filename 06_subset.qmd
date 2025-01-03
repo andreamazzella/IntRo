@@ -19,8 +19,8 @@ editor: visual
 
 # Recap from topic 05_structures
 
-1. Create a vector with the following values: 1.2 9.3 0.6
-2. Create a data frame with the following columns: id (1, 2, 3, 4, 5), initials (BN, NX, ED, ST, VN).
+1.  Create a vector with the following values: 1.2 9.3 0.6
+2.  Create a data frame with the following columns: id (1, 2, 3, 4, 5), initials (BN, NX, ED, ST, VN).
 
 ------------------------------------------------------------------------
 
@@ -48,7 +48,7 @@ msleep
 ## Sort rows
 
 You can use `arrange()` to change the order of the rows according to the value of one or more columns. By default, it uses ascending order. Please note that rows with missing values are always listed at the end. If you list more than one column, each additional column will be used to break ties.
- 
+
 ```{r}
 msleep |>
   arrange(brainwt)
@@ -113,9 +113,9 @@ Use `filter()` to identify which animals sleeps on average 4 hours per night.
 
 You can use these conditions:
 
-- `>`, `>=`, `<`, `<=`
-- `==` (equal to; please note that this has two `=` signs!)
-- `!=` (not equal to)
+-   `>`, `>=`, `<`, `<=`
+-   `==` (equal to; please note that this has two `=` signs!)
+-   `!=` (not equal to)
 -   `is.na(x)` - is this a missing value?
 -   `!is.na(x)` - is this a non-missing value?
 
@@ -180,10 +180,7 @@ msleep |>
     )
 ```
 
-
 ------------------------------------------------------------------------
-
-
 
 ## Select columns
 
@@ -217,9 +214,9 @@ msleep |>
 
 Other helper functions are:
 
-- `ends_with()`
-- `contains()`
-- `where()` 
+-   `ends_with()`
+-   `contains()`
+-   `where()`
 
 ```{r}
 msleep |>
@@ -232,7 +229,6 @@ To avoid having to write down many columns, you can select all sequential column
 msleep |>
   select(name:sleep_total)
 ```
-
 
 ------------------------------------------------------------------------
 
@@ -292,7 +288,6 @@ msleep |>
   geom_col(fill = "#7CAE00")
 ```
 
-
 ------------------------------------------------------------------------
 
 #### Exercise 6
@@ -303,6 +298,11 @@ Create a new dataset called `sleepy` containing only data on name and total slee
 
 ```
 
+------------------------------------------------------------------------
+
+# Learning more
+
+-   R for Data Science (2ed) chapter 3: [Data transformation](https://r4ds.hadley.nz/data-transform.html)
 
 ------------------------------------------------------------------------
 

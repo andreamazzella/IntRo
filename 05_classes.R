@@ -274,7 +274,7 @@ tribble(~id, ~initials,
 # You can check the classes of all variables in a dataset with `glimpse()`, from `dplyr`:
 glimpse(dat)
 
-# Learn more ------------------------------------------------------------------------------------------------------------
+# Learning more ------------------------------------------------------------------------------------------------------------
 
 # https://r4ds.hadley.nz/logicals
 # https://r4ds.hadley.nz/numbers
