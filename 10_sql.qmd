@@ -12,6 +12,7 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 -   Methods to run an SQL query in R
     -   dbplyr package
     -   SQL chunks in a qmd
+    -   `DBI::dbGetQuery()`
 -   Commonly used SQL clauses
     -   SELECT
     -   WHERE
@@ -133,7 +134,8 @@ FROM Populations.dbo.vRes21_PHEC15_SingleYear
 WHERE ("Age" = 0.0)
 ```
 
-You can assign the results of your query to an R object by using chunk option `output.var`.
+You can:\
+- Assign the results of your query to an R object by using chunk option `output.var`. - Add a comment after two hyphens: `--`
 
 ```{sql}
 #| connection: con_DataLake
@@ -141,6 +143,7 @@ You can assign the results of your query to an R object by using chunk option `o
 
 SELECT "Period", "OfficialCode", "GeoName", "SexDesc", "AgeDesc", "Population"
 FROM Populations.dbo.vRes21_PHEC15_SingleYear
+-- Only get population for very young children
 WHERE ("Age" = 0.0)
 ```
 
@@ -155,7 +158,7 @@ head(pop_aged_0)
 1.  Insert a new SQL chunk below.
 2.  Use it to get columns Age_years and Description from table vRef_AgeBands, which is contained in the LookupsShared database
 
-### Using `DBI::dbGetQuery()`
+### Using `dbGetQuery()`
 
 Another alternative, that you can also use in .R scripts, is using `DBI::dbGetQuery()`, which needs the query to be written in a string.
 
@@ -166,13 +169,15 @@ string_query <-
   "SELECT Period, OfficialCode, GeoName, SexDesc, AgeDesc, Population
    FROM Populations.dbo.vRes21_PHEC15_SingleYear
    WHERE (Age = 0)"
+
 dbGetQuery(con_DataLake, string_query)
 ```
 
-Or you can write the query in a .sql file and then read it in:
+Or you can:\
+1. Write the query in a .sql script (which you can do from RStudio) 2. Read the .sql script with `readr::read_file()`
 
 ```{r}
-string_query_2 <- read_file("scripts/query.sql", )
+string_query_2 <- read_file("scripts/query.sql")
 
 dbGetQuery(con_DataLake, string_query_2)
 ```
@@ -243,6 +248,7 @@ Note the correspondences between R and SQL:
 | `!is.na(column)`     | `"column" IS NOT NULL` |
 | `x %in% c("a", "b")` | `"X" IN ('a', 'b')`    |
 | `between(x, 0, 1)`   | `"x" BETWEEN 0 AND 1`  |
+| `#`                  | `--`                   |
 
 ## ORDER BY
 
