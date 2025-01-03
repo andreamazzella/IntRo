@@ -102,7 +102,7 @@ R can save data in multiple different formats. RData files can be used to save a
 ``` r
 #| eval: false
 # save an r object as an .rds file
-saveRDS(r_obj_to_save, file = "./filepath/filename.rds")
+save_rds(r_obj_to_save, file = "filepath/filename.rds")
 ```
 
 For very large data sets, such as those containing HES or ECDS data, you may wish to use [.fst](https://www.fstpackage.org/ "fst package") files as these are optimised for rapid writing and reading. A disadvantage of fst is that it is not commonly readable by other languages.
@@ -174,8 +174,15 @@ Renv works by installing packages to a folder within your current project, rathe
 
 **Exercise 2**
 
-1.  Use `dir.create()`, `glue()` and lubridate functions to create an output folder with a subfolder with today's date
+1.  Use `dir.create()`, `glue()` and `lubridate` functions to create an output folder with a sub-folder with today's date
 
 **Exercise 3**
 
-Write the mtcars data set to an output folder into an `outputs` subfolder of your project. Use today's date in the file name
+Write the mtcars data set to an output folder into an `outputs` sub-folder of your project. Use today's date in the file name
+
+## More information
+
+-   <https://r4ds.hadley.nz/workflow-basics>
+-   <https://r4ds.hadley.nz/workflow-style>
+-   <https://r4ds.hadley.nz/workflow-scripts>
+-   <https://r4ds.hadley.nz/workflow-help>

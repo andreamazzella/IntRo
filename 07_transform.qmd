@@ -312,6 +312,12 @@ dm |> count(disability, exercise, frailty)
 
 ------------------------------------------------------------------------
 
+# Learning more
+
+-   R for Data Science (2ed) chapter 3: [Data transformation](https://r4ds.hadley.nz/data-transform.html)
+
+------------------------------------------------------------------------
+
 # Solutions
 
 ```{r}

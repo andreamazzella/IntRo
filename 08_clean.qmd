@@ -436,8 +436,9 @@ The falls dataset is still not clean - many more variables need checking and fix
 
 ------------------------------------------------------------------------
 
-## More resources
+## Learning more
 
+-   R for Data Science (2ed) chapter 3: [Data transformation](https://r4ds.hadley.nz/data-transform.html)
 -   Epi R Handbook, [Chapter 8: Cleaning data](https://epirhandbook.com/new_pages/cleaning.html)
 
 ------------------------------------------------------------------------

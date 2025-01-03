@@ -6,7 +6,7 @@ Markdown notebooks illustrating the basics of R, RStudio and the tidyverse for m
 
 NB - I'm currently restructuring this.
 
-- **01:The basics** (RStudio interface; using R scripts and Quarto documents; assigning values (`<-`); using functions and packages; exploring data frames)
+- **01. The basics** (RStudio interface; using R scripts and Quarto documents; assigning values (`<-`); using functions and packages; exploring data frames)
 - **02. Visualising** (Making bar charts, line charts, Box plots and scatterplots with `ggplot2`)
 - **03. Importing data** (importing and exporting data from/to file and from/to database)
 - **04. Data summaries** (Summarising continuous and categorical data with `dplyr` and `janitor`; the pipe `|>`; table 1 with `gtsummary`)

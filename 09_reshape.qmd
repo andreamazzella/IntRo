@@ -306,7 +306,7 @@ tb_eur
 
 ------------------------------------------------------------------------
 
-## More resources
+## Learning more
 
 -   Joining data
     -   Epi R Handbook, Chapter 14: [Joining data](https://epirhandbook.com/new_pages/joining_matching.html)

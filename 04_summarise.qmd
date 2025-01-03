@@ -385,9 +385,7 @@ final_table |>
 
 ------------------------------------------------------------------------
 
-# Learn more
-
-I recommend these resources:
+# Learning more
 
 -   R for Data Science (2ed) chapter 3.5.2: [Data transformation, `summarize`](https://r4ds.hadley.nz/data-transform.html#sec-summarize)
 -   `janitor` documentation, [tabyls](https://sfirke.github.io/janitor/articles/tabyls.html)
