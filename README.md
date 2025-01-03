@@ -17,7 +17,7 @@ NB - I'm currently restructuring this.
 - **09. Data reshaping** (Joining datasets with `dplyr`; wide and long formats; reshaping wide to long and vice versa with `tidyr`)
 - **10. SQL** (to be created)
 - **11. Git** (to be created)
-- **12. Markdown** (to be created)
+- **12. Quarto** (Rendering Quarto documents, inline code, markdown hyperlinks, mhunk options, YAML headers and global options)
 - **13. Workflows** (How to structure analytical projects and data)
 
 Author: [Andrea Mazzella](https://github.com/andreamazzella)

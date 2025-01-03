@@ -6,7 +6,9 @@
 *.png
 *.jpeg
 *.html
+12_quarto.docx
 create_data.Rmd
 data/raw/Fake_Health_Dataset.csv
+data/raw/espaur2023*
 data/processed/
 data/processing/point_prevalence.rds
