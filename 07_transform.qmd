@@ -6,7 +6,7 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 
 ------------------------------------------------------------------------
 
-# Content
+## Content
 
 -   Data transformation
     -   calculate new variables
@@ -17,7 +17,7 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 
 ------------------------------------------------------------------------
 
-# Recap from topic 06
+## Recap from topic 06_subset
 
 From default dataset `Theoph`, identify at which time point participant 11 had a plasma theophylline concentration higher than 7.5 mg/L (without scrolling through the dataset manually).
 
@@ -35,7 +35,7 @@ dm <- read_rds("data/processing/diabetes.rds")
 
 ------------------------------------------------------------------------
 
-# Data transformation
+## Data transformation
 
 During data analysis, it's very common to need to derive new information from the raw data. For example:
 
@@ -44,7 +44,7 @@ During data analysis, it's very common to need to derive new information from th
 
 ------------------------------------------------------------------------
 
-## Calculate new variables
+### Calculate new variables
 
 In `dplyr`, function `mutate()` is used to add new variables (or change existing ones).
 
@@ -83,7 +83,7 @@ dm |>
   count(height, height_m)
 ```
 
-### Exercise 1
+#### Exercise 1
 
 1.  Convert weight into pounds (1 kg = 2.20462 lbs)
 2.  Create a new data frame that contains this column.
@@ -96,7 +96,7 @@ dm |>
 
 ------------------------------------------------------------------------
 
-## Categorise continuous variables
+### Categorise continuous variables
 
 We might also want to transform a continuous variable into a categorical one, for example to reflect clinically meaningful groups.
 
@@ -151,7 +151,7 @@ dm_bmi |>
 
 NB: categorising continuous variables, and especially dichotomising them, is potentially highly problematic - see this paper: Turner E, Dobson J & Pocock S. (2010). [Categorisation of continuous risk factors in epidemiological publications: A survey of current practice](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2972292/).
 
-### Exercise 2
+#### Exercise 2
 
 Categorise weekly exercise into groups of your choosing.
 
@@ -162,7 +162,7 @@ Categorise weekly exercise into groups of your choosing.
 
 ------------------------------------------------------------------------
 
-## Combine levels of a categorical variable
+### Combine levels of a categorical variable
 
 Sometimes we might need to combine two or more levels of a categorical variable.
 
@@ -218,7 +218,7 @@ dm |>
 
 ------------------------------------------------------------------------
 
-## Create a dummy variable
+### Create a dummy variable
 
 If you want to reduce the levels to two (dummy variable), I recommend creating a logical variable (i.e., that contains only TRUE or FALSE), rather than a "yes"/"no" or 1/0 variable.
 
@@ -244,7 +244,7 @@ dm |>
 
 NB: do *not* use the `%in%` shortcut in these circumstances, otherwise missing values will be incorrectly recoded as FALSE!
 
-### Exercise 3
+#### Exercise 3
 
 Pick one:
 
@@ -257,7 +257,7 @@ Pick one:
 
 ------------------------------------------------------------------------
 
-## Combine values of two categorical variables
+### Combine values of two categorical variables
 
 We can also create a new categorical variables that summarises two other categorical variables.
 
@@ -288,7 +288,7 @@ dm |> count(disability, exercise, frailty)
 
 ------------------------------------------------------------------------
 
-### Exercise 4
+#### Exercise 4
 
 1.  Import the `bristol.rds` dataset.
 2.  Explore the data.
@@ -312,13 +312,13 @@ dm |> count(disability, exercise, frailty)
 
 ------------------------------------------------------------------------
 
-# Learning more
+## Learning more
 
 -   R for Data Science (2ed) chapter 3: [Data transformation](https://r4ds.hadley.nz/data-transform.html)
 
 ------------------------------------------------------------------------
 
-# Solutions
+## Solutions
 
 ```{r}
 #| label: solution_1

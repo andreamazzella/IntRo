@@ -7,7 +7,7 @@ editor: visual
 
 ------------------------------------------------------------------------
 
-# Content
+## Content
 
 -   Sorting rows
 -   Filtering rows
@@ -17,14 +17,14 @@ editor: visual
 
 ------------------------------------------------------------------------
 
-# Recap from topic 05_structures
+## Recap from topic 05_classes
 
 1.  Create a vector with the following values: 1.2 9.3 0.6
 2.  Create a data frame with the following columns: id (1, 2, 3, 4, 5), initials (BN, NX, ED, ST, VN).
 
 ------------------------------------------------------------------------
 
-## Load packages
+### Load packages
 
 In this session, you'll use functions from [`dplyr`](https://dplyr.tidyverse.org/reference/index.html), part of the core tidyverse. We used its `summarise()` and `count()` functons in session 04_summarise; now we'll use `arrange()`, `filter()`, `select()` and the `slice_` functions.
 
@@ -45,7 +45,7 @@ msleep
 
 ------------------------------------------------------------------------
 
-## Sort rows
+### Sort rows
 
 You can use `arrange()` to change the order of the rows according to the value of one or more columns. By default, it uses ascending order. Please note that rows with missing values are always listed at the end. If you list more than one column, each additional column will be used to break ties.
 
@@ -61,7 +61,7 @@ msleep |>
   arrange(desc(sleep_total))
 ```
 
-### Exercise 1
+#### Exercise 1
 
 Reorder the rows so that the animals are listed by taxonomic `order`. If there are multiple animals in the same order, list them by `genus`.
 
@@ -71,7 +71,7 @@ Reorder the rows so that the animals are listed by taxonomic `order`. If there a
 
 ------------------------------------------------------------------------
 
-## Filter rows
+### Filter rows
 
 Sometimes you don't need to use all the records (rows) in your dataset, but only a group of those: for example, you might want to plot sleep duration only among herbivores.
 
@@ -101,7 +101,7 @@ msleep_herbi <- msleep |>
 
 Remember that when you assign a value, R does not show you any result. If you want to see the output, you need to ask R to do it, for example in this case by calling `msleep_herbi`.
 
-### Exercise 2
+#### Exercise 2
 
 Use `filter()` to identify which animals sleeps on average 4 hours per night.
 
@@ -109,7 +109,7 @@ Use `filter()` to identify which animals sleeps on average 4 hours per night.
 
 ```
 
-### Conditions
+#### Conditions
 
 You can use these conditions:
 
@@ -137,7 +137,7 @@ msleep |>
   filter(!is.na(conservation))
 ```
 
-### Linking conditions
+#### Linking conditions
 
 You can also filter on more than one condition; for example, you might want to only filter herbivores that sleep more than 15 hours a day.
 
@@ -152,7 +152,7 @@ You can also link two or more conditions.
 -   `|`: or. The overall condition will be TRUE if either condition is TRUE.
 -   `x %in% c(3, 7)`: this is shorthand for `x == 3 | x == 7`.
 
-#### Exercise 3
+##### Exercise 3
 
 Filter domesticated mammals that weight more than 50 kg. Which are they?
 
@@ -160,7 +160,7 @@ Filter domesticated mammals that weight more than 50 kg. Which are they?
 
 ```
 
-#### Exercise 4
+##### Exercise 4
 
 Make a bar chart of diet type, but only for mammals whose brain weighs less than 50 grams.
 
@@ -168,7 +168,7 @@ Make a bar chart of diet type, but only for mammals whose brain weighs less than
 
 ```
 
-## Extract rows by group
+### Extract rows by group
 
 Imagine you want to only keep one row in each group; for example, only the carnivore, omnivore and herbivore with the longest total sleep duration. We can use the `slice_` functions with a `by =` argument for that.
 
@@ -182,7 +182,7 @@ msleep |>
 
 ------------------------------------------------------------------------
 
-## Select columns
+### Select columns
 
 Function `select()` keeps only certain variables (columns), and removes the rest. The first argument is (again) the dataset name. All the other arguments are the names of the variables we want to keep. (We briefly used this in topic 3 to choose variables to add to a table 1).
 
@@ -195,7 +195,7 @@ msleep |>
 
 We can add as many variables as we need.
 
-#### Exercise 5
+##### Exercise 5
 
 Show a dataset only containing names, brain weights and body weights for all mammals.
 
@@ -203,7 +203,7 @@ Show a dataset only containing names, brain weights and body weights for all mam
 
 ```
 
-### Selection helpers
+#### Selection helpers
 
 There are a number of functions to help us select more efficiently; for example, `starts_with()`:
 
@@ -232,7 +232,7 @@ msleep |>
 
 ------------------------------------------------------------------------
 
-## Piping function calls together
+### Piping function calls together
 
 Because `dplyr` functions take a data frame as the first argument and return a data frame, you can pipe them into other functions that take a data frame as a first argument.
 
@@ -290,7 +290,7 @@ msleep |>
 
 ------------------------------------------------------------------------
 
-#### Exercise 6
+##### Exercise 6
 
 Create a new dataset called `sleepy` containing only data on name and total sleep - just for insectivores who sleep at least 9 hours per day - and in descending order of total sleep.
 
@@ -300,13 +300,13 @@ Create a new dataset called `sleepy` containing only data on name and total slee
 
 ------------------------------------------------------------------------
 
-# Learning more
+## Learning more
 
 -   R for Data Science (2ed) chapter 3: [Data transformation](https://r4ds.hadley.nz/data-transform.html)
 
 ------------------------------------------------------------------------
 
-# Solutions
+## Solutions
 
 ```{r}
 #| label: Exercise 1 solution

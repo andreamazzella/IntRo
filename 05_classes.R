@@ -14,6 +14,8 @@
 # - Lists
 # - Data frames
 
+library(tidyverse)
+
 # Recap from topic 04_summarise  ---------------------------------------------------------------------------------------
 
 # 1.  Import `amr_klebsiella.csv`, contained in the `/data/raw` folder.
@@ -74,7 +76,7 @@ typeof(10000000000L)
 7^3
 round(4.7)
 
-# Note that R uses "round half to even", which keeps the rounding unboased.
+# Note that R uses "round half to even", which keeps the rounding unbiased.
 round(0.5)
 round(1.5)
 
@@ -92,7 +94,7 @@ janitor::round_half_up(0.5)
 # The tidyverse style guide recommends using double quotes.
 
 # If you need to have quotes within quotes, you can use the other one.
-"A string with an internal 'quote' can be created like so."
+'A string with an internal "quote" can be created like so.'
 
 # You can use \n to create a new line.
 text <- "one\ntwo"
@@ -157,7 +159,6 @@ c(
 # Factors are used to represent categorical variables: a variable in which each value can only be one of a series.
 
 # `forcats` is a package part of the core `tidyverse` and it helps dealing with factors.
-library(forcats)
 
 # A vector of character strings doesn't sort in a useful way:
 sample_months <- c("March", "January", "August")
@@ -188,13 +189,14 @@ as.numeric(sample_months_factor)
 # -   shown in YYYY-MM-DD format, e.g., 1970-01-01.
 
 # Package `lubridate` (part of the core `tidyverse`) helps working with dates.
-library(lubridate)
+
 # For example, you can create today's date with lubridate::today():
 today()
 
 # You can also convert a string into a date using `lubridate`'s helper functions:
 ymd("2025-01-02")
 dmy("01/04/2018")
+dmy("13th of December 1975")
 
 # You can extract components using `lubridate::year()`, `lubridate::month()`, `lubridate::day()` and other:
 year(today())

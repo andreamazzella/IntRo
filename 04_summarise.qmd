@@ -7,7 +7,7 @@ editor: visual
 
 ------------------------------------------------------------------------
 
-# Content
+## Content
 
 -   Summarising data with `dplyr` and `janitor`
     -   Categorical variables
@@ -17,7 +17,7 @@ editor: visual
 
 ------------------------------------------------------------------------
 
-# Recap from topic 03_import
+## Recap from topic 03_import
 
 1.  Insert a new chunk below.
 2.  Import the `sites` sheet from the `syphilis.xlsx` file, contained in the `/data/raw` folder.
@@ -26,7 +26,7 @@ editor: visual
 
 ------------------------------------------------------------------------
 
-# Load packages
+## Load packages
 
 In this session, you'll use functions from a few more packages:
 
@@ -57,9 +57,9 @@ help(trial)
 
 ------------------------------------------------------------------------
 
-## Summarising data
+### Summarising data
 
-### Using `summary()`
+#### Using `summary()`
 
 You can use `summary()` to get a quick summary of your entire dataset.
 
@@ -78,7 +78,7 @@ summary(trial)
 
 ------------------------------------------------------------------------
 
-### `dplyr` basics
+#### `dplyr` basics
 
 We'll frequently use `dplyr` functions, like `summarise()`. They have some things in common:
 
@@ -88,7 +88,7 @@ We'll frequently use `dplyr` functions, like `summarise()`. They have some thing
 
 Because the first argument and the output is always the dataframe, we chain `dplyr` functions one after the other using the pipe, `|>`. We'll cover pipes in more detail later, but for the moment, be aware that `dat |> summarise(...)` is equivalent to `summarise(dat, ...)`.
 
-## Using `summarise()`
+### Using `summarise()`
 
 We can summarise a data.frame using the `summarise()` function from package `dplyr` and some helper functions like `min()`, `mean()`, `median()`, `sd()`. See `help(summarise)` for a list of helper functions.
 
@@ -122,7 +122,7 @@ trial |>
 
 ------------------------------------------------------------------------
 
-## Grouped summaries
+### Grouped summaries
 
 What if we wanted to calculate the mean age in specific groups of patients, such as by treatment group?
 
@@ -179,7 +179,7 @@ Calculate the median and maximum marker levels in the four stage groups.
 
 ------------------------------------------------------------------------
 
-## Frequency tables
+### Frequency tables
 
 To tabulate categorical data, we have many options, among which:
 
@@ -218,7 +218,7 @@ trial |>
 
 ------------------------------------------------------------------------
 
-## Cross-tabulation
+### Cross-tabulation
 
 We're often interested in showing the distribution of *two* categorical variables against each other, i.e., cross-tabulation (two-way tables). This way we can check counts and percentages of each possible combination of factors.
 
@@ -255,7 +255,7 @@ Write some code to calculate the percentage of people who were alive at the end 
 
 ------------------------------------------------------------------------
 
-## The `|>` pipe
+### The `|>` pipe
 
 `|>` is called a *pipe*; it's a programming tool that helps improve code readability. It was introduced in R version 4.1 after the success of the `magrittr` pipe, `%>%`.
 
@@ -316,7 +316,7 @@ trial |>
 
 ------------------------------------------------------------------------
 
-# Summary tables
+## Summary tables
 
 Summary data is often presented in a "Table 1": this contains a summary of the baseline characteristics, with frequencies and percentages for categorical variables, and means or medians with a measure of variability for continuous variables. Usually these are painful to prepare because you need to do a lot of calculations and then painstakingly copy them into a table. Also, if the data changes (new data, or new variables) you need to redo it from scratch.
 
@@ -324,7 +324,7 @@ Package `gtsummary()` allows us to programmatically create publication-ready sum
 
 ------------------------------------------------------------------------
 
-## Basic `gtsummary` table
+### Basic `gtsummary` table
 
 This package is somewhat similar to `ggplot2`. The main function is `tbl_summary()`, which we can then build upon.
 
@@ -340,7 +340,7 @@ Note that the variables have been renamed, e.g., "Tumor Response" rather than `r
 
 ------------------------------------------------------------------------
 
-## Stratified `gtsummary` table
+### Stratified `gtsummary` table
 
 Using argument `by =` it's possible to stratify the table according to a categorical variable.
 
@@ -371,7 +371,7 @@ Create a table 1 of the `ToothGrowth` dataset, stratifying by supplement type bu
 
 ```
 
-## Save a `gtsummary` table to file
+### Save a `gtsummary` table to file
 
 We can use `gtsave()` to save a `gt` table to a file, so we first need to convert our `gtsummary` table into a regular `gt` table using `as_gt()`. Valid extensions include `.pdf`, `.html`, `.png`, `.docx`, `.rtf`.
 
@@ -385,7 +385,7 @@ final_table |>
 
 ------------------------------------------------------------------------
 
-# Learning more
+## Learning more
 
 -   R for Data Science (2ed) chapter 3.5.2: [Data transformation, `summarize`](https://r4ds.hadley.nz/data-transform.html#sec-summarize)
 -   `janitor` documentation, [tabyls](https://sfirke.github.io/janitor/articles/tabyls.html)
@@ -393,7 +393,7 @@ final_table |>
 
 ------------------------------------------------------------------------
 
-# Solutions
+## Solutions
 
 ```{r}
 #| label: Exercise 2 solution

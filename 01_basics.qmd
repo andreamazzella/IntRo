@@ -7,7 +7,7 @@ editor: visual
 
 ------------------------------------------------------------------------
 
-# Content
+## Content
 
 -   The RStudio interface
 -   Using the console
@@ -21,7 +21,7 @@ editor: visual
 
 ------------------------------------------------------------------------
 
-# The RStudio interface
+## The RStudio interface
 
 The RStudio interface is divided into four parts:
 
@@ -36,13 +36,13 @@ The RStudio interface is divided into four parts:
 
 ------------------------------------------------------------------------
 
-# Console
+## Console
 
 The console is used to run simple commands that you don't need to save.
 
 *Exercise 1.* In the console, add 3 and 5. You do this by using it as a calculator: Type 3 + 5, then press Enter.
 
-Now forget about the console: it's better to keep your code saved in a script. This is for many reasons:
+But it's better to keep your code saved in a script. This is for many reasons:
 
 1.  If your code throws an error, you can easily edit it and re-run it.
 2.  It allows you to keep track of your work so you don't have to restart from scratch every time.
@@ -50,7 +50,7 @@ Now forget about the console: it's better to keep your code saved in a script. T
 
 ------------------------------------------------------------------------
 
-# R scripts (.R)
+## R scripts (.R)
 
 An R script, for example `analysis.R`, mainly contains code, and any non-code text needs to be highlighted with a preceding `#`.
 
@@ -71,7 +71,7 @@ You can keep your R script organised using sections, which will appear in the Ou
 
 ------------------------------------------------------------------------
 
-# Quarto Markdown documents (.qmd)
+## Quarto Markdown documents (.qmd)
 
 A Quarto Markdown document like this one (`intRo1 basics.qmd`) is mainly composed of two things:
 
@@ -138,7 +138,7 @@ You can create a new Markdown document, you can:
 
 ------------------------------------------------------------------------
 
-# Assignment
+## Assignment
 
 You can tell R that something has a name; R will remember it and you can use that later in your code. This is called *assignment* and is done by using the arrow `<-` (keyboard shortcut: `Alt` + `-` on Windows, `⌥` + `*` on Mac) Assignment creates a new "object". The following code means: "radius" gets the value of 5.7. "radius" is a new object.
 
@@ -173,7 +173,7 @@ radius
 
 ------------------------------------------------------------------------
 
-# Using functions
+## Using functions
 
 In programming, a function is like a verb. It takes something (its "arguments"), it does something to it, and gives you back an output. In R, the arguments of a function are written in brackets.
 
@@ -204,13 +204,13 @@ help(seq)
 
 ------------------------------------------------------------------------
 
-# Using packages
+## Using packages
 
 R has some core functions, like the ones we've used so far: `sqrt()`, `mean()` and `seq()` and several more advanced ones (for example, the function for logistic regression). There are also extra functions made by programmers and grouped into "packages", which need to be downloaded (and loaded) separately.
 
 Just like an app, you only need to install a package only once, but you then need to load it every time you're in a new R session and want to use some of its functions. You can then update them as required.
 
-## Step 1: Download and install a package
+### Step 1: Download and install a package
 
 To download and install a package, I recommend you use one these options:
 
@@ -221,7 +221,7 @@ You can check if a package is already installed by going to the `Packages` tab a
 
 *Exercise 8.* Install packages `readr`, `ggplot2` and `dplyr`.
 
-## Step 2: Load the package
+### Step 2: Load the package
 
 You can then load (open) the package with `library()`.
 
@@ -231,7 +231,7 @@ library(readr)
 
 ------------------------------------------------------------------------
 
-## Step 3: Using functions from a package
+### Step 3: Using functions from a package
 
 If you've loaded a package, you can directly use all functions contained within it. For example, we're soon going to use `readr`'s function `read_csv()` just by calling it.
 
@@ -246,7 +246,7 @@ This can be helpful when you want to clarify which package the function is from,
 -   Two packages have a function with the same name (e.g., `filter` is a function in both `stats` and `dplyr`)
 -   The function is not commonly used
 
-# Exploring data frames
+## Exploring data frames
 
 A large part of R is built around `data.frame`s: data in table format.
 
@@ -288,7 +288,7 @@ dplyr::glimpse(bacteraemias, width = 100)
 
 ------------------------------------------------------------------------
 
-# Learning more
+## Learning more
 
 -   This course
     -   Topic 12_quarto
@@ -300,7 +300,7 @@ dplyr::glimpse(bacteraemias, width = 100)
 
 ------------------------------------------------------------------------
 
-# Solutions
+## Solutions
 
 ```{r}
 #| label: exercise 6 solution

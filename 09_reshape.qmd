@@ -6,7 +6,7 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 
 ------------------------------------------------------------------------
 
-# Content
+## Content
 
 -   Join multiple datasets
     -   Append rows
@@ -17,7 +17,7 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 
 ------------------------------------------------------------------------
 
-# Recap from topic 08_clean
+## Recap from topic 08_clean
 
 1.  Run this chunk to create a dirty dataframe containing information on patients with myocardial infarctions seen by different ambulance teams.
 2.  Clean the column names.
@@ -43,7 +43,7 @@ library(tidyverse)
 
 ------------------------------------------------------------------------
 
-# Joining data
+## Joining data
 
 Often we don't get all the data in a single dataset - we need to join data from different tables.
 
@@ -65,7 +65,7 @@ outcms <- read_excel("data/raw/candidaemias.xlsx", sheet = "outcomes")
 
 ------------------------------------------------------------------------
 
-## Append rows
+### Append rows
 
 It looks like the β-D-glucan (`bdg`) results are scattered over three separate sheets, one per study site.
 
@@ -84,7 +84,7 @@ lab <- bind_rows(site_5, site_7)
 lab
 ```
 
-### Exercise 1
+#### Exercise 1
 
 1.  Try to add the data from site 8 to this new combined dataset.
 2.  What happens?
@@ -92,7 +92,7 @@ lab
 
 ------------------------------------------------------------------------
 
-## Join columns
+### Join columns
 
 Now we want to join lab results with outcome data. They're in two separate dataframes:
 
@@ -127,12 +127,12 @@ inner_join(lab, outcms, by = "id")
 full_join(lab, outcms, by = "id")
 ```
 
-### Exercise 2
+#### Exercise 2
 
 1.  Join demographic data to the dataframe containing lab results.
 2.  (Extra practice) Make a scatterplot to explore the relation between age and BDG at baseline, with different species identified by different shapes.
 
-### Exercise 3
+#### Exercise 3
 
 Run the chunk below which joins data from `antifn` and `lab`.
 
@@ -145,7 +145,7 @@ left_join(lab, antifn, by = "id")
 
 ------------------------------------------------------------------------
 
-# Reshaping data
+## Reshaping data
 
 Let's look again at the `lab` dataframe. Imagine we wanted to make a line graph, to show the BDG through time.
 
@@ -172,7 +172,7 @@ This helps with data collection, but it make many types of data manipulation and
 
 ------------------------------------------------------------------------
 
-## Pivot longer
+### Pivot longer
 
 We can turn this into a "long" format dataframe by using `pivot_longer()`, from `tidyr`.
 
@@ -223,7 +223,7 @@ tb_amer <- read_csv("data/raw/tb_amer.csv")
 tb_amer
 ```
 
-### Exercise 4
+#### Exercise 4
 
 1.  Try making a bar chart to compare the total new cases of tuberculosis across countries. Each bar should be split in two different colours to indicate whether cases are pulmonary or extra-pulmonary TB.
 2.  What issue are you facing, and how can you fix it?
@@ -239,7 +239,7 @@ ggplot(tb_amer, aes( # complete here
 
 ------------------------------------------------------------------------
 
-### Complex `pivot_longer()`
+#### Complex `pivot_longer()`
 
 Some datasets are more complex. For example, there can be many variables that are repeated in multiple columns, like in this case, timing, CFU count and PCR result in samples A-C.
 
@@ -262,7 +262,7 @@ To learn more about complex joins, please see the Resources section further belo
 
 ------------------------------------------------------------------------
 
-## Pivot wider
+### Pivot wider
 
 Sometimes it might be helpful to go the other way - turn a long dataset wider, i.e., turning rows into columns. For example, to facilitate calculating new columns, or to increase readability.
 
@@ -299,7 +299,7 @@ tb_eur <-  tidyr::who |>
 tb_eur
 ```
 
-### Exercise 5
+#### Exercise 5
 
 1.  Reshape this dataset so that there is one column per year, containing the new number of cases in that country in that year.
 2.  Change the name of the columns so that the numbers they contain are clear.

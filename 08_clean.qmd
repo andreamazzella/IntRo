@@ -6,7 +6,7 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 
 ------------------------------------------------------------------------
 
-# Content
+## Content
 
 -   Data cleaning
     -   What is dirty data?
@@ -19,7 +19,7 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 
 ------------------------------------------------------------------------
 
-# Recap from topic 07_transform
+## Recap from topic 07_transform
 
 Using dataset `trial`, create a new categorical variable that indicates if that patient's `marker` was <0.5, between 0.5 and 1, or ≥1 ng/mL.
 
@@ -41,7 +41,7 @@ library(tidyverse)
 
 ------------------------------------------------------------------------
 
-# Dirty data
+## Dirty data
 
 Your colleague Ian, an eager medical doctor, heard that you can use R and asked you to do a 'quick analysis' of his data.
 
@@ -57,7 +57,7 @@ falls <- read_excel("data/raw/S-Fall for analysis new final FINAL.xlsx")
 falls
 ```
 
-### Exercise 1
+#### Exercise 1
 
 1.  Can you spot at least 5 issues with this dataset?
 2.  Open the spreadsheet in Excel. What do you notice?
@@ -69,7 +69,7 @@ falls
 
 ------------------------------------------------------------------------
 
-# Data cleaning
+## Data cleaning
 
 In its current state, the data frame is unusable. We'll now work on cleaning it to make it easier to work with.
 
@@ -85,13 +85,13 @@ head(falls_v2)
 
 ------------------------------------------------------------------------
 
-## Rename variables
+### Rename variables
 
 Some variables have unclear, long or upper-case names.
 
 ------------------------------------------------------------------------
 
-### Exercise 2
+#### Exercise 2
 
 Use a function to count how many patients were previously admitted to a Mental Health hospital. What do you notice?
 
@@ -102,7 +102,7 @@ Let's rename them so they're easier to understand, or to type.
 
 A helpful function to give a first scrub to all variable names at once is `clean_names()` from package `janitor`.
 
-### Exercise 3
+#### Exercise 3
 
 What differences do you notice between the original and cleaned names?
 
@@ -134,7 +134,7 @@ falls_renamed_2 <- falls_renamed |>
 head(falls_renamed_2)
 ```
 
-### Exercise 4
+#### Exercise 4
 
 Rename variable `duration_of_analgesia` to a name of your choice.
 
@@ -143,7 +143,7 @@ Rename variable `duration_of_analgesia` to a name of your choice.
 
 ------------------------------------------------------------------------
 
-## Deleting variables
+### Deleting variables
 
 It looks like some variables don't contain any data - they didn't even have a name:
 
@@ -161,7 +161,7 @@ falls_trimmed <- falls_renamed_2 |>
 
 ------------------------------------------------------------------------
 
-## Deleting rows
+### Deleting rows
 
 It looks like:
 
@@ -182,7 +182,7 @@ falls_condensed <- falls_trimmed |>
 
 ------------------------------------------------------------------------
 
-## Sorting rows by a column
+### Sorting rows by a column
 
 Remember from topic 06_subset that you can use `arrange()` from `dplyr` to sort the dataframe by the order of values in a column.
 
@@ -193,7 +193,7 @@ falls_condensed |>
 
 ------------------------------------------------------------------------
 
-## Parsing data classes
+### Parsing data classes
 
 One of the main reasons for so many problems with the new dataset is that its *data classes* are not specified. You might remember from topic 05_classes that R uses different classes for different variable types, for example numeric, factor (for categorical variables), Date, logical etc. However,Excel or `.csv` files do not hold this information. Certain R functions are designed to work with only specific data classes.
 
@@ -216,7 +216,7 @@ To do this, we can specify column types when importing the data, or we can use "
 - for dates: `lubridate::ymd()`, `lubridate::dmy()`, `readr::parse_date()` or `as.Date`
 - for factors: `forcats::fct`, `readr::parse_factor` or `as.factor()`
 
-### Exercise 5
+#### Exercise 5
 
 1. Use `summary()` on column `ward`.
 2. Change column `ward`'s class from character to factor.
@@ -230,7 +230,7 @@ To do this, we can specify column types when importing the data, or we can use "
 
 ------------------------------------------------------------------------
 
-## Value labels
+### Value labels
 
 It looks like some variables contain integers, but they are actually categorical, and should be factors.
 
@@ -255,7 +255,7 @@ falls_c2 <- falls_c1 |>
 falls_c2 |> count(mood_disorder)
 ```
 
-### Exercise 6
+#### Exercise 6
 
 Now do the same with variable `dementia` (0: no, 1: yes, N/A: missing value). Note that any levels that you don't label will be converted into a missing value.
 
@@ -264,7 +264,7 @@ Now do the same with variable `dementia` (0: no, 1: yes, N/A: missing value). No
 
 ------------------------------------------------------------------------
 
-## Cleaning dates
+### Cleaning dates
 
 Some data import functions automatically understand if something is a date; others will keep it as a character column and you would then need to change them to dates.
 
@@ -299,7 +299,7 @@ data.frame(excel_dates = c(42455, 42875, 41578)) |>
   mutate(dates_cleaned = excel_numeric_to_date(excel_dates))
 ```
 
-### Exercise 7
+#### Exercise 7
 
 1.  Check the data class of the variable identifying the start of sedative medications.
 2.  Change its data class to date.
@@ -309,7 +309,7 @@ data.frame(excel_dates = c(42455, 42875, 41578)) |>
 
 ------------------------------------------------------------------------
 
-## Identifying data entry errors and changing values
+### Identifying data entry errors and changing values
 
 Whilst exploring a dataset, you might notice that some values are incorrect. This could be because:
 
@@ -319,7 +319,7 @@ Whilst exploring a dataset, you might notice that some values are incorrect. Thi
 
 ------------------------------------------------------------------------
 
-### Changing values in categorical variables
+#### Changing values in categorical variables
 
 Let's look at the values that people have entered in the `gender` column.
 
@@ -350,7 +350,7 @@ falls_r1 <- falls_c3 |>
 falls_r1 |> count(gender_new, gender)
 ```
 
-### Exercise 8
+#### Exercise 8
 
 1.  Check the current categories of the variable on hospital-based cognitive-behavioural therapy.
 2.  Fix any easy inconsistencies.
@@ -362,7 +362,7 @@ falls_r1 |> count(gender_new, gender)
 
 ------------------------------------------------------------------------
 
-### Changing values in numerical variables
+#### Changing values in numerical variables
 
 Histograms are a good way to identify suspicious outliers.
 
@@ -378,7 +378,7 @@ falls_r1 |> filter(age > 100) |> select(id, gender, age)
 
 Imagine Ian has checked and confirmed that ID 209 was indeed 103 years old, but ID 540 was 'only' 105.
 
-### Exercise 9
+#### Exercise 9
 
 Let's correct this value. Remember to add a comment to explain why you're editing a value.
 
@@ -387,7 +387,7 @@ Let's correct this value. Remember to add a comment to explain why you're editin
 
 ------------------------------------------------------------------------
 
-## Relevelling factors
+### Relevelling factors
 
 Finally, we might sometimes need to reorder the categories in an ordered variable, for example because R has ordered it alphabetically. We use function `fct_relevel()` from package `forcats`.
 
@@ -404,7 +404,7 @@ falls_r2 |> ggplot(aes(outcome)) + geom_bar()
 
 ------------------------------------------------------------------------
 
-### Challenge exercise
+#### Challenge exercise
 
 1.  Import the `bristol.csv` dataset and briefly explore it.
 2.  Change the data classes to the correct ones.
@@ -430,7 +430,7 @@ falls_r2 |> ggplot(aes(outcome)) + geom_bar()
 
 ```
 
-### Extra practice
+#### Extra practice
 
 The falls dataset is still not clean - many more variables need checking and fixing...
 
