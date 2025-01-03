@@ -1,0 +1,364 @@
+---
+title: "10: SQL"
+subtitle: "Introduction to R for health data"
+author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
+---
+
+------------------------------------------------------------------------
+
+## Content
+
+-   SQL server structure: databases, schemas, tables, views
+-   Methods to run an SQL query in R
+    -   dbplyr package
+    -   SQL chunks in a qmd
+-   Commonly used SQL clauses
+    -   SELECT
+    -   WHERE
+    -   ORDER BY
+    -   GROUP BY
+    -   LEFT JOIN
+
+------------------------------------------------------------------------
+
+## Recap from topic 09_reshape
+
+...
+
+------------------------------------------------------------------------
+
+```{r}
+library(DBI)
+library(odbc)
+library(dbplyr)
+library(dplyr)
+```
+
+This code assumes that you have a Data Lake source in your ODBC Data Sources.
+
+------------------------------------------------------------------------
+
+## SQL server structure
+
+This is a high-level summary of the structure of a SQL server:
+
+-   A **server** is the machine that hosts the database management system. One server can contain multiple databases.
+-   A **database** is a logical container that holds data. A database can contain multiple objects.
+-   A **schema** is an optional organisation structure to group objects. The default schema is `dbo`.
+-   A **table** is the actual data storage structure within a schema. It holds rows and columns of data.
+-   A **view** is a virtual table created by querying one or more tables.
+
+```         
+Server (e.g.: Data Lake)
+├── Database 1 (e.g., Populations)
+│   └── Schema 1 (default: dbo)
+│       ├── Table 1 (e.g.: vRes21_PHEC15_SingleYear)
+│       └── Table 2 (e.g.: vRes21_ICB23_FiveYear)
+└── Database 2 (e.g., LookupsShared)
+    └── Schema 1 (default: dbo)
+        ├── Table 1 (e.g.: vLKP_PHEC15)
+        └── Table 2 (e.g.: vRef_AgeBands)
+```
+
+------------------------------------------------------------------------
+
+Remember from topic 03_import that before we can run any queries on a database, we need to connect to its server.
+
+```{r}
+con_DataLake <-
+    dbConnect(
+        odbc(),
+        Driver = "SQL Server",
+        Server = "SQLClusColLK19\\Lake19"
+        )
+```
+
+Before we write a SQL query, remember that you can use `dbplyr` package to get your `dplyr` code translated to the corresponding SQL query.
+
+```{r}
+# Create a virtual table from a database 
+pop_db <- tbl(con_DataLake, I("Populations.dbo.vRes21_PHEC15_SingleYear"))
+```
+
+The `I()` section above means: from the `Populations` database, go to the `dbo` schema and get me the `vRes21_PHEC15_SingleYear` table.
+
+```{r}
+# Prepare a basic query
+pop_query <- pop_db |>
+  filter(Age == 0) |> 
+  select(Period, OfficialCode, GeoName, SexDesc, AgeDesc, Population)
+
+# Run the query
+collect(pop_query)
+```
+
+## Writing SQL queries
+
+Instead of using `dbplyr`, we can write and run SQL queries from R in other ways:
+
+-   Write the SQL query in a SQL chunk within a qmd
+-   Use `DBI::dbGetQuery()`
+    -   With a SQL query written as a character string in R
+    -   With a SQL query written in a .sql script
+
+To familiarise ourselves with SQL, we can get `dbplyr` to show you the SQL query it created based on your `dplyr` code.
+
+```{r}
+show_query(pop_query)
+```
+
+`SELECT`, `FROM` and `WHERE` are called SQL "clauses". Conventionally we write them in upper-case.
+
+-   `SELECT` is equivalent to `dplyr::select()` but can also be used to create new columns
+-   `FROM` identifies the table
+-   `WHERE` is equivalent to `dplyr::filter()`
+-   `GROUP BY` is equivalent to `.by =` argument in `dplyr::summarise()` and `dplyr::mutate()`
+-   `ORDER BY` is equivalent to `dplyr::arrange()`
+
+Note that in SQL, you must always write the clauses in the order above; you can't start with `FROM` and follow with `SELECT`, for example.
+
+### SQL chunk in a qmd
+
+If you're working from a qmd script, you can use a SQL chunk, that lets you write the SQL query and run it directly from this script.
+
+After you create an SQL chunk (by adding `{sql}` at the top) you need to list the name of the connection object in the connection chunk option, i.e., what comes after `#| connection:`.
+
+Let's run the exact same query shown in `show_query()`.
+
+```{sql}
+#| connection: con_DataLake
+
+SELECT "Period", "OfficialCode", "GeoName", "SexDesc", "AgeDesc", "Population"
+FROM Populations.dbo.vRes21_PHEC15_SingleYear
+WHERE ("Age" = 0.0)
+```
+
+You can assign the results of your query to an R object by using chunk option `output.var`.
+
+```{sql}
+#| connection: con_DataLake
+#| output.var: pop_aged_0
+
+SELECT "Period", "OfficialCode", "GeoName", "SexDesc", "AgeDesc", "Population"
+FROM Populations.dbo.vRes21_PHEC15_SingleYear
+WHERE ("Age" = 0.0)
+```
+
+You can then use this object in the rest of your R code.
+
+```{r}
+head(pop_aged_0)
+```
+
+### Exercise 1
+
+1.  Insert a new SQL chunk below.
+2.  Use it to get columns Age_years and Description from table vRef_AgeBands, which is contained in the LookupsShared database
+
+### Using `DBI::dbGetQuery()`
+
+Another alternative, that you can also use in .R scripts, is using `DBI::dbGetQuery()`, which needs the query to be written in a string.
+
+You can write this string directly in R, but it's not very human-friendly as there is no syntax highlighting:
+
+```{r}
+string_query <-
+  "SELECT Period, OfficialCode, GeoName, SexDesc, AgeDesc, Population
+   FROM Populations.dbo.vRes21_PHEC15_SingleYear
+   WHERE (Age = 0)"
+dbGetQuery(con_DataLake, string_query)
+```
+
+Or you can write the query in a .sql file and then read it in:
+
+```{r}
+string_query_2 <- read_file("scripts/query.sql", )
+
+dbGetQuery(con_DataLake, string_query_2)
+```
+
+------------------------------------------------------------------------
+
+From now on, this script will just use `show_query()` to show how `dplyr` code that you're already familiar with translates to `SQL` statements. The exercises will require you to write the query in SQL, but feel free to write it with dplyr and use `show_query()` to help if needed.
+
+## SELECT
+
+You can select all columns by using the asterisk symbol:
+
+```{r}
+pop_db |> 
+  show_query()
+```
+
+You can select only the top *n* rows by using `TOP()` - equivalent to `head()`:
+
+```{r}
+pop_db |>
+  select(Period, GeoName) |>
+  head(10) |> 
+  show_query()
+```
+
+Within `SELECT`, you can rename a column using `AS` (note that, unlike in dplyr, in SQL the new name is on the right)
+
+```{r}
+pop_db |>
+  select(year = Period) |> 
+  show_query()
+```
+
+### Exercise 2
+
+Use the SQL chunk below to write an SQL query that will:
+
+1.  Read table `vRes21_ICB23_FiveYear` contained in the `Populations` database
+2.  Return the first 5 rows only
+3.  Return columns OfficialCode and GeoName only
+4.  Rename these columns as icb_code and icb_name, respectively.
+
+```{sql}
+
+```
+
+## WHERE
+
+`WHERE` is equivalent to `dplyr::filter()`:
+
+```{r}
+pop_db |>
+  filter(Age == 0 & GeoName %in% c("London", "North East")) |>
+  show_query()
+```
+
+Note the correspondences between R and SQL:
+
+| R                    | SQL                    |
+|----------------------|------------------------|
+| `&`                  | `AND`                  |
+| `|`                  | `OR`                   |
+| `==`                 | `=`                    |
+| `"character_value"`  | `'character_value'`    |
+| `column`             | `"column"`             |
+| `is.na(column)`      | `"column" IS NULL`     |
+| `!is.na(column)`     | `"column" IS NOT NULL` |
+| `x %in% c("a", "b")` | `"X" IN ('a', 'b')`    |
+| `between(x, 0, 1)`   | `"x" BETWEEN 0 AND 1`  |
+
+## ORDER BY
+
+`ORDER BY` is equivalent to `dplyr::arrange()`:
+
+```{r}
+pop_db |>
+  filter(Age == 0 & GeoName == "London") |>
+  arrange(SexDesc) |> 
+  show_query()
+```
+
+### Exercise 3
+
+Use the SQL chunk below to write an SQL query that will:
+
+1.  Read the `vRef_ESP2013` table contained in the `LookupsShared` database
+2.  Only keep rows whose Age_Band_Min is between 25 and 70
+3.  Sort the rows by increasing Population.
+
+```{sql}
+
+```
+
+## GROUP BY
+
+`GROUP BY` is equivalent to the `.by =` argument in `summarise()` and `mutate()`, while `COUNT()` is equivalent to `dplyr::n()` and `AVG()` is equivalent to `mean()`.
+
+```{r}
+pop_db |>
+  summarise(
+    count = n(),
+    mean_pop = mean(Population),
+    .by = c(Period, AgeDesc)
+  ) |>
+  show_query()
+```
+
+## LEFT JOIN
+
+Joining two tables in SQL is similar to `dplyr`'s joins.
+
+For example, let's left join `pop_db` to some lookup information contained in `phec_lkp_db`.
+
+You first need to have both tables in your environment, and both need to use the same connection.
+
+```{r}
+phec_lkp_db <- tbl(con_DataLake, I("LookupsShared.dbo.vLKP_PHEC15"))
+```
+
+Then note the key aspects of the query:
+
+-   After your `FROM` clause containing table 1, you write a `LEFT JOIN` clause containing table 2
+-   `ON` is used to identify the key column(s) on which to join. In this case, the PHE code is listed as "OfficialCode" in table 1 and "PHEC15CD" in table 2.
+-   Your `SELECT` clause can identify columns from both datasets by using the TableName.ColumnName syntax.
+
+```{r}
+pop_db |>
+  left_join(phec_lkp_db, by = join_by(OfficialCode == PHEC15CD)) |>
+  show_query()
+```
+
+Please note: you can use `AS` to create short names from table 1 and table 2; this makes it easier to refer to them in the `SELECT` statement.
+
+### Exercise 4
+
+In the SQL chunk below, write an SQL query that will:
+
+1.  Read table `vLKP_LSOA21` contained in the `LookupsShared` database
+2.  Left join it with table `IMD2019_Quintiles_LSOA21_England` contained in the same database, with `LSOA21CD` as a linking variable
+3.  Return the top 10 rows of variables LSOA21CD, LSOA21NM, IMD2019_Score.
+
+```{sql}
+
+```
+
+## Learning more
+
+-   This course: topic 03_import covers
+-   R for Data Science (2ed), [Databases](https://r4ds.hadley.nz/databases.html)
+
+## Solutions
+
+```{sql}
+#| label: solution_ex1
+#| connection: con_DataLake
+
+SELECT Age, Age_years, Description
+FROM LookupsShared.dbo.vRef_AgeBands
+```
+
+```{sql}
+#| label: solution_ex2
+#| connection: con_DataLake
+
+SELECT TOP 5 OfficialCode AS icb_code,
+             GeoName AS icb_name
+FROM Populations.dbo.vRes21_ICB23_FiveYear
+```
+
+```{sql}
+#| label: solution_ex3
+#| connection: con_DataLake
+
+SELECT *
+FROM LookupsShared.dbo.vRef_ESP2013
+WHERE Age_Band_Min BETWEEN 25 AND 70
+ORDER BY Population
+```
+
+```{sql}
+#| label: solution_ex4
+#| connection: con_DataLake
+
+SELECT TOP 10 lsoa.LSOA21CD, lsoa.LSOA21NM, imd.IMD2019_Score
+FROM LookupsShared.dbo.vLKP_LSOA21 AS lsoa
+LEFT JOIN LookupsShared.dbo.vSocioDemog_LSOA21 AS imd
+  ON lsoa.LSOA21CD = imd.LSOA21CD
+```

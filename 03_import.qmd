@@ -7,7 +7,7 @@ editor: visual
 
 ------------------------------------------------------------------------
 
-# Content
+## Content
 
 -   Importing and exporting data files
     -   csv
@@ -20,7 +20,7 @@ editor: visual
 
 ------------------------------------------------------------------------
 
-# Recap from 02_visualise
+## Recap from 02_visualise
 
 1.  Explore the in-built dataset below.
     -   This contains data from an experiment on theophylline, a drug used to treat asthma and COPD.
@@ -45,7 +45,7 @@ theoph <- tibble::as_tibble(datasets::Theoph)
 
 ------------------------------------------------------------------------
 
-# Load packages
+## Load packages
 
 In this session, you'll use functions from a few packages:
 
@@ -72,9 +72,9 @@ library(fs)
 
 ------------------------------------------------------------------------
 
-# Importing and exporting data files
+## Importing and exporting data files
 
-## Importing data from a file
+### Importing data from a file
 
 The general process is this:
 
@@ -82,7 +82,7 @@ The general process is this:
 2.  You list the path to your data as an argument of that function; for example, `read_csv("data/lab.csv")`.
 3.  You assign the output of this function to an object with a name of your choice; for example, `lab_raw <- read_csv("data/lab.csv")`.
 
-### Importing csv files
+#### Importing csv files
 
 CSV files (comma-separated values) are the most common file type for tabular data.
 
@@ -136,22 +136,22 @@ ages <- read_csv(
 
 `read_csv` also has many other arguments; for example, you can use `skip` to avoid reading some initial rows that don't contain data, or `n_max` to establish the maximum number of rows to read (useful if you just want to preview a data file, for example). Run `help(read_csv)` for more information.
 
-### Importing other delimited files
+#### Importing other delimited files
 
 You can use `readr::read_delim()`, which is very similar to `read_csv`. You'll need to specify which delimiter the files uses: for example `read_delim(..., delim = "|")`.
 
-### Even faster importing
+#### Even faster importing
 
 If you need to import a very large delimited file, you could try:
 
 -   only selecting the columns that you will need (see `col_select` above)
 -   using `data.table::fread()` instead of the `readr` functions.
 
-Please note that if you're downloading a delimited file from a shared drive, your internet download speed will be a limiting factor.
+NB: if you're reading a file from a shared drive that you're accessing remotely, the speed bottleneck will likely be your internet download speed, not the reading function you pick.
 
-Very large files should ideally be saved in a different format that makes it easier to import, for example fst.
+Very large files should ideally be saved in a different format that makes it easier to import, for example .fst.
 
-### Importing rds files
+#### Importing rds files
 
 R's native data file format, rds, keeps data types, so it's helpful to use for example for mid-processing files.
 
@@ -163,7 +163,7 @@ You can read them with `readr::read_rds()` or base R `readRDS()` :
 
 ```
 
-### Importing Excel files
+#### Importing Excel files
 
 You can import Excel spreadsheets with `readxl::read_excel()`, which will work with both the old .xls and the new .xlsx formats.
 
@@ -183,11 +183,11 @@ Please note that by default `read_excel()` imports the first sheet, but you can 
 
 ```
 
-### Importing ODS files
+#### Importing ODS files
 
 You can use `readODS::read_ods()`, which is very similar to the function above.
 
-### Importing dta files
+#### Importing dta files
 
 If for any unpleasant circumstance the data was saved in Stata's proprietary dta format, `haven::read_dta()` comes to the rescue.
 
@@ -211,7 +211,7 @@ pps <-
 pps
 ```
 
-## Exporting data to a file
+### Exporting data to a file
 
 Whatever you do to the dataset, it doesn't change the original file. If you want to make some changes permanent, you need to use a writing function.
 
@@ -221,7 +221,7 @@ Important: never overwrite the initial, raw data file. Ideally, separate the dat
 dir_create("data/processed")
 ```
 
-### Exporting as csv
+#### Exporting as csv
 
 You can use `readr::write_csv`. For example, let's save the pps data frame in CSV format.
 
@@ -229,7 +229,7 @@ You can use `readr::write_csv`. For example, let's save the pps data frame in CS
 pps |> write_csv("data/processed/point_prevalence.csv")
 ```
 
-### Exporting as rds
+#### Exporting as rds
 
 ```{r}
 
@@ -245,21 +245,21 @@ pps |> write_csv("data/processed/point_prevalence.csv")
 
 I recommend *against* saving to .RData because it doesn't make it clear which objects are imported in this way.
 
-### Exporting as xlsx
+#### Exporting as xlsx
 
 I don't recommend saving in xlsx or xls format, but if you need to, you can use [`writexl`](https://docs.ropensci.org/writexl/)`::write_xlsx()` .
 
-### Exporting as ODS
+#### Exporting as ODS
 
 If you need to export data in spreadsheet format, I recommend using ODS (OpenDocument spreadsheet), as it has an open licence. You can do this with `readODS::write_ods()`.
 
-### Exporting as dta
+#### Exporting as dta
 
 If for any unfortunate circumstance you must save the data in Stata's proprietary dta format, you can use `haven::write_dta()`.
 
-# Reading and writing on a SQL database
+## Reading and writing on a SQL database
 
-## Initial SQL setup
+### Initial SQL setup
 
 The very first time that you use a SQL database, you'll need to:
 
@@ -268,11 +268,13 @@ The very first time that you use a SQL database, you'll need to:
 
 The code in the sections below assumes that you have a Data Lake source in your ODBC Data Sources.
 
-## Connect to a SQL database
+### Connect to a SQL database
 
 Now we need to connect to the database. You can do this directly from R, using functions from package `DBI` and `odbc`.
 
 `dbConnect` has many options and choosing which to use depends on your database - you should ask other data scientists in your team how to set up a connection.
+
+If you only need to import tables from a single database, you can specify the database in this connection.
 
 ```{r}
 con_LookupsShared <-
@@ -292,7 +294,7 @@ If the code in the chunk above worked, you will now see that the Connections tab
 
 ```
 
-## Pull data from a SQL table
+### Pull data from a SQL table
 
 You can get data from a SQL database table in a variety of ways:
 
@@ -301,7 +303,7 @@ You can get data from a SQL database table in a variety of ways:
 -   Write the SQL query as a character string in `DBI::dbGetQuery()`
 -   Call a SQL query (e.g. `query.sql`) from within R code by using `readr::read_lines()` and then passing it to `DBI::dbGetQuery()`
 
-### Using `dbplyr`
+#### Using `dbplyr`
 
 1.  Use `tbl()` to create an object that represents the table you want. NB - running this code will not import the whole table into memory.
 
@@ -325,38 +327,7 @@ sicbl_name_lookup <- collect(sicbl_name_lookup_db)
 sicbl_name_lookup
 ```
 
-### Using SQL chunks within a qmd - IMO we don't need this, the above is enough at this stage as it gets the job done
-
-If you're working from a qmd script (like this one), you can use a SQL chunk, that lets you write the SQL query and run it directly from this script.
-
-A SQL chunk needs to know the name of the connection object. You do this by typing it in the `connection` chunk option, i.e., what comes after `#| connection:`.
-
-```{sql}
-#| connection: con_LookupsShared
-
-SELECT *
-FROM LookupsShared.dbo.vLKP_SICBL24
-```
-
-(NB: In session `10_sql` we'll cover more complex SQL queries)
-
-You can assign the results of your query to an R object by using chunk option `output.var`.
-
-```{sql}
-#| connection: con_LookupsShared
-#| output.var: lookup_sicbl
-
-SELECT *
-FROM LookupsShared.dbo.vLKP_SICBL24
-```
-
-You can then use this object in the rest of your R code.
-
-```{r}
-head(lookup_sicbl)
-```
-
-## Writing data to a SQL database
+### Writing data to a SQL database
 
 If you need to write data to SQL, you can use `DBI::dbWriteTable()`.
 
@@ -376,7 +347,9 @@ dbWriteTable(
 
 ------------------------------------------------------------------------
 
-*Stretch exercise*. If you have access to LookupsShared:
+#### Stretch exercise
+
+If you have access to LookupsShared:
 
 1.  Find the table containing the 2013 European Standard Population
 2.  Create an object that represents this table
@@ -397,7 +370,7 @@ dbDisconnect(con_LookupsShared)
 
 ------------------------------------------------------------------------
 
-# Learning more
+## Learning more
 
 I recommend these resources:
 
@@ -409,7 +382,7 @@ I recommend these resources:
 
 ------------------------------------------------------------------------
 
-# Solutions
+## Solutions
 
 ```{r}
 #| label: recap Q1
