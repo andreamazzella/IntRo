@@ -1,6 +1,6 @@
 # title: "05: data classes"
 # subtitle: "Introduction to R for health data"
-# author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
+# authors: Andrea Mazzella (https://github.com/andreamazzella) and Simon Thelwall (https://github.com/simonthelwall)
 
 # Content  -------------------------------------------------------------------------------------------------------------
 # - Data classes
@@ -21,13 +21,15 @@ library(tidyverse)
 # 1.  Import `amr_klebsiella.csv`, contained in the `/data/raw` folder.
 # 2.  Cross-tabulate age group against antimicrobial susceptibility.
 
+
+
 # Data classes ---------------------------------------------------------------------------------------------------------
 
 # R represents different variable types (continuous, categorical etc.) internally using "classes".
 
 # You can check what class something is by using class():
 class(0.78)
-class(NA)
+class(FALSE)
 class("Maria")
 
 # R data classes that are relevant to health data analysis are:
@@ -41,11 +43,9 @@ class("Maria")
 
 ## Logical ----------------------------------------------------------------------------------
 
-# Three possible values - note they're upper-case and NOT in quotes.
+# The logical class has three possible values - note they're upper-case and NOT in quotes.
 TRUE
-T
 FALSE
-F
 NA
 
 # Note that FALSE is equivalent to 0 and TRUE is equivalent to 1:
@@ -62,7 +62,7 @@ near(1/49*49, 1)
 
 ## Numeric ----------------------------------------------------------------------------------
 
-# Numeric includes integers and "doubles" (that is, real numbers).
+# The numeric class includes two types: integers and "doubles" (that is, real numbers).
 typeof(2.7)
 
 # Adding an L after an integer forces R to treat it as an integer
@@ -85,9 +85,9 @@ janitor::round_half_up(0.5)
 
 ## Character --------------------------------------------------------------------------------
 
-# stringr
+# Character strings contain text.
 
-# Character strings are created using either double quotes (`"`) or single quotes (`'`).
+# They are created using either double quotes (`"`) or single quotes (`'`).
 "Maria"
 'Maria'
 
@@ -98,6 +98,8 @@ janitor::round_half_up(0.5)
 
 # You can use \n to create a new line.
 text <- "one\ntwo"
+
+# `stringr` is a package part of the core `tidyverse` and it helps dealing with factors. Its function start with `str_`
 str_view(text)
 
 # You can combine more strings with `paste0()` or `stringr::str_c()`
@@ -110,6 +112,12 @@ str_c("Josep ", NA, "Dalí")
 
 # You can subset a character string by using `gsub()` or stringr::str_sub()`:
 str_sub("ID3487", 3, 6)
+
+## Exercise 1  ---------------------------------------------------------------
+# 1. Create a new object called "mic" and give it a value of 3.2.
+# 2. Use class() to ensure that this new object has a numeric class.
+
+
 
 # Vectors --------------------------------------------------------------------------------------------------------------
 
@@ -152,6 +160,12 @@ c(
 
 # Of note, every column in a `data.frame` is a vector - see section "Data frames" below for more information.
 
+## Exercise 2  ---------------------------------------------------------------
+# 1.  Create a vector object that is 5 elements long and contains the values 81, 22, 83, 65 and 50
+# 2.  Find a way to test whether the object is a vector as intended (hint, base R has a number of functions to check the class of an object, e.g. `is.na()`)
+
+
+
 # More data classes ----------------------------------------------------------------------------------------------------
 
 ## Factors ----------------------------------------------------------------------------------
@@ -180,6 +194,10 @@ as.numeric(sample_months_factor)
 
 # You can use modify the order of levels in a factor with `forcats::fct_relevel()` to reorder bars or legend items in a ggplot.
 
+## Exercise 3  ---------------------------------------------------------------
+# 1. Create a factor object that contains the elements "E. coli", "K. pneumoniae", "MRSA", "MSSA" and "P. aeruginosa"
+# 2. Re-order this factor so that MRSA and MSSA come at each end and the remaining species are in alphabetical order.
+
 ## Dates ------------------------------------------------------------------------------------
 
 # Dates and times are not as straightforward as we might initially think; think about
@@ -204,6 +222,9 @@ month(ymd("2025-01-02"))
 day(dmy("01/04/2018"))
 
 # Time spans are implemented as durations, periods and intervals.
+
+## Exercise 4  ---------------------------------------------------------------
+# Create a vector of these dates: 07/10/2018, 9 Jan 2025, 31-12-1990 and 1st of April 2020.
 
 ## Year-months ------------------------------------------------------------------------------
 
@@ -275,6 +296,11 @@ tribble(~id, ~initials,
 
 # You can check the classes of all variables in a dataset with `glimpse()`, from `dplyr`:
 glimpse(dat)
+
+## Exercise 5  ---------------------------------------------------------------
+# Isolate column "initials" from data frame "dat".
+
+
 
 # Learning more ------------------------------------------------------------------------------------------------------------
 
