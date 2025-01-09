@@ -294,16 +294,9 @@ If the code in the chunk above worked, you will now see that the Connections tab
 
 ```
 
-### Pull data from a SQL table
+### Pull data from a SQL table using `dbplyr`
 
-You can get data from a SQL database table in a variety of ways:
-
--   Use package `dbplyr` to query a database using `dplyr` code - detailed below
--   Write the SQL query in a SQL chunk within a qmd - detailed below (but we may want to remove this)
--   Write the SQL query as a character string in `DBI::dbGetQuery()`
--   Call a SQL query (e.g. `query.sql`) from within R code by using `readr::read_lines()` and then passing it to `DBI::dbGetQuery()`
-
-#### Using `dbplyr`
+You can get data from a SQL database table in a variety of ways. In this topic, we'll use package `dbplyr` to query a database using `dplyr` code - detailed below. (In topic 10_sql, we'll explore some other methods.)
 
 1.  Use `tbl()` to create an object that represents the table you want. NB - running this code will not import the whole table into memory.
 
@@ -311,7 +304,7 @@ You can get data from a SQL database table in a variety of ways:
 sicbl_db <- tbl(con_LookupsShared, "vLKP_SICBL24")
 ```
 
-2.  Use `dplyr` functions to query the database. This will be covered in session `06_subset`, but for now just be aware that `select` keeps only the columns listed, and drops all other columns. Be aware that this still is not a dataframe, it's just a SQL commands. In the background, `dbplyr` is converting the `dplyr` code into a SQL query. You can see the SQL query by using `show_query` on the new object.
+2.  Use `dplyr` functions to query the database. This will be covered in session `06_subset`, but for now just be aware that `select` keeps only the columns listed. Be aware that this still is not a dataframe, it's just a SQL command. In the background, `dbplyr` is converting the `dplyr` code into a SQL query. You can see the SQL query by using `show_query()` on the new object.
 
 ```{r}
 sicbl_name_lookup_db <- sicbl_db |>
