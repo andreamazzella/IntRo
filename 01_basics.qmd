@@ -46,7 +46,7 @@ But it's better to keep your code saved in a script. This is for many reasons:
 
 1.  If your code throws an error, you can easily edit it and re-run it.
 2.  It allows you to keep track of your work so you don't have to restart from scratch every time.
-3.  You can sharing your work with others
+3.  You can share your work with others
 
 ------------------------------------------------------------------------
 
@@ -73,7 +73,7 @@ You can keep your R script organised using sections, which will appear in the Ou
 
 ## Quarto Markdown documents (.qmd)
 
-A Quarto Markdown document like this one (`intRo1 basics.qmd`) is mainly composed of two things:
+A Quarto Markdown document like this one (`01_basics.qmd`) is mainly composed of two things:
 
 -   **Text**, which is the main component.
     -   This can be formatted *as if it's a text editor.* If you're using Visual editing, you will find a tool bar with formatting options. If you're using Source, you can use Markdown syntax.
