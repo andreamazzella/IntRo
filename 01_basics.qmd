@@ -29,7 +29,7 @@ The RStudio interface is divided into four parts:
 |-------------------|-------------------------------|
 | Console, Terminal | Files, Packages, Help         |
 
--   *top left*: the code script or notebook you're working on (like this one: `intRo1 basics.qmd`).
+-   *top left*: the code script or notebook you're working on (like this one: `01_basics.qmd`).
 -   *bottom left*: the console (where you can input your commands)
 -   *top right*: Environment (where your datasets and other "objects" are stored)
 -   *bottom right*: help (and other stuff)
@@ -40,7 +40,11 @@ The RStudio interface is divided into four parts:
 
 The console is used to run simple commands that you don't need to save.
 
-*Exercise 1.* In the console, add 3 and 5. You do this by using it as a calculator: Type 3 + 5, then press Enter.
+### Exercise 1
+
+In the console, add 3 and 5. You do this by using it as a calculator: Type 3 + 5, then press Enter.
+
+------------------------------------------------------------------------
 
 But it's better to keep your code saved in a script. This is for many reasons:
 
@@ -88,41 +92,49 @@ print(R.version.string)
 You can use a qmd:
 
 -   Interactively, running chunks yourself
--   By rendering it into a document (this will be covered in session `12_markdown`)
+-   By rendering it into a document (this will be covered in session `12_quarto`)
 
 To **run all the code in a chunk**, you click on the green triangle button at the top right of the chunk (or you place your cursor inside it and press on Windows `Ctrl` + `Shift` + `Enter`; on Mac: `⌘` + `⌥` + `Enter`.
 
-*Exercise 2.* Run this chunk. Note where is the output displayed.
+### Exercise 2
+
+Run this chunk. Note where is the output displayed.
 
 ```{r}
 5 - 1
 ```
 
+------------------------------------------------------------------------
+
 To **run a single line**, you can click on it and press `Ctrl` + `Enter`, on Mac, `⌘` + `Enter`.
 
 To **run any part of the code** (like two lines), you can select the code of interest and press the key combinations as above.
 
-*Exercise 3.* Only run the line of this chunk that calculates the area of a circle - not the whole chunk.
+### Exercise 3
+
+Only run the line of this chunk that calculates the area of a circle - not the whole chunk.
 
 ```{r}
-strsplit("erom ecno yrt - knuhc elohw eht nur ev'uoy snaem ti siht ees uoy fi", NULL) |> 
+strsplit("erom ecno yrt - knuhc elohw eht nur ev'uoy snaem ti siht ees uoy fi", NULL) |>
   unlist() |> rev() |> paste(collapse = "")
 
 # Area of a circle
 pi * 1.4 ^2
 ```
 
+------------------------------------------------------------------------
+
 To add a new chunk, you can:
 
 -   Go to the toolbar, click `Code` → `Insert Chunk`.
 -   Go to the top right of the window, click on an icon with a green `+c` → `R`
 -   Use a keyboard shortcut
-    -   Mac:`⌘` + `⌥` + `I`
+    -   Mac: `⌘` + `⌥` + `I`
     -   Windows, US keyboard: `Ctrl` + `Alt` + `I`
     -   Windows, any other keyboard: this needs resetting - go to the toolbar, `Tools` → `Modify Keyboard Shortcuts...` → type `insert chunk` in the `Filter` field → click on the shortcut area → press `Ctrl` + `Shift` + `I`.
 -   You could potentially type the three backticks ```` ``` ```` followed by `{r}` and close the chunk with three more backticks, but why would you?
 
-A Markdown document can be opened in Visual mode (like this one) or in Source mode. Visual mode will have nicer formatting of the text outside of the code chunks.
+A Markdown document can be opened in Visual mode or in Source mode. Visual mode will have nicer formatting of the text outside of the code chunks.
 
 You can see the outline of the qmd file by clicking on the `Outline` button in the top right part of this panel.
 
@@ -131,7 +143,7 @@ You can create a new Markdown document, you can:
 -   Go to the toolbar: `File` → `New File` → `Quarto document...` → set options → click `Create`
 -   Go to the Files tab in the bottom right of the screen and click on the `New Blank File` icon → `Quarto doc...` (this will automatically save the file in the folder you see)
 
-*Exercise 4.*
+### Exercise 4
 
 1.  Add a new chunk in the space below
 2.  Use this new chunk to divide 6 by 2
@@ -142,7 +154,9 @@ You can create a new Markdown document, you can:
 
 You can tell R that something has a name; R will remember it and you can use that later in your code. This is called *assignment* and is done by using the arrow `<-` (keyboard shortcut: `Alt` + `-` on Windows, `⌥` + `*` on Mac) Assignment creates a new "object". The following code means: "radius" gets the value of 5.7. "radius" is a new object.
 
-*Exercise 5.* Run this chunk. In which part of the screen is R storing this value?
+### Exercise 5
+
+Run this chunk. In which part of the screen is R storing this value?
 
 ```{r}
 # "radius" gets the value of 5.7
@@ -158,7 +172,9 @@ Please note that when you assign a value, R does not show you any result. If you
 radius
 ```
 
-*Exercise 6.* Calculate the double of the value assigned to radius, without typing 5.7.
+### Exercise 6
+
+Calculate the double of the value assigned to radius, without typing 5.7.
 
 ```{r}
 
@@ -184,7 +200,7 @@ The square root function, `sqrt()`, is very simple: it can take a single argumen
 sqrt(64)
 ```
 
-Many functions take more arguments. For example, `seq()`, used to generate regular sequences, needs values for these arguments: `from`, `to`, `by`.
+Many functions take more arguments. For example, `seq()`, used to generate regular sequences, can take values for three arguments: `from`, `to`, `by`.
 
 ```{r}
 # Create a regular sequence of numbers from 1996 to 2040, by 4
@@ -197,7 +213,7 @@ You can find information on a function by using `help()`; the documentation will
 help(seq)
 ```
 
-*Exercise 7.*
+### Exercise 7
 
 1.  Create a new chunk below.
 2.  Use it to calculate the natural logarithm of 100.
@@ -219,7 +235,9 @@ To download and install a package, I recommend you use one these options:
 
 You can check if a package is already installed by going to the `Packages` tab and searching for its name.
 
-*Exercise 8.* Install packages `readr`, `ggplot2` and `dplyr`.
+### Exercise 8
+
+Install packages `readr`, `ggplot2` and `dplyr`.
 
 ### Step 2: Load the package
 
@@ -245,6 +263,8 @@ This can be helpful when you want to clarify which package the function is from,
 
 -   Two packages have a function with the same name (e.g., `filter` is a function in both `stats` and `dplyr`)
 -   The function is not commonly used
+
+------------------------------------------------------------------------
 
 ## Exploring data frames
 
@@ -278,7 +298,7 @@ dplyr::glimpse(bacteraemias, width = 100)
 
 ------------------------------------------------------------------------
 
-*Push exercise*.
+### Push exercise
 
 1.  Create a new chunk in the space below.
 2.  Preview the `msleep` data frame, which is available from package `ggplot2`.
