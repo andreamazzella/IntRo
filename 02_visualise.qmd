@@ -48,7 +48,9 @@ amr_klebsiella <- read_csv("data/raw/amr_klebsiella.csv")
 amr_pseud_acinetobac <- read_csv("data/raw/pseud_acinetobac.csv")
 ```
 
-*Exercise 1*. Which of these tables are line lists and which are aggregated data?
+#### Exercise 1
+
+Which of the data tables above are line lists and which contain aggregated data?
 
 ------------------------------------------------------------------------
 
@@ -78,18 +80,18 @@ ggplot(amr_ethnicity, aes(x = ethn_group, y = perc_resist)) +
 Let's break this code down.
 
 -   `ggplot()` is the base function; it needs as arguments:
--   the data frame name (`amr_ethnicity`)
--   `aes()` stands for "aesthetics", and basically means what we want to appear on the graph. `x = ethn_group` means that we want variable `ethn_group` to be plotted on the x-axis. `y = perc_resist` means that we want those values to show on the y-axis.
+    -   the data frame name (`amr_ethnicity`)
+    -   `aes()` stands for "aesthetics", and basically means what we want to appear on the graph. `x = ethn_group` means that we want variable `ethn_group` to be plotted on the x-axis. `y = perc_resist` means that we want those values to show on the y-axis.
 -   `geom_col` is a geometry function: it specifies that we want the variables above to be represented in a bar chart.
 -   The `+` sign links the base function with the geometry function.
 
 Note that code can span over more than one line - it makes it more readable.
 
-#### Bugs
+### Bugs
 
 Computers take your instructions very literally, so tiny mistakes can easily break some code.
 
-*Exercise 2.*
+#### Exercise 2
 
 1.  Remove the two `#` from this chunk.
 2.  You will see that this chunk won't run properly.
@@ -122,7 +124,7 @@ ggplot(amr_klebsiella, aes(x = susceptibility_result)) +
     geom_bar(fill = "darkgreen")
 ```
 
-*Exercise 3.*
+#### Exercise 3
 
 1.  Visualise the summarised age of the different ethnic groups in the `amr_ethnicity` data with a bar chart.
 2.  Colour all the bars with a single colour of your choice.
@@ -131,7 +133,7 @@ ggplot(amr_klebsiella, aes(x = susceptibility_result)) +
 
 ```
 
-*Want to know more?* Reordering bars is covered in session `08_clean`.
+> *Want to know more?* Reordering bars is covered in session `08_clean`.
 
 ### Clustered bar charts
 
@@ -150,7 +152,7 @@ ggplot(amr_pseud_acinetobac, aes(x = organism, y = perc_resistant, fill = antimi
   geom_col(position = position_dodge(0.8), width = 0.7)
 ```
 
-*Exercise 4.*
+#### Exercise 4
 
 1.  Create a bar chart that shows the same data, but with antimicrobials on the x-axis and colours indicating organism.
 2.  Which of the two visualisations do you find more helpful?
@@ -159,10 +161,10 @@ ggplot(amr_pseud_acinetobac, aes(x = organism, y = perc_resistant, fill = antimi
 
 ```
 
-*Want to know more?*
-
--   To italicise part of some text, I invite you to look into `ggtext::element_markdown()`.
--   To change the *value* labels in a categorical variable, you either use `+ scale_<aes>_discrete(labels = c("value1" = "label1", "value2" = "label2"))`, or you recode the values before plotting. I recommend you ignore this for now.
+> *Want to know more?*
+>
+> -   To italicise part of some text, I invite you to look into `ggtext::element_markdown()`.
+> -   To change the *value* labels in a categorical variable, you either use `+ scale_<aes>_discrete(labels = c("value1" = "label1", "value2" = "label2"))`, or you recode the values before plotting. I recommend you ignore this for now.
 
 ------------------------------------------------------------------------
 
@@ -180,9 +182,13 @@ ggplot(amr_pseud_acinetobac, aes(y = organism, x = perc_resistant, fill = antimi
        x = "Percentage of isolates that are resistant")
 ```
 
-*Exercise 5.*
+#### Exercise 5
 
-Update the code to make the graph above to: 1. Show a subtitle (England, 2023) 2. Show a caption with the data source (ESPAUR report 2024) 3. Change the label title from "antimicrobial" to "Antibiotic".
+Update the code to make the graph above to:
+
+1.  Show a subtitle (England, 2023)
+2.  Show a caption with the data source (ESPAUR report 2024)
+3.  Change the label title from "antimicrobial" to "Antibiotic".
 
 ```{r}
 
@@ -211,7 +217,7 @@ amr_tb |>
     geom_col()
 ```
 
-*Exercise 6*.
+#### Exercise 6
 
 1.  Create a line chart equivalent to the bar chart above.
 2.  Do you notice any other difference?
@@ -220,7 +226,7 @@ amr_tb |>
 
 ```
 
-*Want to know more?* If you want your y-axis to start from 0 in a line chart, you can add a new layer: `coord_cartesian(ylim = 0, NA))`.
+> *Want to know more?* If you want your y-axis to start from 0 in a line chart, you can add a new layer: `coord_cartesian(ylim = 0, NA))`.
 
 ### 2 to 4 lines
 
@@ -237,9 +243,9 @@ rates_bacteraemia_grampos |>
     geom_line()
 ```
 
-*Want to learn more?*
-
--   Ideally, you wouldn't rely on colour alone to differentiate lines. It is preferable to label the lines directly, for example with `ggrepel::geom_label_repel()` - a bit fiddly.
+> *Want to learn more?*
+>
+> -   Ideally, you wouldn't rely on colour alone to differentiate lines. It is preferable to label the lines directly, for example with `ggrepel::geom_label_repel()` - a bit fiddly.
 
 ### 5 or more lines
 
@@ -257,10 +263,10 @@ rates_bacteraemia_all |>
     geom_line()
 ```
 
-*Want to learn more?*
-
--   If your aim is showing the time trend in each facet, you can set the y-axis scales to be independent of each other, with `facet_wrap(~organism, scales = "free_y"`. That will zoom in.
--   If you aim is comparing lines, you can show all other lines in a lighter shade to each small plot using the `gghighlight` package.
+> *Want to learn more?*
+>
+> -   If your aim is showing the time trend in each facet, you can set the y-axis scales to be independent of each other, with `facet_wrap(~organism, scales = "free_y"`. That will zoom in.
+> -   If you aim is comparing lines, you can show all other lines in a lighter shade to each small plot using the `gghighlight` package.
 
 ## Scatterplots
 
@@ -280,7 +286,7 @@ ggplot(amr_klebsiella, aes(x = age, y = CrCl, colour = sex)) +
   geom_point()
 ```
 
-*Exercise 7.*
+#### Exercise 7
 
 Show the two sexes with different *shapes* as well as different colours.
 
@@ -327,7 +333,7 @@ ggplot(amr_klebsiella, aes(x = age, y = CrCl)) +
 
 ## Themes
 
-The `theme_...()` functions allow you to customise the appearance of a ggplot. If you want some changes to apply to all graphs you'll produce in this session, you can use `theme_set()` and `theme_update()`. I recommend adding this code to the top of your script that produces graphs.
+The `theme_...()` functions allow you to customise the appearance of a ggplot. If you want some changes to apply to all graphs you'll produce in this session, you can use `theme_set()` and `theme_update()`. I recommend adding code like this to the top of your script that produces graphs.
 
 ```{r}
 # Set theme_bw() as the start point but increase the starting character size to 12 points
@@ -351,7 +357,9 @@ theme_update(
     )
 ```
 
-*Exercise* 8. Rerun the chunk that produces the creatinine clearance graph and notice the differences.
+#### Exercise 8
+
+Rerun the chunk that produces the creatinine clearance graph and notice the differences.
 
 ------------------------------------------------------------------------
 
@@ -372,7 +380,9 @@ You can save to pdf, jpeg, png, svg, and other formats, and you can change heigh
 
 Please refer to the function's documentation for more options.
 
-*Exercise 8.* Save this same plot to file, but:
+#### Exercise 9
+
+Save this same plot to file, but:
 
 1.  Give it a different name
 2.  Use jpeg format
