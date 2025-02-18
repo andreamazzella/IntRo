@@ -37,7 +37,9 @@ library(tidyverse)
 > *Want to know more?* Package conflicts.\
 > Two packages can contain a function with the same name - for example, `filter()` is present in both the base R module `stats` and in `dplyr`. If you load `dplyr`, R will warn you that from now on, every time you call `filter()`, it will use its `dplyr` form. In the rare cases in which you want to force R to use the function from a specific package, you can preface the function with `packagename::`. For example, `stats::filter(...)` will tell R to specifically use the `filter()` function from `stats` (and not the one from `dplyr`).
 
-Let's import some data - for now, please just run this chunk; we'll come back to how to do it in session `03_import`.
+------------------------------------------------------------------------
+
+Let's import some data. For now, please just run this chunk; we'll come back to how this works in session `03_import`.
 
 We'll use some antimicrobial resistance data adapted from the ESPAUR 2024 report.
 
@@ -58,7 +60,7 @@ Which of the data tables above are line lists and which contain aggregated data?
 
 Package `ggplot2` can make high-quality graphs.
 
-It works in "layers" separated by `+` signs: you can have a very simple graph with just two layers, or a very complex one with many more. Let's start with something simple and work on it.
+It works in "layers" separated by `+` signs: you can have a very simple graph with just two layers (`ggplot(...) + geom_...(...)`), or a very complex one with many more. Let's start with something simple and work on it.
 
 ------------------------------------------------------------------------
 
@@ -81,9 +83,9 @@ Let's break this code down.
 
 -   `ggplot()` is the base function; it needs as arguments:
     -   the data frame name (`amr_ethnicity`)
-    -   `aes()` stands for "aesthetics", and basically means what we want to appear on the graph. `x = ethn_group` means that we want variable `ethn_group` to be plotted on the x-axis. `y = perc_resist` means that we want those values to show on the y-axis.
--   `geom_col` is a geometry function: it specifies that we want the variables above to be represented in a bar chart.
--   The `+` sign links the base function with the geometry function.
+    -   `aes()`, which stands for "aesthetics", and basically indicates what we want to appear on the graph. `x = ethn_group` means that we want variable `ethn_group` to be plotted on the x-axis. `y = perc_resist` means that we want those values to show on the y-axis.
+-   `geom_col` is a "geom" (geometry) function: it specifies that we want the variables above to be represented in a bar chart.
+-   The `+` sign links the two layers: the `ggplot()` function call with the geom function call.
 
 Note that code can span over more than one line - it makes it more readable.
 
@@ -93,13 +95,11 @@ Computers take your instructions very literally, so tiny mistakes can easily bre
 
 #### Exercise 2
 
-1.  Remove the two `#` from this chunk.
-2.  You will see that this chunk won't run properly.
-3.  Can you spot the *four* bugs that break the code, and fix them?
+This chunk will lead to an error. Can you spot the *four* bugs that break the code, and fix them?
 
 ```{r}
-# ggplot(amr_ethnicity, aes(x = Ethn_group, y = perc resist)
-#   geom_col()
+ggplot(amr_ethnicity, aes(x = Ethn_group, y = perc resist)
+  geom_col()
 ```
 
 (Hint: if you're accessing this qmd file in Source mode, RStudio will *sometimes* help with some of these bugs. Look to the left of the chunk. Sometimes the advice can actually be misleading, so take with a pinch of salt).
@@ -177,9 +177,11 @@ You do this by adding another `+` sign and then the `labs()` function - which ca
 ```{r}
 ggplot(amr_pseud_acinetobac, aes(y = organism, x = perc_resistant, fill = antimicrobial)) +
   geom_col(position = position_dodge(0.8), width = 0.7) +
-  labs(title = "Antibiotic resistance in Acinetobacter and Pseudomonas",
-       y = "Organism",
-       x = "Percentage of isolates that are resistant")
+  labs(
+    title = "Antibiotic resistance in Acinetobacter and Pseudomonas",
+    y = "Organism",
+    x = "Percentage of isolates that are resistant"
+    )
 ```
 
 #### Exercise 5
@@ -304,31 +306,31 @@ Run this chunk and then try to understand what each line does.
 
 ```{r}
 ggplot(amr_klebsiella, aes(x = age, y = CrCl)) +
-    # Highlight chronic kidney disease stage 3-5
-    annotate("rect", ymin = 0, ymax = 60, xmin = 0, xmax = 150, fill = "red", alpha = 0.1) +
-    annotate("text", x  = 50, y = 40, label = "CKD 3-5") +
-    geom_point(
-        aes(colour = sex, shape = sex),
-        alpha = 0.5
-        ) +
-    geom_smooth(
-        method = "lm",
-        linetype = "dashed"
-        ) +
-    coord_cartesian(xlim = c(18, 100)) +
-    # Show the CrCl thresholds for the various stages of CKD
-    scale_y_continuous(breaks = c(0, 15, seq(30, 160, by = 30))) +
-    scale_x_continuous(breaks = c(18, seq(40, 100, by = 20))) +
-    scale_colour_brewer(palette  = "Dark2") +
-    labs(
-        title = "Relationship between age and creatinine clearance",
-        subtitle = "Klebsiella spp. bacteraemia, England, 2023",
-        x = "Age (years)",
-        y = "Creatinine\nclearace\n(mL/min)",
-        colour = "Sex",
-        shape = "Sex",
-        caption = "Data: simulated. The blue dashed line is fitted  using linear regression."
-        )
+  # Highlight chronic kidney disease stage 3-5
+  annotate("rect", ymin = 0, ymax = 60, xmin = 0, xmax = 150, fill = "red", alpha = 0.1) +
+  annotate("text", x  = 50, y = 40, label = "CKD 3-5") +
+  geom_point(
+    aes(colour = sex, shape = sex),
+    alpha = 0.5
+    ) +
+  geom_smooth(
+    method = "lm",
+    linetype = "dashed"
+    ) +
+  coord_cartesian(xlim = c(18, 100)) +
+  # Show the CrCl thresholds for the various stages of CKD
+  scale_y_continuous(breaks = c(0, 15, seq(30, 160, by = 30))) +
+  scale_x_continuous(breaks = c(18, seq(40, 100, by = 20))) +
+  scale_colour_brewer(palette  = "Dark2") +
+  labs(
+    title = "Relationship between age and creatinine clearance",
+    subtitle = "Klebsiella spp. bacteraemia, England, 2023",
+    x = "Age (years)",
+    y = "Creatinine\nclearace\n(mL/min)",
+    colour = "Sex",
+    shape = "Sex",
+    caption = "Data: simulated. The blue dashed line is fitted  using linear regression."
+    )
 ```
 
 ## Themes
@@ -339,22 +341,22 @@ The `theme_...()` functions allow you to customise the appearance of a ggplot. I
 # Set theme_bw() as the start point but increase the starting character size to 12 points
 theme_set(theme_bw(base_size = 12))
 theme_update(
-    panel.grid.minor.x = element_blank(),
-    panel.grid.minor.y = element_blank(),
-    panel.border = element_blank(),
-    axis.line = element_line(colour = "black"),
-    axis.title.y = element_text(
-        angle = 0,
-        hjust = 0
-        ),
-    axis.title = element_text(face = "bold"),
-    strip.background = element_blank(),
-    strip.text = element_text(size = 11),
-    panel.spacing = unit(1, "lines"),
-    axis.text = element_text(size = 11),
-    legend.title = element_blank(),
-    legend.text = element_text(size = 11)
-    )
+  panel.grid.minor.x = element_blank(),
+  panel.grid.minor.y = element_blank(),
+  panel.border = element_blank(),
+  axis.line = element_line(colour = "black"),
+  axis.title.y = element_text(
+    angle = 0,
+    hjust = 0
+    ),
+  axis.title = element_text(face = "bold"),
+  strip.background = element_blank(),
+  strip.text = element_text(size = 11),
+  panel.spacing = unit(1, "lines"),
+  axis.text = element_text(size = 11),
+  legend.title = element_blank(),
+  legend.text = element_text(size = 11)
+  )
 ```
 
 #### Exercise 8
@@ -475,12 +477,14 @@ ggplot(amr_pseud_acinetobac, aes(y = antimicrobial, x = perc_resistant, fill = o
 
 ggplot(amr_pseud_acinetobac, aes(y = organism, x = perc_resistant, fill = antimicrobial)) +
   geom_col(position = position_dodge(0.8), width = 0.7) +
-  labs(title = "Antibiotic resistance in Acinetobacter and Pseudomonas",
-       subtitle = "England, 2023",
-       y = "Organism",
-       x = "Percentage of isolates that are resistant",
-       fill = "Antibiotic",
-       caption = "Data source: ESPAUR report 2024")
+  labs(
+    title = "Antibiotic resistance in Acinetobacter and Pseudomonas",
+    subtitle = "England, 2023",
+    y = "Organism",
+    x = "Percentage of isolates that are resistant",
+    fill = "Antibiotic",
+    caption = "Data source: ESPAUR report 2024"
+    )
 ```
 
 ```{r}
@@ -488,8 +492,8 @@ ggplot(amr_pseud_acinetobac, aes(y = organism, x = perc_resistant, fill = antimi
 
 # Q1
 amr_tb |>
-    ggplot(aes(year, resistant_count)) +
-    geom_line()
+  ggplot(aes(year, resistant_count)) +
+  geom_line()
 
 # Q2
 # The y-axis has been cut in order to zoom into the data.
@@ -506,15 +510,15 @@ ggplot(amr_klebsiella, aes(x = age, y = CrCl, shape = sex, colour = sex)) +
 #| label: ex8 solution
 
 ggsave(
-    # Q1, Q2
-    "output/scatter_creat_clearance.jpeg",
-    # Q3
-    width = 1200,
-    height = 500,
-    unit = "px",
-    # Q4
-    dpi = 150
-    )
+  # Q1, Q2
+  "output/scatter_creat_clearance.jpeg",
+  # Q3
+  width = 1200,
+  height = 500,
+  unit = "px",
+  # Q4
+  dpi = 150
+  )
 ```
 
 ------------------------------------------------------------------------
