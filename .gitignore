@@ -13,3 +13,4 @@ data/raw/espaur2023*
 data/processed/
 data/processing/point_prevalence.rds
 planning/
+certificates/
