@@ -117,7 +117,7 @@ ggplot(amr_klebsiella, aes(x = susceptibility_result)) +
 
 We can build on these simple graphs by adding some optional arguments.
 
-For example, let's change the fill colour from the default gray.
+For example, let's change the fill colour from the default grey.
 
 ```{r}
 ggplot(amr_klebsiella, aes(x = susceptibility_result)) +
@@ -213,9 +213,8 @@ amr_tb <- read_csv("data/raw/amr_tb.csv")
 ```
 
 ```{r}
-# An equivalent bar chart
-amr_tb |>
-    ggplot(aes(year, resistant_count)) +
+# Bar chart
+ggplot(amr_tb, aes(year, resistant_count)) +
     geom_col()
 ```
 
@@ -341,19 +340,26 @@ The `theme_...()` functions allow you to customise the appearance of a ggplot. I
 # Set theme_bw() as the start point but increase the starting character size to 12 points
 theme_set(theme_bw(base_size = 12))
 theme_update(
+  # Do not show gridlines for minor axis breaks
   panel.grid.minor.x = element_blank(),
   panel.grid.minor.y = element_blank(),
+  # Do not show a border for the panel
   panel.border = element_blank(),
+  # Show each axis as a black line
   axis.line = element_line(colour = "black"),
+  # Make y-axis label horizontal
   axis.title.y = element_text(
     angle = 0,
     hjust = 0
     ),
+  # Make axis labels bold
   axis.title = element_text(face = "bold"),
+  axis.text = element_text(size = 11),
+  # Only relevant for plots with facets
   strip.background = element_blank(),
   strip.text = element_text(size = 11),
   panel.spacing = unit(1, "lines"),
-  axis.text = element_text(size = 11),
+  # Remove legend title
   legend.title = element_blank(),
   legend.text = element_text(size = 11)
   )
@@ -444,4 +450,81 @@ I recommend these resources for `ggplot2` and data visualisation:
 
 ------------------------------------------------------------------------
 
+## Solutions
 
+```{r}
+#| label: ex1 solution
+
+# amr_klebsiella is the only line list; the others are aggregated.
+```
+
+```{r}
+#| label: ex2 tips
+
+# Just some tips: look at case, spaces, and symbols
+```
+
+```{r}
+#| label: ex3 solution
+
+ggplot(amr_ethnicity, aes(y = ethn_group, x = median_age)) +
+  geom_col(fill = "#007C91")
+```
+
+```{r}
+#| label: ex4 solution
+
+ggplot(amr_pseud_acinetobac, aes(y = antimicrobial, x = perc_resistant, fill = organism)) +
+  geom_col(position = position_dodge(0.8), width = 0.7)
+```
+
+```{r}
+#| label: ex5 solution
+
+ggplot(amr_pseud_acinetobac, aes(y = organism, x = perc_resistant, fill = antimicrobial)) +
+  geom_col(position = position_dodge(0.8), width = 0.7) +
+  labs(
+    title = "Antibiotic resistance in Acinetobacter and Pseudomonas",
+    subtitle = "England, 2023",
+    y = "Organism",
+    x = "Percentage of isolates that are resistant",
+    fill = "Antibiotic",
+    caption = "Data source: ESPAUR report 2024"
+    )
+```
+
+```{r}
+#| label: ex6 solution
+
+# Q1
+amr_tb |>
+  ggplot(aes(year, resistant_count)) +
+  geom_line()
+
+# Q2
+# The y-axis has been cut in order to zoom into the data.
+```
+
+```{r}
+#| label: ex7 solution
+
+ggplot(amr_klebsiella, aes(x = age, y = CrCl, shape = sex, colour = sex)) +
+  geom_point()
+```
+
+```{r}
+#| label: ex8 solution
+
+ggsave(
+  # Q1, Q2
+  "output/scatter_creat_clearance.jpeg",
+  # Q3
+  width = 1200,
+  height = 500,
+  unit = "px",
+  # Q4
+  dpi = 150
+  )
+```
+
+------------------------------------------------------------------------
