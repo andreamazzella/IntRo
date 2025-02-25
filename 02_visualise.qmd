@@ -513,7 +513,7 @@ ggplot(amr_klebsiella, aes(x = age, y = CrCl, shape = sex, colour = sex)) +
 ```
 
 ```{r}
-#| label: ex8 solution
+#| label: ex9 solution
 
 ggsave(
   # Q1, Q2

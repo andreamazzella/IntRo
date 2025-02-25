@@ -106,7 +106,7 @@ Let's preview it.
 head(metabolic)
 ```
 
-*Exercise 1*.
+##### Exercise 1
 
 1.  Choose any other CSV file in the /data folder
 2.  Import it.
@@ -117,6 +117,8 @@ head(metabolic)
 ```
 
 Please note that if the column headers contain spaces, `read_csv` will keep them. In session `08_cleaning` we'll go through how to make these column names easier to deal with.
+
+------------------------------------------------------------------------
 
 If the file contains many columns that you don't need, you can specify which ones to import with the `col_select` argument. This has the advantage of speeding up the import.
 
@@ -157,7 +159,9 @@ R's native data file format, rds, keeps data types, so it's helpful to use for e
 
 You can read them with `readr::read_rds()` or base R `readRDS()` :
 
-*Exercise 2*. Read `diabetes.rds`, a file saved in the `/data` folder.
+##### Exercise 2
+
+Read `diabetes.rds`, a file saved in the `/data` folder.
 
 ```{r}
 
@@ -173,7 +177,7 @@ candi_site5 <- read_excel("data/raw/candidaemias.xlsx")
 
 Please note that by default `read_excel()` imports the first sheet, but you can specify otherwise.
 
-*Exercise 3*.
+##### Exercise 3
 
 1.  Open the documentation of `read_excel()` .
 2.  Find out how to import a different sheet.
@@ -191,7 +195,7 @@ You can use `readODS::read_ods()`, which is very similar to the function above.
 
 If for any unpleasant circumstance the data was saved in Stata's proprietary dta format, `haven::read_dta()` comes to the rescue.
 
-*Exercise 4*.
+##### Exercise 4
 
 1.  Import the `point_prevalence.dta` file.
 2.  Preview the data. What do you notice about the `site`, `site_type` and `fy` columns?
@@ -237,7 +241,9 @@ pps |> write_csv("data/processed/point_prevalence.csv")
 
 `readr::write_rds` or base R `saveRDS()` let you save in the native R format, which will keep the data types. I recommend doing this for intermediate data tables you are processing.
 
-*Exercise 5*. Save the `pps` data frame as an RDS file in the "processing" folder.
+##### Exercise 5
+
+Save the `pps` data frame as an RDS file in the "processing" folder.
 
 ```{r}
 
@@ -288,7 +294,9 @@ con_LookupsShared <-
 
 If the code in the chunk above worked, you will now see that the Connections tab in the panel at the top right of this window will have become active and show all databases within this server.
 
-*Exercise 6*. Create a separate connection to another database within a server you have access to.
+##### Exercise 6
+
+Create a separate connection to another database within a server you have access to.
 
 ```{r}
 
@@ -340,7 +348,7 @@ dbWriteTable(
 
 ------------------------------------------------------------------------
 
-#### Stretch exercise
+##### Stretch exercise
 
 If you have access to LookupsShared:
 
