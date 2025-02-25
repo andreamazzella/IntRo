@@ -53,7 +53,7 @@ In this session, you'll use functions from a few packages:
 -   [`readxl`](https://readxl.tidyverse.org/) to read Excel spreadsheets
 -   [`haven`](https://haven.tidyverse.org/) to read and write dta files
 -   [`readODS`](https://docs.ropensci.org/readODS/) to read and write ODS spreadsheets
--   `DBI`, `odbc` and to read data from (and write it to) an SQL database.
+-   `DBI`, `odbc` and to read data from (and write it to) an SQL database
 -   [`dbplyr`](https://dbplyr.tidyverse.org/) to simplify querying a SQL database table.
 -   [`fs`](https://fs.r-lib.org/) to handle file and folders
 
@@ -96,7 +96,11 @@ metabolic <- read_csv("data/raw/metabolic.csv")
 
 The code above will work if the CSV `metabolic.csv` is stored in a folder called `data` which is kept where this .qmd script is.
 
-However, if you need to keep your data on a shared drive, you need to specify the longer path. I recommend using the full path to identify the data folder (e.g., `//FILECOL17.phe.gov.uk/ProjectData/HCAI/intRo/data/`) and not just e.g. `H:/intRo/data/`, because some people might not have mapped the same drive to the same letter. You can then use `paste0()` or `glue::glue()` to identify your file. Please note, I recommend **against** using `setwd()` to do this. More information on data location will be covered in session `13_workflows`.
+However, if you need to keep your data on a shared drive, you need to specify the longer path. I recommend using the full path to identify the data folder (e.g., `//FILECOL17.phe.gov.uk/ProjectData/HCAI/intRo/data/`) and not just e.g. `H:/intRo/data/`, because some people might not have mapped the same drive to the same letter.
+
+You can then use `paste0()` or `glue::glue()` to identify your file. Please note, I recommend **against** using `setwd()` to do this. More information on data location will be covered in session `13_workflows`.
+
+------------------------------------------------------------------------
 
 You will note that now this dataset has been imported in your *Environment*, in the top right of your window.
 
@@ -161,7 +165,7 @@ You can read them with `readr::read_rds()` or base R `readRDS()` :
 
 ##### Exercise 2
 
-Read `diabetes.rds`, a file saved in the `/data` folder.
+Read `diabetes.rds`, a file saved in the `/data/processing/` folder.
 
 ```{r}
 
@@ -215,6 +219,8 @@ pps <-
 pps
 ```
 
+------------------------------------------------------------------------
+
 ### Exporting data to a file
 
 Whatever you do to the dataset, it doesn't change the original file. If you want to make some changes permanent, you need to use a writing function.
@@ -230,7 +236,7 @@ dir_create("data/processed")
 You can use `readr::write_csv`. For example, let's save the pps data frame in CSV format.
 
 ```{r}
-pps |> write_csv("data/processed/point_prevalence.csv")
+write_csv(pps, "data/processed/point_prevalence.csv")
 ```
 
 #### Exporting as rds
@@ -263,6 +269,8 @@ If you need to export data in spreadsheet format, I recommend using ODS (OpenDoc
 
 If for any unfortunate circumstance you must save the data in Stata's proprietary dta format, you can use `haven::write_dta()`.
 
+------------------------------------------------------------------------
+
 ## Reading and writing on a SQL database
 
 ### Initial SQL setup
@@ -284,12 +292,12 @@ If you only need to import tables from a single database, you can specify the da
 
 ```{r}
 con_LookupsShared <-
-    dbConnect(
-        odbc(),
-        Driver = "SQL Server",
-        Server = "SQLClusColLK19\\Lake19",
-        Database = "LookupsShared"
-        )
+  dbConnect(
+    odbc(),
+    Driver = "SQL Server",
+    Server = "SQLClusColLK19\\Lake19",
+    Database = "LookupsShared"
+    )
 ```
 
 If the code in the chunk above worked, you will now see that the Connections tab in the panel at the top right of this window will have become active and show all databases within this server.
@@ -315,8 +323,7 @@ sicbl_db <- tbl(con_LookupsShared, "vLKP_SICBL24")
 2.  Use `dplyr` functions to query the database. This will be covered in session `06_subset`, but for now just be aware that `select` keeps only the columns listed. Be aware that this still is not a dataframe, it's just a SQL command. In the background, `dbplyr` is converting the `dplyr` code into a SQL query. You can see the SQL query by using `show_query()` on the new object.
 
 ```{r}
-sicbl_name_lookup_db <- sicbl_db |>
-    select(SICBL24CD, SICBL24NM)
+sicbl_name_lookup_db <- select(sicbl_db, SICBL24CD, SICBL24NM)
 
 show_query(sicbl_name_lookup_db)
 ```
@@ -327,6 +334,8 @@ show_query(sicbl_name_lookup_db)
 sicbl_name_lookup <- collect(sicbl_name_lookup_db)
 sicbl_name_lookup
 ```
+
+------------------------------------------------------------------------
 
 ### Writing data to a SQL database
 
@@ -340,10 +349,10 @@ Please note that this chunk will throw an error - you don't have writing permiss
 test <- tibble(col1 = c("a", "b", "c"))
 
 dbWriteTable(
-    con_LookupsShared,
-    name = "vLKP_test",
-    value = test
-    )
+  con_LookupsShared,
+  name = "vLKP_test",
+  value = test
+  )
 ```
 
 ------------------------------------------------------------------------
@@ -428,7 +437,7 @@ pps_raw
 ```{r}
 #| label: exerc5 solution
 
-pps |> write_rds("data/processing/point_prevalence.rds")
+write_rds(pps, "data/processing/point_prevalence.rds")
 ```
 
 ```{r}
@@ -436,11 +445,11 @@ pps |> write_rds("data/processing/point_prevalence.rds")
 
 # Just an example - this will only work if you have access to this database
 con_staging <-
-    dbConnect(
-        odbc(),
-        Driver = "SQL Server",
-        Server = "SQLCLUSCOLHFN17\\HFN17",
-        Database = "HCAI_Analysis_Staging")
+  dbConnect(
+    odbc(),
+    Driver = "SQL Server",
+    Server = "SQLCLUSCOLHFN17\\HFN17",
+    Database = "HCAI_Analysis_Staging")
 ```
 
 ```{r}
@@ -450,8 +459,7 @@ esp_db <- tbl(con_LookupsShared, "vRef_ESP2013")
 
 esp <- collect(esp_db)
 
-esp |>
-    ggplot(aes(Age_Band_Min, Population)) +
+ggplot(esp, aes(Age_Band_Min, Population)) +
     # The data is already aggregated
     geom_col()
 ```
