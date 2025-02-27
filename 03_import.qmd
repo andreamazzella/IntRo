@@ -185,7 +185,7 @@ Please note that by default `read_excel()` imports the first sheet, but you can 
 
 1.  Open the documentation of `read_excel()` .
 2.  Find out how to import a different sheet.
-3.  Read the sheet containing antifungal treatment from the `candidaemias.xlsx` file.
+3.  Read the sheet containing antifungal medications from the `candidaemias.xlsx` file.
 
 ```{r}
 
