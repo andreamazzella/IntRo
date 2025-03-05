@@ -63,7 +63,7 @@ help(trial)
 
 You can use `summary()` to get a quick summary of your entire dataset.
 
-*Exercise 1.*
+#### Exercise 1
 
 -   Run the following chunk.
 -   What is R doing to each variable?
@@ -74,7 +74,7 @@ You can use `summary()` to get a quick summary of your entire dataset.
 summary(trial)
 ```
 
-*Want to know more?* This function doesn't provide a helpful summary of character variables, like `trt`. Once you specify the data class, the output will be more telling; see `intRo6 clean.Rmd` for how to do this.
+> *Want to know more?* This function doesn't provide a helpful summary of character variables, like `trt`. Once you specify the data class, the output will be more useful; see `08_clean.qmd` for how to do this.
 
 ------------------------------------------------------------------------
 
@@ -110,7 +110,7 @@ trial |>
     )
 ```
 
-*Exercise 2.*
+#### Exercise 2
 
 1.  Try and calculate the average age.
 2.  Why do you get an `NA` result?
@@ -169,7 +169,7 @@ trial |>
     )
 ```
 
-*Exercise 3.*
+#### Exercise 3
 
 Calculate the median and maximum marker levels in the four stage groups.
 
@@ -186,7 +186,7 @@ To tabulate categorical data, we have many options, among which:
 -   `count()` from `dplyr`
 -   `tabyl()` from `janitor`.
 
-*Exercise 4.*
+#### Exercise 4
 
 Run these two chunks and compare their outputs.
 
@@ -203,7 +203,7 @@ trial |>
   tabyl(response)
 ```
 
-*Exercise 5.*
+#### Exercise 5
 
 1.  Write a line of code that will calculate the percentage of patients with each cancer stage.
 2.  Show the same with an appropriate graph.
@@ -245,7 +245,7 @@ trial |>
   adorn_ns()
 ```
 
-*Exercise 6.*
+#### Exercise 6
 
 Write some code to calculate the percentage of people who were alive at the end of the study stratified by cancer grade. (If you can't remember the names of your variables, you can run `names(trial)`.
 
@@ -296,7 +296,9 @@ adorn_ns(tab_trial_perc_formt)
 
 You can set a keyboard shortcut for the `|>` pipe. Go to Tools → Global options → Code → tick "Use native pipe operator". After this, pressing *Ctrl + Shift + M* (on Windows) will insert a `|>` pipe.
 
-*Exercise 5.* Rewrite the following code using the pipe.
+#### Exercise 7
+
+Rewrite the following code using the pipe.
 
 ```{r}
 # Without a pipe
@@ -363,7 +365,7 @@ final_table <- trial |>
 final_table
 ```
 
-*Exercise 7.*
+#### Exercise 8
 
 Create a table 1 of the `ToothGrowth` dataset, stratifying by supplement type but keeping an overall column.
 
