@@ -55,6 +55,8 @@ trial
 help(trial)
 ```
 
+> *Issues with `gtsummary`?* As of March 2025, `gtsummary` requires package `glue` to be installed with version 1.8.0 or above. If you don't have that, please try updating `glue`. If you can't get `glue` to update, you might need to delete the `glue` folder from where your packages are saved. This could be something like `C:/Users/name.surname/AppData/Local/R/win-library/4.4` . You can then reinstall `glue` .
+
 ------------------------------------------------------------------------
 
 ### Summarising data
@@ -205,7 +207,7 @@ trial |>
 
 #### Exercise 5
 
-1.  Write a line of code that will calculate the percentage of patients with each cancer stage.
+1.  Summarise the dataset to calculate the percentage of patients with each cancer stage.
 2.  Show the same with an appropriate graph.
 
 ```{r}
@@ -421,8 +423,9 @@ trial |>
 #| label: Exercise 5 solution
 trial |>
   tabyl(stage)
-trial |>
-  ggplot(aes(x = stage)) + geom_bar()
+
+ggplot(trial, aes(x = stage)) +
+  geom_bar()
 ```
 
 ```{r}
