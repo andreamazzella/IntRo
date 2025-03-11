@@ -52,8 +52,9 @@ NA
 FALSE == 0
 TRUE == 1
 
-# They are created when running comparisons with > < >= <= == (NB: two = symbols) !=
-# as well as functions like is.na() and dplyr::near().
+# Logical values are created:
+# - After you run a comparison with > < >= <= == (NB: two = symbols) !=
+# - As the output of certain functions, such as `is.na()` or `dplyr::near()`.
 4 > 7
 4 == 5 - 1
 "Maria" == NA
@@ -102,13 +103,15 @@ text <- "one\ntwo"
 # `stringr` is a package part of the core `tidyverse` and it helps dealing with factors. Its function start with `str_`
 str_view(text)
 
-# You can combine more strings with `paste0()` or `stringr::str_c()`
+# You can combine more strings with `paste0()`, `stringr::str_c()` or `glue::glue()`:
 paste0("Maria ", "Ramírez ", "Rioja")
 str_c("Maria ", "Ramírez ", "Rioja")
+glue::glue("Maria ", "Ramírez ", "Rioja")
 
 # `stringr::str_c()` has the advantage of returning NA if one or more element is NA:
 paste0("Josep ", NA, "Dalí")
 str_c("Josep ", NA, "Dalí")
+glue::glue("Josep ", NA, "Dalí")
 
 # You can subset a character string by using `gsub()` or stringr::str_sub()`:
 str_sub("ID3487", 3, 6)
@@ -151,7 +154,7 @@ mean(c(6, 7, 11))
 log(c(100, 5))
 log(100, 5)
 
-# Objects in a vector can have names:
+# The elements of a vector can have names:
 c(
   age = 19,
   height = 185,
@@ -174,7 +177,7 @@ c(
 
 # `forcats` is a package part of the core `tidyverse` and it helps dealing with factors.
 
-# A vector of character strings doesn't sort in a useful way:
+# A vector of character strings will sort alphabetically, which might not be helpful.
 sample_months <- c("March", "January", "August")
 sort(sample_months)
 
@@ -182,8 +185,8 @@ sort(sample_months)
 sample_months_factor <-
   fct(
     sample_months,
-    c("January", "February", "March", "April", "May", "June", "July",
-      "August", "September", "October", "November", "December")
+    levels = c("January", "February", "March", "April", "May", "June", "July",
+               "August", "September", "October", "November", "December")
     )
 
 # If we sort the vector, it will now sort correctly.
@@ -201,7 +204,7 @@ as.numeric(sample_months_factor)
 ## Dates ------------------------------------------------------------------------------------
 
 # Dates and times are not as straightforward as we might initially think; think about
-# leap years, time zones, daylight saving times, how Americans write dates, etc.
+# leap years, time zones, daylight saving times, how Americans write dates, etc..
 # In R, dates are:
 # -   conceptualised as number of days passed since the 1st of January 1970.
 # -   shown in YYYY-MM-DD format, e.g., 1970-01-01.
