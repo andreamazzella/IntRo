@@ -114,7 +114,7 @@ str_c("Josep ", NA, "Dalí")
 glue::glue("Josep ", NA, "Dalí")
 
 # You can subset a character string by using `gsub()` or stringr::str_sub()`:
-str_sub("ID3487", 3, 6)
+str_sub("2024/25", 1, 4)
 
 ## Exercise 1  ---------------------------------------------------------------
 # 1. Create a new object called "mic" and give it a value of 3.2.
@@ -134,7 +134,7 @@ str_sub("ID3487", 3, 6)
 # You create a vector using function `c()`, which stands for "combine":
 c(TRUE, TRUE, FALSE)
 c(5, 2, 4)
-c("cirrhosis", "fibrosis", "hepatitis")
+c("co-amoxiclav", "piperacillin/tazobactam", "meropenem")
 
 # To create a vector with a regular sequence of numeric values, you can use `seq()`.
 # This can be useful when setting regular x-axis breaks in time series charts.
@@ -160,6 +160,12 @@ c(
   height = 185,
   systolic_BP = 132
   )
+
+c(
+  r = "red",
+  i = "green",
+  s = "blue"
+)
 
 # Of note, every column in a `data.frame` is a vector - see section "Data frames" below for more information.
 
@@ -204,7 +210,7 @@ as.numeric(sample_months_factor)
 ## Dates ------------------------------------------------------------------------------------
 
 # Dates and times are not as straightforward as we might initially think; think about
-# leap years, time zones, daylight saving times, how Americans write dates, etc..
+# leap years, time zones, daylight saving times, how Americans write dates, etc.
 # In R, dates are:
 # -   conceptualised as number of days passed since the 1st of January 1970.
 # -   shown in YYYY-MM-DD format, e.g., 1970-01-01.
@@ -243,22 +249,25 @@ sample_yearqtr <- as.yearqtr(sample_date)
 sample_yearqtr
 as.numeric(sample_yearqtr)
 
+## Weeks  -----------------------------------------------------------------------------------
+# If you need to use year-weeks, you can look into the custom classes from these packages: aweek, tsibble.
+
 # Lists ----------------------------------------------------------------------------------------------------------------
 
-# An R list is also a list of object in a specific order, but unlike a vector, these don't have to be of the same type.
+# An R list is also a list of objects in a specific order, but unlike a vector, these don't have to be of the same type.
 
 list(
-    5,
-    c(TRUE, FALSE, FALSE),
-    "cirrhosis"
-    )
+  5,
+  c(TRUE, FALSE, FALSE),
+  "cirrhosis"
+  )
 
 # Like vectors, elements of a list can be named:
 
 list_study_info <- list(
-    study_id = "478774",
-    nhs_trusts = c("RH5", "RA4", "RBZ"),
-    final = TRUE
+  study_id = "478774",
+  nhs_trusts = c("RH5", "RA4", "RBZ"),
+  final = TRUE
 )
 
 # You can access a named element of a list with the "exposition operator", `$`:

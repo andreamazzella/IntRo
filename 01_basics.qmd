@@ -226,7 +226,7 @@ R has some core functions, like the ones we've used so far: `sqrt()`, `mean()` a
 
 Just like an app, you only need to install a package only once, but you then need to load it every time you're in a new R session and want to use some of its functions. You can then update them as required.
 
-### Step 1: Download and install a package
+### Step 1: Download and install a package from CRAN
 
 To download and install a package, I recommend you use one these options:
 
@@ -238,6 +238,8 @@ You can check if a package is already installed by going to the `Packages` tab a
 ### Exercise 8
 
 Install packages `readr`, `ggplot2` and `dplyr`.
+
+------------------------------------------------------------------------
 
 ### Step 2: Load the package
 
@@ -263,6 +265,17 @@ This can be helpful when you want to clarify which package the function is from,
 
 -   Two packages have a function with the same name (e.g., `filter` is a function in both `stats` and `dplyr`)
 -   The function is not commonly used
+
+------------------------------------------------------------------------
+
+> *Errors with installing or loading a package?*
+>
+> These are some possible reasons:
+>
+> -   Some packages require a newer version of R.
+> -   Many packages depend on others, and if those dependencies fail to install, the package itself won't install (or won't work). Usually the error message might provide some clue.
+> -   If the package or one of its dependencies is already loaded, installation might fail. It can be helpful to close all the RStudio windows you have open, reopen RStudio, start a new R session (from the toolbar: `Session` → `Restart R`) and then try installing the package again.
+> -   If a package was partially installed, R might not install it again. Remove the problematic package with `remove.packages("packagename")` and then reinstall.
 
 ------------------------------------------------------------------------
 
