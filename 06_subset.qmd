@@ -51,7 +51,9 @@ msleep
 
 ### Sort rows
 
-You can use `arrange()` to change the order of the rows according to the value of one or more columns. By default, it uses ascending order. Please note that rows with missing values are always listed at the end. If you list more than one column, each additional column will be used to break ties.
+You can use `arrange()` to change the order of the rows according to the value of one or more columns.
+
+By default, it uses ascending order for numbers. Rows with missing values are always listed at the end. If you list more than one column, each additional column will be used to break ties.
 
 ```{r}
 msleep |>
@@ -158,7 +160,7 @@ You can also link two or more conditions.
 
 ##### Exercise 3
 
-Filter domesticated mammals that weight more than 50 kg. Which are they?
+Filter *domesticated* mammals that *weigh more than 50 kg*. Which are they?
 
 ```{r}
 
@@ -166,7 +168,7 @@ Filter domesticated mammals that weight more than 50 kg. Which are they?
 
 ##### Exercise 4
 
-Make a bar chart of diet type, but only for mammals whose brain weighs less than 50 grams.
+Make a bar chart of diet type, but only for mammals *whose brain weighs less than 50 grams*.
 
 ```{r}
 
@@ -272,7 +274,7 @@ summarise(
 
 ```{r}
 # Creating intermediate objects
-msleep_essential_cols <- select(msleep, name, order, vore, bodywt) |> 
+msleep_essential_cols <- select(msleep, name, order, vore, bodywt)
 msleep_relevant_orders <- filter(msleep_essential_cols, order %in% c("Carnivora", "Artiodactyla", "Rodentia"))
 summarise(
   msleep_relevant_orders,
@@ -296,7 +298,7 @@ msleep |>
 
 ##### Exercise 6
 
-Create a new dataset called `sleepy` containing only data on name and total sleep - just for insectivores who sleep at least 9 hours per day - and in descending order of total sleep.
+Create a new dataset called `sleepy` containing only data on name and total sleep - just for **insecti**`vore`s who sleep at least 9 hours per day - and in descending order of total sleep.
 
 ```{r}
 
