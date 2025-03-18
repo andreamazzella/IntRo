@@ -34,7 +34,11 @@ In this session, you'll use functions from [`dplyr`](https://dplyr.tidyverse.org
 library(tidyverse)
 ```
 
-*Want to know more?* When you're using a qmd, if you use label a chunk with the word "setup", it will automatically run first whenever you try and run any other code in the qmd.
+> *Want to know more?*
+>
+> When you're using a qmd, if you use label a chunk with the word "setup", it will automatically run first whenever you try and run any other code in the qmd.
+
+------------------------------------------------------------------------
 
 We'll use the in-built dataset `msleep` containing information on sleep of 83 mammal species.
 
