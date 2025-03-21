@@ -26,7 +26,7 @@ editor: visual
 
 ### Load packages
 
-In this session, you'll use functions from [`dplyr`](https://dplyr.tidyverse.org/reference/index.html), part of the core tidyverse. We used its `summarise()` and `count()` functons in session 04_summarise; now we'll use `arrange()`, `filter()`, `select()` and the `slice_` functions.
+In this session, you'll use functions from [`dplyr`](https://dplyr.tidyverse.org/reference/index.html), part of the core tidyverse. We used its `summarise()` and `count()` functions in session 04_summarise; now we'll use `arrange()`, `filter()`, `select()` and the `slice_` functions.
 
 ```{r}
 #| label: setup
@@ -168,7 +168,7 @@ Filter *domesticated* mammals that *weigh more than 50 kg*. Which are they?
 
 ##### Exercise 4
 
-Make a bar chart of diet type, but only for mammals *whose brain weighs less than 50 grams*.
+Make a bar chart of diet type, but only for mammals *whose brains weigh less than 50 grams*.
 
 ```{r}
 
@@ -184,6 +184,12 @@ msleep |>
     sleep_total,
     by = vore
     )
+
+# Alternative
+msleep |>
+  group_by(vore) |>
+  filter(sleep_total == max(sleep_total)) |>
+  ungroup()
 ```
 
 ------------------------------------------------------------------------
@@ -298,7 +304,7 @@ msleep |>
 
 ##### Exercise 6
 
-Create a new dataset called `sleepy` containing only data on name and total sleep - just for **insecti**`vore`s who sleep at least 9 hours per day - and in descending order of total sleep.
+Create a new dataset called `sleepy` containing only data on name and total sleep - just for **insecti**`vore`s that sleep at least 9 hours per day - and in descending order of total sleep.
 
 ```{r}
 
