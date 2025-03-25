@@ -61,7 +61,7 @@ dm |>
 
 By default, new variables are added on the right-hand side of the data frame. You can change this with the `.before =` or `.after =` argument.
 
-Like with all `dplyr` functions, this change is temporary; if you want this column to be permanently added to the dataset, you need to assign it. In this case, I generally recommend creating a new object with a meaningful name, but occasionally you might want to ovderwrite the existing data frame.
+Like with all `dplyr` functions, this change is temporary; if you want this column to be permanently added to the dataset, you need to assign it. In this case, I generally recommend creating a new object with a meaningful name, but occasionally you might want to overwrite the existing data frame.
 
 ```{r}
 # Creating a new object
@@ -290,7 +290,7 @@ dm |> count(disability, exercise, frailty)
 
 #### Exercise 4
 
-1.  Import the `bristol.rds` dataset.
+1.  Import the `bristol.rds` dataset (from the `processing` folder).
 2.  Explore the data.
 3.  Categorise the type of stool in the Bristol scale into three levels: "constipation" (type 1-2), "normal" (type 3-5), "diarrhoea" (type 6-7).
 4.  Save a copy as `bristol_v2.rds`.
@@ -401,7 +401,7 @@ bristol |>
 
 # Export
 # bristol |>
-#   write_rds("data/bristol_v2.rds")
+#   write_rds("data/processed/bristol_v2.rds")
 ```
 
 ------------------------------------------------------------------------
