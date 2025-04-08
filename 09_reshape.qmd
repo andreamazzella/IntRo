@@ -37,6 +37,7 @@ ambulance_stemi
 ------------------------------------------------------------------------
 
 ```{r}
+#| label: setup
 library(readxl)
 library(tidyverse)
 ```

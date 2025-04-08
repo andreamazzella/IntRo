@@ -286,6 +286,8 @@ dm <- dm |>
 dm |> count(disability, exercise, frailty)
 ```
 
+You can also add a catch-all at the end, for all rows that haven't matched any of the listed conditions. This is done by using argument `.default = ` at the end.
+
 ------------------------------------------------------------------------
 
 #### Exercise 4
@@ -378,7 +380,7 @@ dm |>
 ```{r}
 #| label: solution_4
 # Import
-bristol <- read_rds("data/bristol.rds")
+bristol <- read_rds("data/processing/bristol.rds")
 
 # Explore
 View(bristol)

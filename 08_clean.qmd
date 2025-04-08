@@ -195,7 +195,7 @@ falls_condensed |>
 
 ### Parsing data classes
 
-One of the main reasons for so many problems with the new dataset is that its *data classes* are not specified. You might remember from topic 05_classes that R uses different classes for different variable types, for example numeric, factor (for categorical variables), Date, logical etc. However,Excel or `.csv` files do not hold this information. Certain R functions are designed to work with only specific data classes.
+One of the main reasons for so many problems with the new dataset is that its *data classes* are not specified. You might remember from topic 05_classes that R uses different classes for different variable types, for example numeric, factor (for categorical variables), Date, logical etc. However, Excel or `.csv` files do not hold this information. Certain R functions are designed to work with only specific data classes.
 
 Remember we can use `class()` to check which class an object is:
 
@@ -213,8 +213,8 @@ Importing functions will guess which class each variable is, but in some cases w
 
 To do this, we can specify column types when importing the data, or we can use "parsing" functions after importing:
 - for numerical variables: `readr::parse_integer()`, `readr::parse_double()` or `as.numeric()`
-- for dates: `lubridate::ymd()`, `lubridate::dmy()`, `readr::parse_date()` or `as.Date`
-- for factors: `forcats::fct`, `readr::parse_factor` or `as.factor()`
+- for dates: `lubridate::ymd()`, `lubridate::dmy()`, `readr::parse_date()` or `as.Date()`
+- for factors: `forcats::fct()`, `readr::parse_factor()` or `as.factor()`
 
 #### Exercise 5
 
@@ -285,14 +285,14 @@ falls_c3 <- falls_c2 |> mutate(date_admit = as.Date(date_admit))
 summary(falls_c3$date_admit)
 ```
 
-If you instead had a date variable read as character, remember that you can use `lubridate`'s helper functions to fix this. As long as all the dates follow the same order, for example, day-month-year, one simple function such as `dmy()` will guess most dates correctly:
+If you instead had a date variable read as character, remember that you can use `lubridate`'s helper functions to fix this. As long as all the dates follow the same order, for example, day-month-year, one simple function such as `dmy()` will guess the dates correctly:
 
 ```{r}
 data.frame(date_birth = c("2/2/87", "3 Jan 1951", "12-08-47")) |> 
   mutate(date_birth_cleaned = dmy(date_birth))
 ```
 
-Sometimes there can be an error where dates are read in the format Excel uses under the hood (days since 01/01/1900). To fix this, we can use this handy function from `janitor`, `excel_numeric_to_date()`:
+Sometimes, after importing a spreadsheet, dates are read in the format Excel uses under the hood (days since 01/01/1900). To fix this, we can use a handy function from `janitor` called `excel_numeric_to_date()`:
 
 ```{r}
 data.frame(excel_dates = c(42455, 42875, 41578)) |> 
