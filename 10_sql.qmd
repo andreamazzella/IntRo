@@ -22,13 +22,9 @@ author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
 
 ------------------------------------------------------------------------
 
-## Recap from topic 09_reshape
-
-...
-
-------------------------------------------------------------------------
-
 ```{r}
+#| label: setup
+
 library(DBI)
 library(odbc)
 library(dbplyr)
@@ -93,6 +89,8 @@ pop_query <- pop_db |>
 collect(pop_query)
 ```
 
+------------------------------------------------------------------------
+
 ## Writing SQL queries
 
 Instead of using `dbplyr`, we can write and run SQL queries from R in other ways:
@@ -118,6 +116,8 @@ show_query(pop_query)
 
 Note that in SQL, you must always write the clauses in the order above; you can't start with `FROM` and follow with `SELECT`, for example.
 
+------------------------------------------------------------------------
+
 ### SQL chunk in a qmd
 
 If you're working from a qmd script, you can use a SQL chunk, that lets you write the SQL query and run it directly from this script.
@@ -134,8 +134,7 @@ FROM Populations.dbo.vRes21_PHEC15_SingleYear
 WHERE ("Age" = 0.0)
 ```
 
-You can:\
-- Assign the results of your query to an R object by using chunk option `output.var`. - Add a comment after two hyphens: `--`
+You can: - Assign the results of your query to an R object by using chunk option `output.var`. - Add a comment after two hyphens: `--`
 
 ```{sql}
 #| connection: con_DataLake
@@ -158,6 +157,8 @@ head(pop_aged_0)
 1.  Insert a new SQL chunk below.
 2.  Use it to get columns Age_years and Description from table vRef_AgeBands, which is contained in the LookupsShared database
 
+------------------------------------------------------------------------
+
 ### Using `dbGetQuery()`
 
 Another alternative, that you can also use in .R scripts, is using `DBI::dbGetQuery()`, which needs the query to be written in a string.
@@ -173,8 +174,10 @@ string_query <-
 dbGetQuery(con_DataLake, string_query)
 ```
 
-Or you can:\
-1. Write the query in a .sql script (which you can do from RStudio) 2. Read the .sql script with `readr::read_file()`
+Or you can:
+
+1.  Write the query in a .sql script (which you can do from RStudio)
+2.  Read the .sql script with `readr::read_file()`
 
 ```{r}
 string_query_2 <- read_file("scripts/query.sql")
@@ -185,6 +188,8 @@ dbGetQuery(con_DataLake, string_query_2)
 ------------------------------------------------------------------------
 
 From now on, this script will just use `show_query()` to show how `dplyr` code that you're already familiar with translates to `SQL` statements. The exercises will require you to write the query in SQL, but feel free to write it with dplyr and use `show_query()` to help if needed.
+
+------------------------------------------------------------------------
 
 ## SELECT
 
@@ -212,6 +217,8 @@ pop_db |>
   show_query()
 ```
 
+------------------------------------------------------------------------
+
 ### Exercise 2
 
 Use the SQL chunk below to write an SQL query that will:
@@ -224,6 +231,8 @@ Use the SQL chunk below to write an SQL query that will:
 ```{sql}
 
 ```
+
+------------------------------------------------------------------------
 
 ## WHERE
 
@@ -250,6 +259,8 @@ Note the correspondences between R and SQL:
 | `between(x, 0, 1)`   | `"x" BETWEEN 0 AND 1`  |
 | `#`                  | `--`                   |
 
+------------------------------------------------------------------------
+
 ## ORDER BY
 
 `ORDER BY` is equivalent to `dplyr::arrange()`:
@@ -260,6 +271,8 @@ pop_db |>
   arrange(SexDesc) |> 
   show_query()
 ```
+
+------------------------------------------------------------------------
 
 ### Exercise 3
 
@@ -272,6 +285,8 @@ Use the SQL chunk below to write an SQL query that will:
 ```{sql}
 
 ```
+
+------------------------------------------------------------------------
 
 ## GROUP BY
 
@@ -286,6 +301,8 @@ pop_db |>
   ) |>
   show_query()
 ```
+
+------------------------------------------------------------------------
 
 ## LEFT JOIN
 
@@ -313,6 +330,8 @@ pop_db |>
 
 Please note: you can use `AS` to create short names from table 1 and table 2; this makes it easier to refer to them in the `SELECT` statement.
 
+------------------------------------------------------------------------
+
 ### Exercise 4
 
 In the SQL chunk below, write an SQL query that will:
@@ -325,10 +344,14 @@ In the SQL chunk below, write an SQL query that will:
 
 ```
 
+------------------------------------------------------------------------
+
 ## Learning more
 
 -   This course: topic 03_import covers
 -   R for Data Science (2ed), [Databases](https://r4ds.hadley.nz/databases.html)
+
+------------------------------------------------------------------------
 
 ## Solutions
 
