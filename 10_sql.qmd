@@ -122,7 +122,10 @@ Note that in SQL, you must always write the clauses in the order above; you can'
 
 If you're working from a qmd script, you can use a SQL chunk, that lets you write the SQL query and run it directly from this script.
 
-After you create an SQL chunk (by adding `{sql}` at the top) you need to list the name of the connection object in the connection chunk option, i.e., what comes after `#| connection:`.
+You need to:
+
+1.  Create an SQL chunk (by adding `{sql}` at the top)
+2.  *In the first line* of this chunk, type `#| connection:` and then add the name of the connection object.
 
 Let's run the exact same query shown in `show_query()`.
 
@@ -134,7 +137,10 @@ FROM Populations.dbo.vRes21_PHEC15_SingleYear
 WHERE ("Age" = 0.0)
 ```
 
-You can: - Assign the results of your query to an R object by using chunk option `output.var`. - Add a comment after two hyphens: `--`
+You can:
+
+-   Assign the results of your query to an R object by using chunk option `output.var`
+-   Add a comment after two hyphens: `--`
 
 ```{sql}
 #| connection: con_DataLake
