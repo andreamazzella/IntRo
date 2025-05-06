@@ -12,6 +12,7 @@ data/raw/Fake_Health_Dataset.csv
 data/raw/espaur2023*
 data/processing/point_prevalence.rds
 data/processed/point_prevalence*
+templates/2025-06_UKHSA_document_template.docx
 planning/
 certificates/
 /.quarto/
