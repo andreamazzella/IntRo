@@ -62,16 +62,10 @@ The output will only appear in the console and in the Plots panel.
 
 An advantage of R scripts over Quarto Markdown documents is that they can be run from other scripts.
 
-To create a new R script, you can:
+To create an R script, you may:
 
 -   Go to the toolbar: `File` → `New File` → `R Script`
--   Use a keyboard short-cut: `Ctrl` + `Shift` + `N` on Windows.
--   Go to the Files tab in the bottom right of the screen and click on the `New Blank File` icon → `R Script` (this will automatically save the file in the folder you see)
-
-You can keep your R script organised using sections, which will appear in the Outline. You create an R script section by:
-
-1.  Clicking on the toolbar: `Code` → `Insert Section...` (or using the short-cut `Ctrl` + `Shift` + `R` on Windows)
-2.  Writing the section title
+-   Or, go to the Files tab in the bottom right of the screen and click on the `New Blank File` icon → `R Script` (this will automatically save the file in the folder you see)
 
 ------------------------------------------------------------------------
 
@@ -80,7 +74,7 @@ You can keep your R script organised using sections, which will appear in the Ou
 A Quarto Markdown document like this one (`01_basics.qmd`) is mainly composed of two things:
 
 -   **Text**, which is the main component.
-    -   This can be formatted *as if it's a text editor.* If you're using Visual editing, you will find a tool bar with formatting options. If you're using Source, you can use Markdown syntax.
+    -   This can be formatted *as if it's a text editor.* If you're using Visual editing, you will find a tool bar with formatting options. If you're using Source, you need to know a syntax called Markdown.
     -   You can keep your qmd organised with headings. If a line starts with a hash symbol, `#`, it will become a level 1 heading; with `##`, a level 2 heading, etc. Headings will be shown in the Outline.
 -   **Chunks**, which contain code (and comments, which are preceded by a hash symbol, `#`). A chunk looks like this:
 
@@ -129,9 +123,9 @@ To add a new chunk, you can:
 -   Go to the toolbar, click `Code` → `Insert Chunk`.
 -   Go to the top right of the window, click on an icon with a green `+c` → `R`
 -   Use a keyboard shortcut
-    -   Mac: `⌘` + `⌥` + `I`
     -   Windows, US keyboard: `Ctrl` + `Alt` + `I`
     -   Windows, any other keyboard: this needs resetting - go to the toolbar, `Tools` → `Modify Keyboard Shortcuts...` → type `insert chunk` in the `Filter` field → click on the shortcut area → press `Ctrl` + `Shift` + `I`.
+    -   Mac: `⌘` + `⌥` + `I`
 -   You could potentially type the three backticks ```` ``` ```` followed by `{r}` and close the chunk with three more backticks, but why would you?
 
 A Markdown document can be opened in Visual mode or in Source mode. Visual mode will have nicer formatting of the text outside of the code chunks.
@@ -152,7 +146,9 @@ You can create a new Markdown document, you can:
 
 ## Assignment
 
-You can tell R that something has a name; R will remember it and you can use that later in your code. This is called *assignment* and is done by using the arrow `<-` (keyboard shortcut: `Alt` + `-` on Windows, `⌥` + `*` on Mac) Assignment creates a new "object". The following code means: "radius" gets the value of 5.7. "radius" is a new object.
+You can tell R that something has a name; R will remember it and you can use that later in your code. This is called *assignment* and is done by using the arrow `<-` (keyboard shortcut: `Alt` + `-` on Windows, `⌥` + `*` on Mac).
+
+Assignment creates a new "object". The code in the exercise below means: "radius" gets the value of 5.7. "radius" is a new object.
 
 ### Exercise 5
 
@@ -216,7 +212,7 @@ help(seq)
 ### Exercise 7
 
 1.  Create a new chunk below.
-2.  Use it to calculate the natural logarithm of 100.
+2.  Write a line of code using function *log* to calculate the logarithm of 100.
 
 ------------------------------------------------------------------------
 
