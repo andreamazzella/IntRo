@@ -259,7 +259,7 @@ I recommend *against* saving to .RData because it doesn't make it clear which ob
 
 #### Exporting as xlsx
 
-I don't recommend saving in xlsx or xls format, but if you need to, you can use [`writexl`](https://docs.ropensci.org/writexl/)`::write_xlsx()` .
+If you need to export to Excel format, you can use [`writexl`](https://docs.ropensci.org/writexl/)`::write_xlsx()` .
 
 #### Exporting as ODS
 
@@ -463,3 +463,4 @@ ggplot(esp, aes(Age_Band_Min, Population)) +
     # The data is already aggregated
     geom_col()
 ```
+
