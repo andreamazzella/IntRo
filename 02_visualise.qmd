@@ -227,7 +227,7 @@ ggplot(amr_tb, aes(year, resistant_count)) +
 
 ```
 
-> *Want to know more?* If you want your y-axis to start from 0 in a line chart, you can add a new layer: `coord_cartesian(ylim = 0, NA))`.
+> *Want to know more?* If you want your y-axis to start from 0 in a line chart, you can add a new layer: `coord_cartesian(ylim = c(0, NA))`.
 
 ### 2 to 4 lines
 
@@ -528,3 +528,4 @@ ggsave(
 ```
 
 ------------------------------------------------------------------------
+
