@@ -2,7 +2,6 @@
 title: "04: Summarising data"
 subtitle: "Introduction to R for health data"
 author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
-source: visual
 ---
 
 ------------------------------------------------------------------------
@@ -175,7 +174,7 @@ trial |>
   adorn_ns(position = "front")
 ```
 
-#### Chaining |> pipes
+#### Chaining pipes
 
 You can also have more than one pipe, as you've seen above. It still works the same, but it makes code much easier to write and read.
 
@@ -199,7 +198,6 @@ adorn_ns(tab_trial_perc_formt, position = "front")
 # Which one would you much rather write? And read?
 ```
 
-
 #### Exercise 4
 
 Write some code to calculate the percentage of people who were alive at the end of the study stratified by cancer grade. (If you can't remember the names of your variables, you can run `names(trial)`.
@@ -209,7 +207,6 @@ Write some code to calculate the percentage of people who were alive at the end 
 ```
 
 ------------------------------------------------------------------------
-
 
 ### Using `summarise()`
 
@@ -305,8 +302,6 @@ Calculate the median and maximum marker levels in the four stage groups.
 ### Using `summary()`
 
 You can use `summary()` to get a quick summary of your entire dataset.
-
-NB: if there are many columns and you're using visual editor, the output will be scrambled. Try running the code from the console instead.
 
 #### Exercise 7
 
