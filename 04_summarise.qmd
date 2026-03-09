@@ -2,7 +2,7 @@
 title: "04: Summarising data"
 subtitle: "Introduction to R for health data"
 author: Andrea Mazzella [(GitHub)](https://github.com/andreamazzella)
-editor: visual
+source: visual
 ---
 
 ------------------------------------------------------------------------
@@ -61,40 +61,161 @@ help(trial)
 
 ### Summarising data
 
-#### Using `summary()`
-
-You can use `summary()` to get a quick summary of your entire dataset.
-
-#### Exercise 1
-
--   Run the following chunk.
--   What is R doing to each variable?
--   What is the median `age`?
--   How many missing values does the `response` variable have?
-
-```{r}
-summary(trial)
-```
-
-> *Want to know more?* This function doesn't provide a helpful summary of character variables, like `trt`. Once you specify the data class, the output will be more useful; see `08_clean.qmd` for how to do this.
-
-------------------------------------------------------------------------
-
 #### `dplyr` basics
 
 We'll frequently use `dplyr` functions, like `summarise()`. They have some things in common:
 
--   Their first argument is always a data frame.
--   The following arguments refer to columns by using their names, without quotes
--   The output is always a new data frame; the original data frame is left unchanged.
+-   Their first argument is always a dataframe.
+-   The output is always a new dataframe; the original data frame is left unchanged.
 
-Because the first argument and the output is always the dataframe, we chain `dplyr` functions one after the other using the pipe, `|>`. We'll cover pipes in more detail later, but for the moment, be aware that `dat |> summarise(...)` is equivalent to `summarise(dat, ...)`.
+------------------------------------------------------------------------
+
+### Frequency tables
+
+To tabulate categorical data, we have many options, among which:
+
+-   `count()` from `dplyr`
+-   `tabyl()` from `janitor`.
+
+#### Exercise 1
+
+Run these two chunks and compare their outputs.
+
+-   What are the differences?
+-   Which function do you prefer?
+
+```{r}
+count(trial, response)
+```
+
+```{r}
+tabyl(trial, response)
+```
+
+#### Exercise 2
+
+1.  Summarise the dataset to calculate the percentage of patients with each cancer stage.
+2.  Show the same with an appropriate graph.
+
+```{r}
+# 1. Frequency table
+
+
+# 2. Graph
+
+```
+
+------------------------------------------------------------------------
+
+### The `|>` pipe
+
+`|>` is called a *pipe*; it's a programming tool that helps improve code readability. It was introduced in R version 4.1 after the success of the `magrittr` pipe, `%>%`.
+
+These two lines are equivalent:
+
+```{r}
+trial |> count(response)
+
+count(trial, response)
+```
+
+You can see that the pipe is:
+
+1.  Taking what's before it
+2.  Shifting it to the function that follows, as its first argument.
+
+You can set a keyboard shortcut for the `|>` pipe. Go to Tools → Global options → Code → tick "Use native pipe operator". After this, pressing *Ctrl + Shift + M* (on Windows) will insert a `|>` pipe.
+
+#### Exercise 3
+
+Rewrite the following code using the pipe.
+
+```{r}
+# Without a pipe
+tabyl(trial, trt)
+
+# With the pipe
+
+```
+
+Many functions from modern R packages list the dataframe as their first argument. This includes key functions from `ggplot2`, `dplyr`, `janitor`. This means that you can use the pipe:
+
+```{r}
+trial |>
+  ggplot(aes(y = stage)) +
+  geom_bar()
+```
+
+------------------------------------------------------------------------
+
+### Cross-tabulation
+
+We're often interested in showing the distribution of *two* categorical variables against each other, i.e., cross-tabulation (two-way tables). This way we can check counts and percentages of each possible combination of factors.
+
+To make two-way tables you can use:
+
+-   `count()` from `dplyr`, but it returns an output in long format and without percentages.
+-   `tabyl()` and some more functions from `janitor`
+
+```{r}
+# Just counts
+trial |>
+  count(trt, response)
+
+trial |>
+  tabyl(trt, response)
+
+trial |>
+  tabyl(trt, response) |>
+  # Change from counts to row percentages (as proportions)
+  adorn_percentages("row") |>
+  # Format 0.3 as 30%
+  adorn_pct_formatting() |>
+  # Add counts back in, before percentages 
+  adorn_ns(position = "front")
+```
+
+#### Chaining |> pipes
+
+You can also have more than one pipe, as you've seen above. It still works the same, but it makes code much easier to write and read.
+
+```{r}
+# This code...
+trial |> 
+  tabyl(trt, response) |>
+  adorn_percentages("row") |>
+  adorn_pct_formatting() |>
+  adorn_ns(position = "front")
+
+# ...is equivalent to:
+adorn_ns(adorn_pct_formatting(adorn_percentages(tabyl(trial, trt, response), "row")), position = "front")
+
+# and similar to this:
+tab_trial <- tabyl(trial, trt, response)
+tab_trial_perc <- adorn_percentages(tab_trial, "row")
+tab_trial_perc_formt <- adorn_pct_formatting(tab_trial_perc)
+adorn_ns(tab_trial_perc_formt, position = "front")
+
+# Which one would you much rather write? And read?
+```
+
+
+#### Exercise 4
+
+Write some code to calculate the percentage of people who were alive at the end of the study stratified by cancer grade. (If you can't remember the names of your variables, you can run `names(trial)`.
+
+```{r}
+
+```
+
+------------------------------------------------------------------------
+
 
 ### Using `summarise()`
 
 We can summarise a data.frame using the `summarise()` function from package `dplyr` and some helper functions like `min()`, `mean()`, `median()`, `sd()`. See `help(summarise)` for a list of helper functions.
 
-For example, to calculate the mean `ttdeath` across every row we can run:
+For example, to calculate the mean `ttdeath` we can run:
 
 ```{r}
 trial |> 
@@ -112,10 +233,10 @@ trial |>
     )
 ```
 
-#### Exercise 2
+#### Exercise 5
 
 1.  Try and calculate the average age.
-2.  Why do you get an `NA` result?
+2.  Why do think you get that result?
 3.  Use `help(mean)` and see if you can figure out how to calculate the mean age.
 
 ```{r}
@@ -166,12 +287,12 @@ We can also group by more than one variable.
 trial |>
   summarise(
     n(),
-    avg_follow_up = mean(ttdeath, na.rm = T) |> round(1),
+    avg_follow_up = mean(ttdeath, na.rm = T),
     .by = c(trt, death)
     )
 ```
 
-#### Exercise 3
+#### Exercise 6
 
 Calculate the median and maximum marker levels in the four stage groups.
 
@@ -181,142 +302,24 @@ Calculate the median and maximum marker levels in the four stage groups.
 
 ------------------------------------------------------------------------
 
-### Frequency tables
+### Using `summary()`
 
-To tabulate categorical data, we have many options, among which:
+You can use `summary()` to get a quick summary of your entire dataset.
 
--   `count()` from `dplyr`
--   `tabyl()` from `janitor`.
-
-#### Exercise 4
-
-Run these two chunks and compare their outputs.
-
--   What are the differences?
--   Which function do you prefer?
-
-```{r}
-trial |>
-  count(response)
-```
-
-```{r}
-trial |>
-  tabyl(response)
-```
-
-#### Exercise 5
-
-1.  Summarise the dataset to calculate the percentage of patients with each cancer stage.
-2.  Show the same with an appropriate graph.
-
-```{r}
-# 1. Frequency table
-
-
-# 2. Graph
-
-```
-
-------------------------------------------------------------------------
-
-### Cross-tabulation
-
-We're often interested in showing the distribution of *two* categorical variables against each other, i.e., cross-tabulation (two-way tables). This way we can check counts and percentages of each possible combination of factors.
-
-To make two-way tables you can use:
-
--   `count()` from `dplyr`, but it returns an output in long format and without percentages.
--   `tabyl()` and some more functions from `janitor`
-
-```{r}
-# Just counts
-trial |>
-  count(trt, response)
-
-trial |>
-  tabyl(trt, response)
-
-trial |>
-  tabyl(trt, response) |>
-  # Change from counts to row percentages (as proportions)
-  adorn_percentages("row") |>
-  # Label percentages
-  adorn_pct_formatting() |>
-  # Add counts back 
-  adorn_ns()
-```
-
-#### Exercise 6
-
-Write some code to calculate the percentage of people who were alive at the end of the study stratified by cancer grade. (If you can't remember the names of your variables, you can run `names(trial)`.
-
-```{r}
-
-```
-
-------------------------------------------------------------------------
-
-### The `|>` pipe
-
-`|>` is called a *pipe*; it's a programming tool that helps improve code readability. It was introduced in R version 4.1 after the success of the `magrittr` pipe, `%>%`.
-
-These two lines are equivalent:
-
-```{r}
-trial |> count(response)
-
-count(trial, response)
-```
-
-You can see that the pipe is:
-
-1.  Taking what's before it
-2.  Shifting it to the function that follows, as its first argument.
-
-You can also have more than one pipe, as you've seen above. It still works the same, but it makes code much easier to write and read.
-
-```{r}
-# This code...
-trial |> 
-  tabyl(trt, response) |>
-  adorn_percentages("row") |>
-  adorn_pct_formatting() |>
-  adorn_ns()
-
-# ...is equivalent to:
-adorn_ns(adorn_pct_formatting(adorn_percentages(tabyl(trial, trt, response), "row")))
-
-# and this
-tab_trial <- tabyl(trial, trt, response)
-tab_trial_perc <- adorn_percentages(tab_trial, "row")
-tab_trial_perc_formt <- adorn_pct_formatting(tab_trial_perc)
-adorn_ns(tab_trial_perc_formt)
-
-# Which one would you much rather write? And read?
-```
-
-You can set a keyboard shortcut for the `|>` pipe. Go to Tools → Global options → Code → tick "Use native pipe operator". After this, pressing *Ctrl + Shift + M* (on Windows) will insert a `|>` pipe.
+NB: if there are many columns and you're using visual editor, the output will be scrambled. Try running the code from the console instead.
 
 #### Exercise 7
 
-Rewrite the following code using the pipe.
+-   Use `summary()` with your dataframe.
+-   What is R doing to each variable?
+-   What is the median `age`?
+-   How many missing values does the `response` variable have?
 
 ```{r}
-# Without a pipe
-tabyl(trial, trt, response)
-
-# With the pipe
 
 ```
 
-Many functions from modern R packages list the data.frame as their first argument. This includes key functions from `ggplot2`, `dplyr`, `janitor`.
-
-```{r}
-trial |>
-  ggplot(aes(trt, age)) +
-  geom_boxplot()
-```
+> *Want to know more?* This function doesn't provide a helpful summary of variables containing text, like `trt`. Once you specify the data class, the output will be more useful; see `08_clean.qmd` for how to do this.
 
 ------------------------------------------------------------------------
 
@@ -401,6 +404,29 @@ final_table |>
 
 ```{r}
 #| label: Exercise 2 solution
+tabyl(trial, stage)
+
+ggplot(trial, aes(x = stage)) +
+  geom_bar()
+```
+
+```{r}
+#| label: Exercise 3 solution
+
+trial |>
+  tabyl(trt)
+```
+
+```{r}
+#| label: Exercise 4 solution
+trial |>
+  tabyl(grade, death) |>
+  adorn_percentages("row") |>
+  adorn_pct_formatting()
+```
+
+```{r}
+#| label: Exercise 5 solution
 
 trial |>
   summarise(mean(age))
@@ -409,7 +435,7 @@ trial |>
 ```
 
 ```{r}
-#| label: Exercise 3 solution
+#| label: Exercise 6 solution
 
 trial |>
   summarise(
@@ -420,24 +446,13 @@ trial |>
 ```
 
 ```{r}
-#| label: Exercise 5 solution
-trial |>
-  tabyl(stage)
-
-ggplot(trial, aes(x = stage)) +
-  geom_bar()
-```
-
-```{r}
-#| label: Exercise 6 solution
-trial |>
-  tabyl(grade, death) |>
-  adorn_percentages("row") |>
-  adorn_pct_formatting()
-```
-
-```{r}
 #| label: Exercise 7 solution
+
+summary(trial)
+```
+
+```{r}
+#| label: Exercise 8 solution
 teeth <- datasets::ToothGrowth
 
 teeth |> 
