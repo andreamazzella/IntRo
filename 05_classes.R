@@ -22,7 +22,6 @@ library(tidyverse)
 # 2.  Cross-tabulate age group against antimicrobial susceptibility.
 
 
-
 # Data classes ---------------------------------------------------------------------------------------------------------
 
 # R represents different variable types (continuous, categorical etc.) internally using "classes".
@@ -57,7 +56,6 @@ TRUE == 1
 # - As the output of certain functions, such as `is.na()` or `dplyr::near()`.
 4 > 7
 4 == 5 - 1
-"Maria" == NA
 is.na("Maria")
 near(1/49*49, 1)
 
@@ -70,7 +68,7 @@ typeof(2.7)
 typeof(2)
 typeof(2L)
 
-# NB: R can't store very large integers in the integer class 
+# NB: R can't store very large integers in the integer type 
 typeof(10000000000L)
 
 # You can use arithmetic operators and numeric functions
@@ -100,7 +98,7 @@ janitor::round_half_up(0.5)
 # You can use \n to create a new line.
 text <- "one\ntwo"
 
-# `stringr` is a package part of the core `tidyverse` and it helps dealing with factors. Its function start with `str_`
+# `stringr` is a package part of the core `tidyverse` and it helps dealing with strings. Its function start with `str_`
 str_view(text)
 
 # You can combine more strings with `paste0()`, `stringr::str_c()` or `glue::glue()`:
@@ -114,12 +112,11 @@ str_c("Josep ", NA, "Dalí")
 glue::glue("Josep ", NA, "Dalí")
 
 # You can subset a character string by using `gsub()` or stringr::str_sub()`:
-str_sub("2024/25", 1, 4)
+str_sub("2024/25", start = 1, end = 4)
 
 ## Exercise 1  ---------------------------------------------------------------
 # 1. Create a new object called "mic" and give it a value of 3.2.
 # 2. Use class() to ensure that this new object has a numeric class.
-
 
 
 # Vectors --------------------------------------------------------------------------------------------------------------
@@ -146,7 +143,7 @@ seq(from = 2010, to = 2020, by = 2)
 # Vectors can be used:
 # -   To apply a calculation or a function to more items at once
 c(0.0031, 0.0149, 0.0075) * 1000
-round(c(7.41, 5.27, 2.01), 1)
+round(c(7.41, 5.27, 2.01), digits = 1)
 # -   When a single argument of a function can contain more than one element
 mean(c(6, 7, 11))
 
@@ -172,7 +169,6 @@ c(
 ## Exercise 2  ---------------------------------------------------------------
 # 1.  Create a vector object that is 5 elements long and contains the values 81, 22, 83, 65 and 50
 # 2.  Find a way to test whether the object is a vector as intended (hint, base R has a number of functions to check the class of an object, e.g. `is.na()`)
-
 
 
 # More data classes ----------------------------------------------------------------------------------------------------
@@ -302,9 +298,11 @@ dat |>
 # `tibble`s are a special type of `data.frame` used in the tidyverse.
 
 # You can create a tibble in an easy to read layout using `tibble::tribble()`:
-tribble(~id, ~initials,
-        1001, "NG",
-        1002, "PT")
+tribble(
+  ~id, ~initials,
+  1001, "NG",
+  1002, "PT"
+  )
 
 # You can check the classes of all variables in a dataset with `glimpse()`, from `dplyr`:
 glimpse(dat)
